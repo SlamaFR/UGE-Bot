@@ -23,8 +23,7 @@ dependencies {
     }
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
-}
-
+    implementation("com.natpryce:konfig:1.6.10.0")}
 tasks.test {
     useJUnitPlatform()
 }
