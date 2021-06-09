@@ -1,5 +1,7 @@
 # Project exclude paths
-/.gradle/
-/build/
+.gradle/
+gradle
+build/
 .idea/
+log
 bot.properties
