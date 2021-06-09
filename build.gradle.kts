@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
     application
 }
 
@@ -17,13 +18,21 @@ repositories {
 }
 
 dependencies {
+    // test api
     testImplementation(kotlin("test"))
+
+    // kotlin api
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+    implementation("com.natpryce:konfig:1.6.10.0")
+
+    // JDA & co.
     implementation("net.dv8tion:JDA:4.2.1_270") {
         exclude("opus-java")
     }
     implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
-    implementation("com.natpryce:konfig:1.6.10.0")}
+
+}
 tasks.test {
     useJUnitPlatform()
 }

@@ -5,11 +5,11 @@ import commands.CallCommand
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import utils.addCommands
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -35,13 +35,18 @@ class UGEBot(token: String) : ListenerAdapter() {
         while(true) {
             when (readLine()) {
                 "die" -> exitProcess(0)
+                "reload" -> load()
             }
         }
     }
 
     override fun onReady(event: ReadyEvent) {
-        registerCommands()
+        load()
         jda.addEventListener(CallCommand())
+    }
+
+    private fun load() {
+        registerCommands()
     }
 
     /*
@@ -49,12 +54,6 @@ class UGEBot(token: String) : ListenerAdapter() {
      */
     private fun registerCommands() {
         val guild = jda.getGuildById("393141696793149450") ?: return
-
-        guild {
-            command(name = "call", "Lancer un appel dans le salon courant.") {
-                option(OptionType.INTEGER, name = "timeout", "Temps imparti pour répondre à l'appel en minutes.")
-                //option(OptionType.ROLE, name = "role", "Groupe d'étudiants visé") not working yet.
-            }
-        }
+        guild.addCommands()
     }
 }

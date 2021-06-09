@@ -1,0 +1,36 @@
+{
+  "commands": [
+    {
+      "name": "call",
+      "description": "Lancer un appel dans le salon courant.",
+      "options": [
+        {
+          "name": "timeout",
+          "description": "Temps imparti pour répondre à l'appel en minutes.",
+          "type": "INTEGER"
+        },
+        {
+          "name": "role",
+          "description": "Groupe d'étudiants visé",
+          "type": "ROLE"
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "description": "test",
+      "options": [
+        {
+          "name": "a",
+          "description": "a",
+          "type": "INTEGER"
+        },
+        {
+          "name": "b",
+          "description": "b",
+          "type": "INTEGER"
+        }
+      ]
+    }
+  ]
+}
