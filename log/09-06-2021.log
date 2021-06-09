@@ -1,0 +1,74 @@
+09-06-21 11:11:22 INFO  - Login Successful!
+09-06-21 11:11:22 INFO  - Connected to WebSocket
+09-06-21 11:11:23 INFO  - Finished Loading!
+09-06-21 11:19:20 INFO  - Login Successful!
+09-06-21 11:19:20 INFO  - Connected to WebSocket
+09-06-21 11:19:21 INFO  - Finished Loading!
+09-06-21 11:21:27 INFO  - Login Successful!
+09-06-21 11:21:27 INFO  - Connected to WebSocket
+09-06-21 11:21:28 INFO  - Finished Loading!
+09-06-21 11:22:29 INFO  - Login Successful!
+09-06-21 11:22:29 INFO  - Connected to WebSocket
+09-06-21 11:22:30 INFO  - Finished Loading!
+09-06-21 11:23:14 INFO  - Login Successful!
+09-06-21 11:23:14 INFO  - Connected to WebSocket
+09-06-21 11:23:14 INFO  - Finished Loading!
+09-06-21 11:24:23 INFO  - Login Successful!
+09-06-21 11:24:24 INFO  - Connected to WebSocket
+09-06-21 11:24:24 INFO  - Finished Loading!
+09-06-21 11:25:25 INFO  - Login Successful!
+09-06-21 11:25:25 INFO  - Connected to WebSocket
+09-06-21 11:25:25 INFO  - Finished Loading!
+09-06-21 11:25:46 INFO  - Login Successful!
+09-06-21 11:25:46 INFO  - Connected to WebSocket
+09-06-21 11:25:47 INFO  - Finished Loading!
+09-06-21 11:36:01 INFO  - Login Successful!
+09-06-21 11:36:01 INFO  - Connected to WebSocket
+09-06-21 11:36:02 INFO  - Finished Loading!
+09-06-21 11:36:48 INFO  - Login Successful!
+09-06-21 11:36:49 INFO  - Connected to WebSocket
+09-06-21 11:36:50 INFO  - Finished Loading!
+09-06-21 11:36:50 ERROR - One of the EventListeners had an uncaught exception
+java.lang.IllegalArgumentException: Name must be lowercase only! Provided: "A"
+	at net.dv8tion.jda.internal.utils.Checks.check(Checks.java:55)
+	at net.dv8tion.jda.internal.utils.Checks.isLowercase(Checks.java:164)
+	at net.dv8tion.jda.api.interactions.commands.build.OptionData.<init>(OptionData.java:92)
+	at net.dv8tion.jda.api.interactions.commands.build.OptionData.<init>(OptionData.java:61)
+	at net.dv8tion.jda.api.requests.restaction.CommandCreateAction.addOption(CommandCreateAction.java:179)
+	at utils.Command_dslKt.option(command_dsl.kt:20)
+	at utils.Command_dslKt.option$default(command_dsl.kt:19)
+	at UGEBot$registerCommands$1$1.invoke(main.kt:59)
+	at UGEBot$registerCommands$1$1.invoke(main.kt:56)
+	at utils.Command_dslKt.command(command_dsl.kt:13)
+	at UGEBot$registerCommands$1.invoke(main.kt:56)
+	at UGEBot$registerCommands$1.invoke(main.kt:55)
+	at utils.Command_dslKt.invoke(command_dsl.kt:8)
+	at UGEBot.registerCommands(main.kt:55)
+	at UGEBot.onReady(main.kt:45)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:463)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:88)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handle(EventManagerProxy.java:70)
+	at net.dv8tion.jda.internal.JDAImpl.handleEvent(JDAImpl.java:160)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.ready(WebSocketClient.java:201)
+	at net.dv8tion.jda.internal.handle.GuildSetupController.checkReady(GuildSetupController.java:115)
+	at net.dv8tion.jda.internal.handle.GuildSetupController.ready(GuildSetupController.java:102)
+	at net.dv8tion.jda.internal.handle.GuildSetupNode.completeSetup(GuildSetupNode.java:375)
+	at net.dv8tion.jda.internal.handle.GuildSetupNode.handleMemberChunk(GuildSetupNode.java:258)
+	at net.dv8tion.jda.internal.handle.GuildSetupController.onMemberChunk(GuildSetupController.java:226)
+	at net.dv8tion.jda.internal.handle.GuildMembersChunkHandler.handleInternally(GuildMembersChunkHandler.java:63)
+	at net.dv8tion.jda.internal.handle.SocketHandler.handle(SocketHandler.java:36)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onDispatch(WebSocketClient.java:952)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onEvent(WebSocketClient.java:839)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.handleEvent(WebSocketClient.java:817)
+	at net.dv8tion.jda.internal.requests.WebSocketClient.onBinaryMessage(WebSocketClient.java:990)
+	at com.neovisionaries.ws.client.ListenerManager.callOnBinaryMessage(ListenerManager.java:385)
+	at com.neovisionaries.ws.client.ReadingThread.callOnBinaryMessage(ReadingThread.java:276)
+	at com.neovisionaries.ws.client.ReadingThread.handleBinaryFrame(ReadingThread.java:996)
+	at com.neovisionaries.ws.client.ReadingThread.handleFrame(ReadingThread.java:755)
+	at com.neovisionaries.ws.client.ReadingThread.main(ReadingThread.java:108)
+	at com.neovisionaries.ws.client.ReadingThread.runMain(ReadingThread.java:64)
+	at com.neovisionaries.ws.client.WebSocketThread.run(WebSocketThread.java:45)
+09-06-21 11:37:12 INFO  - Login Successful!
+09-06-21 11:37:12 INFO  - Connected to WebSocket
+09-06-21 11:37:13 INFO  - Finished Loading!

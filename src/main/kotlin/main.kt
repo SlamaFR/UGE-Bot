@@ -10,6 +10,9 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import utils.command
+import utils.invoke
+import utils.option
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -33,7 +36,8 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     init {
         while(true) {
-            when (readLine()) {
+            val command = readLine()?.split(" ") ?: listOf("nil")
+            when (command[0]) {
                 "die" -> exitProcess(0)
             }
         }
@@ -53,7 +57,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         guild {
             command(name = "call", "Lancer un appel dans le salon courant.") {
                 option(OptionType.INTEGER, name = "timeout", "Temps imparti pour répondre à l'appel en minutes.")
-                //option(OptionType.ROLE, name = "role", "Groupe d'étudiants visé") not working yet.
+                option(OptionType.ROLE, name = "role", "Groupe d'étudiants visé")
             }
         }
     }
