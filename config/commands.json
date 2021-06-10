@@ -17,18 +17,14 @@
       ]
     },
     {
-      "name": "test",
-      "description": "test",
+      "name": "autorole",
+      "description": "Créer un attributeur automatique de rôle.",
       "options": [
         {
-          "name": "a",
-          "description": "a",
-          "type": "INTEGER"
-        },
-        {
-          "name": "b",
-          "description": "b",
-          "type": "INTEGER"
+          "name": "name",
+          "description": "Nom de l'attributeur.",
+          "type": "STRING",
+          "required": true
         }
       ]
     }
