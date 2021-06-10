@@ -17,18 +17,13 @@
       ]
     },
     {
-      "name": "test",
-      "description": "test",
+      "name": "keval",
+      "description": "Evalue une expression mathématique.",
       "options": [
         {
-          "name": "a",
-          "description": "a",
-          "type": "INTEGER"
-        },
-        {
-          "name": "b",
-          "description": "b",
-          "type": "INTEGER"
+          "name": "expression",
+          "description": "L'expression à évaluer",
+          "type": "STRING"
         }
       ]
     }
