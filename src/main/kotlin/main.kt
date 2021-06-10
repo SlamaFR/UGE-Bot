@@ -2,6 +2,7 @@ import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.stringType
 import commands.CallCommand
+import commands.KevalCommand
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -42,7 +43,10 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     override fun onReady(event: ReadyEvent) {
         load()
-        jda.addEventListener(CallCommand())
+        jda.addEventListener(
+            CallCommand(),
+            KevalCommand()
+        )
     }
 
     private fun load() {

@@ -11,24 +11,19 @@
         },
         {
           "name": "role",
-          "description": "Groupe d'étudiants visé",
+          "description": "Groupe d'étudiants visé.",
           "type": "ROLE"
         }
       ]
     },
     {
-      "name": "test",
-      "description": "test",
+      "name": "keval",
+      "description": "Évaluer une expression mathématique.",
       "options": [
         {
-          "name": "a",
-          "description": "a",
-          "type": "INTEGER"
-        },
-        {
-          "name": "b",
-          "description": "b",
-          "type": "INTEGER"
+          "name": "expression",
+          "description": "Expression à évaluer.",
+          "type": "STRING"
         }
       ]
     }
