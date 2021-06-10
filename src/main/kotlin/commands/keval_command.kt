@@ -34,8 +34,8 @@ class KevalCommand : ListenerAdapter() {
         event.replyEmbeds(
             EmbedBuilder()
                 .setTitle("Keval")
-                .addField("Expression:", expr.asString, false)
-                .addField("Résultat:", res.toString(), false)
+                .addField("Expression", expr.asString, false)
+                .addField("Résultat", res.toString(), false)
                 .setColor(Color(0x1ABC9C))
                 .build()
         ).queue()

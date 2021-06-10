@@ -18,7 +18,7 @@
     },
     {
       "name": "keval",
-      "description": "Evalue une expression mathématique.",
+      "description": "Évaluer une expression mathématique.",
       "options": [
         {
           "name": "expression",
