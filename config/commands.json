@@ -11,7 +11,7 @@
         },
         {
           "name": "role",
-          "description": "Groupe d'étudiants visé",
+          "description": "Groupe d'étudiants visé.",
           "type": "ROLE"
         }
       ]
@@ -22,7 +22,7 @@
       "options": [
         {
           "name": "expression",
-          "description": "L'expression à évaluer",
+          "description": "Expression à évaluer.",
           "type": "STRING"
         }
       ]
