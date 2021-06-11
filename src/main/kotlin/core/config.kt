@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.io.File
 
+const val GUILD_CONFIG_ROOT = "config/guilds/"
+
 @Serializable
 data class RolesDTO(
     val adminRoleID: Long,
@@ -56,8 +58,8 @@ fun Guild.getConfigOrNull(): GuildConfig? =
 
 private fun loadConfig(guildId: Long) {
     guildConfigs[guildId] = GuildConfig(
-        Json.decodeFromString(File("config/guilds/${guildId}/roles.json").readText()),
-        Json.decodeFromString(File("config/guilds/${guildId}/channels.json").readText()),
-        Json.decodeFromString(File("config/guilds/${guildId}/autoroles.json").readText()),
+        Json.decodeFromString(File("$GUILD_CONFIG_ROOT$guildId/roles.json").readText()),
+        Json.decodeFromString(File("$GUILD_CONFIG_ROOT$guildId/channels.json").readText()),
+        Json.decodeFromString(File("$GUILD_CONFIG_ROOT$guildId/autoroles.json").readText()),
     )
 }
