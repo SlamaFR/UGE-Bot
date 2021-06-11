@@ -67,9 +67,9 @@ class AutoRole(
         ).apply {
             for (i in roles.indices.chunked(5)) {
                 this.setActionRows(ActionRow.of(
-                    (i.associateWith {
+                    i.associateWith {
                         config.roles[it]
-                    }).map {
+                    }.map {
                         Button.of(it.value.color, "${name}.${it.key}", it.value.title)
                     }
                 ))
