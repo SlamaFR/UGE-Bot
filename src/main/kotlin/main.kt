@@ -34,7 +34,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         .build()
 
     init {
-        while(true) {
+        while (true) {
             when (readLine()) {
                 "die" -> exitProcess(0)
                 "reload" -> load()
@@ -44,8 +44,7 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     override fun onReady(event: ReadyEvent) {
         load()
-        jda.addEventListener(CallCommand())
-        jda.addEventListener(AutoRoleCommand())
+        jda.addEventListener(CallCommand(), AutoRoleCommand())
         jda.guildCache.forEach {
             it.loadAutoRoles()
         }

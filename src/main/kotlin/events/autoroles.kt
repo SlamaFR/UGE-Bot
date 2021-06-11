@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.components.Button
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-val autoRoles: MutableMap<Long, MutableMap<String, AutoRole>> = mutableMapOf()
+val autoRoles = mutableMapOf<Long, MutableMap<String, AutoRole>>()
 val logger: Logger = LoggerFactory.getLogger("AutoRolesManager")
 
 fun createAutoRoleIfAbsent(guild: Guild, name: String, config: AutoRoleDTO): AutoRole? {
@@ -40,8 +40,8 @@ fun createAutoRoleIfAbsent(guild: Guild, name: String): AutoRole? {
 
 fun Guild.loadAutoRoles() {
     val config = this.getConfigOrNull() ?: return
-    config.autoRoles.forEach {
-        createAutoRoleIfAbsent(this, it.key, it.value)
+    config.autoRoles.forEach { (name, autoRole) ->
+        createAutoRoleIfAbsent(this, name, autoRole)
     }
 }
 
@@ -94,7 +94,7 @@ class AutoRole(
             return
         }
 
-        guild.addRoleToMember(event.user.id, role).queue() {
+        guild.addRoleToMember(event.user.id, role).queue {
             event.reply(":white_check_mark: Le rôle ${role.asMention} vous a été attribué !")
                 .setEphemeral(true)
                 .queue()
