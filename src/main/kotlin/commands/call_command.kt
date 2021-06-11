@@ -34,7 +34,7 @@ class Call(
 ) : ListenerAdapter() {
 
     private val students = mutableSetOf<String>()
-    private val uniqueId = event.member!!.id + System.currentTimeMillis().toString()
+    private val uniqueId = event.user.id + System.currentTimeMillis().toString()
 
     init {
         event.jda.addEventListener(this)

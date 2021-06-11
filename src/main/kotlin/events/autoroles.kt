@@ -21,13 +21,15 @@ fun createAutoRoleIfAbsent(guild: Guild, name: String, config: AutoRoleDTO): Aut
         autoRoles[guild.idLong] = mutableMapOf()
     }
 
-    if (name !in autoRoles[guild.idLong]!!.keys) {
+    val guildAutoRoles = autoRoles.getOrPut(guild.idLong) { mutableMapOf() }
+
+    if (name !in guildAutoRoles.keys) {
         val autoRole = AutoRole(config, name, guild.jda)
-        autoRoles[guild.idLong]!![name] = autoRole
+        guildAutoRoles[name] = autoRole
         logger.info("Successfully created AutoRole \"$name\" on ${guild.id}")
         return autoRole
     }
-    return autoRoles[guild.idLong]!![name]
+    return guildAutoRoles[name]
 }
 
 fun createAutoRoleIfAbsent(guild: Guild, name: String): AutoRole? {
@@ -77,13 +79,14 @@ class AutoRole(
 
     override fun onButtonClick(event: ButtonClickEvent) {
         if (!event.componentId.startsWith(name)) return
-        if (event.guild == null) return
+        val guild = event.guild ?: return
+        val member = event.member ?: return
 
         val index = event.componentId.split(".")[1].toInt()
         if (index >= roles.size) return
 
-        val role = event.guild!!.getRoleById(roles[index])
-        if (role in event.member!!.roles) return
+        val role = guild.getRoleById(roles[index])
+        if (role in member.roles) return
         if (role == null) {
             event.reply("**Erreur :** Le rôle demandé est introuvable. Contactez l'administrateur.")
                 .setEphemeral(true)
@@ -91,7 +94,7 @@ class AutoRole(
             return
         }
 
-        event.guild!!.addRoleToMember(event.user.id, role).queue() {
+        guild.addRoleToMember(event.user.id, role).queue() {
             event.reply(":white_check_mark: Le rôle ${role.asMention} vous a été attribué !")
                 .setEphemeral(true)
                 .queue()
