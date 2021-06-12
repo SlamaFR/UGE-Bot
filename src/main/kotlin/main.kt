@@ -1,7 +1,9 @@
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.stringType
+import commands.AutoRoleCommand
 import commands.CallCommand
+import events.loadAutoRoles
 import commands.KevalCommand
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
@@ -33,7 +35,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         .build()
 
     init {
-        while(true) {
+        while (true) {
             when (readLine()) {
                 "die" -> exitProcess(0)
                 "reload" -> load()
@@ -43,13 +45,14 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     override fun onReady(event: ReadyEvent) {
         load()
-        jda.addEventListener(
-            CallCommand(),
-            KevalCommand()
-        )
+        jda.addEventListener(CallCommand(), KevalCommand(), AutoRoleCommand())
+        jda.guildCache.forEach {
+            it.loadAutoRoles()
+        }
     }
 
     private fun load() {
+        logger.info("Registered commands")
         registerCommands()
     }
 

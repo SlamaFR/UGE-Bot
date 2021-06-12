@@ -17,6 +17,18 @@
       ]
     },
     {
+      "name": "autorole",
+      "description": "Créer un attributeur automatique de rôle.",
+      "options": [
+        {
+          "name": "name",
+          "description": "Nom de l'attributeur.",
+          "type": "STRING",
+          "required": true
+        }
+      ]
+    },
+    {
       "name": "keval",
       "description": "Évaluer une expression mathématique.",
       "options": [

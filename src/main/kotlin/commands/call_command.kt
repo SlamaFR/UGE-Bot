@@ -34,7 +34,7 @@ class Call(
 ) : ListenerAdapter() {
 
     private val students = mutableSetOf<String>()
-    private val uniqueId = System.currentTimeMillis()
+    private val uniqueId = event.user.id + System.currentTimeMillis().toString()
 
     init {
         event.jda.addEventListener(this)
@@ -68,9 +68,9 @@ class Call(
             val calendar = Calendar.getInstance()
             val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
             val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
-            val fname = "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+            val fileName = "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
-            File(fname).apply {
+            File(fileName).apply {
                 if (!createNewFile()) throw IOException("Couldn't create file")
                 calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
