@@ -54,7 +54,9 @@ fun getConfigOrNull(guildId: Long): GuildConfig? {
 
 fun Guild.getConfigOrNull(): GuildConfig? = getConfigOrNull(this.idLong)
 
-fun clearGuildConfigs() = guildConfigs.clear()
+fun clearGuildConfigs() {
+    guildConfigs.clear()
+}
 
 private fun loadConfig(guildId: Long) {
     guildConfigs[guildId] = GuildConfig(
