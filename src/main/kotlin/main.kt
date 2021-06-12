@@ -53,14 +53,5 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     private fun load() {
         logger.info("Registered commands")
-        registerCommands()
-    }
-
-    /*
-     * Hacky solution for now, will change.
-     */
-    private fun registerCommands() {
-        val guild = jda.getGuildById("393141696793149450") ?: return
-        guild.addCommands()
     }
 }
