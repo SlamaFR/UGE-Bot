@@ -11,7 +11,7 @@ class AutoRoleCommand : ListenerAdapter() {
         if (event.guild == null) return
 
         val name = event.getOption("name") ?: return
-        val autoRole = createAutoRoleIfAbsent(event.guild!!, name.asString)
+        val autoRole = event.guild?.let { createAutoRoleIfAbsent(it, name.asString) }
 
         if (autoRole != null) {
             event.reply(":white_check_mark: L'attributeur a été créé avec succès !")
