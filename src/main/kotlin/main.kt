@@ -49,9 +49,11 @@ class UGEBot(token: String) : ListenerAdapter() {
     private fun load() {
         clearAutoRoles()
         clearGuildConfigs()
-        jda.guildCache.forEach { it.loadAutoRoles() }
         jda.registerGlobalCommands()
-        jda.guilds.forEach { it.registerGuildCommands() }
+        jda.guilds.forEach {
+            it.registerGuildCommands()
+            it.loadAutoRoles()
+        }
         logger.info("Registered commands")
     }
 }
