@@ -11,7 +11,7 @@
         },
         {
           "name": "role",
-          "description": "Groupe d'étudiants visé",
+          "description": "Groupe d'étudiants visé.",
           "type": "ROLE"
         }
       ]
@@ -25,6 +25,17 @@
           "description": "Nom de l'attributeur.",
           "type": "STRING",
           "required": true
+        }
+      ]
+    },
+    {
+      "name": "keval",
+      "description": "Évaluer une expression mathématique.",
+      "options": [
+        {
+          "name": "expression",
+          "description": "Expression à évaluer.",
+          "type": "STRING"
         }
       ]
     }

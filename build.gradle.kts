@@ -24,13 +24,16 @@ dependencies {
     // kotlin api
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
-    implementation("com.natpryce:konfig:1.6.10.0")
 
     // JDA & co.
     implementation("net.dv8tion:JDA:4.2.1_270") {
         exclude("opus-java")
     }
     implementation("ch.qos.logback:logback-classic:1.2.3")
+
+    // Others
+    implementation("com.natpryce:konfig:1.6.10.0")
+    implementation("com.notkamui.libs:keval:0.7.4")
 
 }
 tasks.test {
