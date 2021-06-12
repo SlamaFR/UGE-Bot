@@ -7,7 +7,8 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.io.File
 
-const val GUILD_CONFIG_ROOT = "config/guilds/"
+private const val GUILD_CONFIG_ROOT = "config/guilds/"
+private val guildConfigs: MutableMap<Long, GuildConfig> = mutableMapOf()
 
 @Serializable
 data class RolesDTO(
@@ -46,15 +47,16 @@ data class GuildConfig(
     val autoRoles: Map<String, AutoRoleDTO>,
 )
 
-private val guildConfigs: MutableMap<Long, GuildConfig> = mutableMapOf()
-
 fun getConfigOrNull(guildId: Long): GuildConfig? {
     if (guildId !in guildConfigs.keys) loadConfig(guildId)
     return guildConfigs[guildId]
 }
 
-fun Guild.getConfigOrNull(): GuildConfig? =
-    getConfigOrNull(this.idLong)
+fun Guild.getConfigOrNull(): GuildConfig? = getConfigOrNull(this.idLong)
+
+fun clearGuildConfigs() {
+    guildConfigs.clear()
+}
 
 private fun loadConfig(guildId: Long) {
     guildConfigs[guildId] = GuildConfig(

@@ -27,6 +27,7 @@ data class OptionDTO(
     val required: Boolean = false,
 )
 
+@Deprecated("Moved to DSL")
 fun Guild.addCommands() {
     val json = File("config/commands.json").readText()
     val group = Json.decodeFromString<CommandGroupDTO>(json)
