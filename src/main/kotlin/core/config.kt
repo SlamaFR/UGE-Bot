@@ -6,6 +6,9 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.io.File
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectory
+import kotlin.io.path.exists
 
 private const val GUILD_CONFIG_ROOT = "config/guilds/"
 private val guildConfigs: MutableMap<Long, GuildConfig> = mutableMapOf()
@@ -58,10 +61,62 @@ fun clearGuildConfigs() {
     guildConfigs.clear()
 }
 
+private fun createRolesFile(file: File) {
+    file.createNewFile()
+    file.writeText(
+        """
+        {
+          "adminRoleID": 0,
+          "managerRoleID": 1,
+          "teacherRoleID": 2,
+          "studentRoleID": 3
+        }
+    """.trimIndent()
+    )
+}
+
+private fun createChannelsFile(file: File) {
+    file.createNewFile()
+    file.writeText(
+        """
+        {
+          "announcementsChannelID": 0,
+          "moodleAnnouncementsChannelsIDs": {
+          }
+        }
+    """.trimIndent()
+    )
+}
+
+private fun createAutorolesFile(file: File) {
+    file.createNewFile()
+    file.writeText("{}\n")
+}
+
 private fun loadConfig(guildId: Long) {
+    val configDir = Path("$GUILD_CONFIG_ROOT$guildId")
+    if (!configDir.exists()) {
+        configDir.createDirectory()
+    }
+
+    val rolesF = File("$GUILD_CONFIG_ROOT$guildId/roles.json")
+    if (!rolesF.exists()) {
+        createRolesFile(rolesF)
+    }
+
+    val channelsF = File("$GUILD_CONFIG_ROOT$guildId/channels.json")
+    if (!channelsF.exists()) {
+        createChannelsFile(channelsF)
+    }
+
+    val autorolesF = File("$GUILD_CONFIG_ROOT$guildId/autoroles.json")
+    if (!autorolesF.exists()) {
+        createAutorolesFile(autorolesF)
+    }
+
     guildConfigs[guildId] = GuildConfig(
-        Json.decodeFromString(File("$GUILD_CONFIG_ROOT$guildId/roles.json").readText()),
-        Json.decodeFromString(File("$GUILD_CONFIG_ROOT$guildId/channels.json").readText()),
-        Json.decodeFromString(File("$GUILD_CONFIG_ROOT$guildId/autoroles.json").readText()),
+        Json.decodeFromString(rolesF.readText()),
+        Json.decodeFromString(channelsF.readText()),
+        Json.decodeFromString(autorolesF.readText())
     )
 }

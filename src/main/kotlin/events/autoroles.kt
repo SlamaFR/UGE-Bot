@@ -102,4 +102,6 @@ fun Guild.loadAutoRoles() {
     }
 }
 
-fun clearAutoRoles() = autoRoles.clear()
+fun clearAutoRoles() {
+    autoRoles.clear()
+}
