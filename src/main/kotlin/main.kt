@@ -3,12 +3,12 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.stringType
 import commands.AutoRoleCommand
 import commands.CallCommand
-import events.loadAutoRoles
 import commands.KevalCommand
 import core.clearGuildConfigs
 import core.registerGlobalCommands
 import core.registerGuildCommands
 import events.clearAutoRoles
+import events.loadAutoRoles
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -34,9 +34,16 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     init {
         while (true) {
-            when (readLine()) {
+            val command = readLine()?.split(" ") ?: listOf("default")
+            when (command[0]) {
                 "die" -> exitProcess(0)
                 "reload" -> load()
+                "delete-commands" -> {
+                    if (command.size < 2) continue
+                    command.drop(1).forEach { name ->
+                        deleteCommandByName(name)
+                    }
+                }
             }
         }
     }
@@ -51,10 +58,18 @@ class UGEBot(token: String) : ListenerAdapter() {
         clearGuildConfigs()
         jda.registerGlobalCommands()
         jda.guilds.forEach {
-            it.registerGuildCommands()
             it.loadAutoRoles()
+            it.registerGuildCommands()
         }
         logger.info("Registered commands")
+    }
+
+    private fun deleteCommandByName(name: String) {
+        jda.guilds.forEach {
+            it.upsertCommand(name, "").queue { command ->
+                it.deleteCommandById(command.idLong).queue()
+            }
+        }
     }
 }
 
