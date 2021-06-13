@@ -44,6 +44,12 @@ class UGEBot(token: String) : ListenerAdapter() {
                         deleteCommandByName(name)
                     }
                 }
+                "delete-global-commands" -> {
+                    if (command.size < 2) continue
+                    command.drop(1).forEach { name ->
+                        deleteGlobalCommandByName(name)
+                    }
+                }
             }
         }
     }
@@ -66,10 +72,18 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     private fun deleteCommandByName(name: String) {
         jda.guilds.forEach {
-            it.upsertCommand(name, "").queue { command ->
+            it.upsertCommand(name, name).queue { command ->
                 it.deleteCommandById(command.idLong).queue()
             }
         }
+        logger.info("Deleted command '$name'")
+    }
+
+    private fun deleteGlobalCommandByName(name: String) {
+        jda.upsertCommand(name, name).queue { command ->
+            jda.deleteCommandById(command.idLong).queue()
+        }
+        logger.info("Deleted global command '$name' (may take up to 1h)")
     }
 }
 
