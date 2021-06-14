@@ -74,22 +74,26 @@ class UGEBot(token: String) : ListenerAdapter() {
         jda.guilds.forEach { guild ->
             guild.retrieveCommands().map { commands ->
                 commands.firstOrNull { it.name == name }
-            }.complete()?.let {
-                guild.deleteCommandById(it.idLong).queue {
-                    logger.info("Deleted command '$name' in guild ${guild.id}")
-                }
-            } ?: logger.info("Command '$name' not found in guild ${guild.id}")
+            }.queue { command ->
+                command?.let {
+                    guild.deleteCommandById(it.idLong).queue {
+                        logger.info("Deleted command '$name' in guild ${guild.id}")
+                    }
+                } ?: logger.info("Command '$name' not found in guild ${guild.id}")
+            }
         }
     }
 
     private fun deleteGlobalCommandByName(name: String) {
         jda.retrieveCommands().map { commands ->
             commands.firstOrNull { it.name == name }
-        }.complete()?.let {
-            jda.deleteCommandById(it.idLong).queue {
-                logger.info("Deleted global command '$name' (may take up to 1h)")
-            }
-        } ?: logger.info("Command '$name' not found")
+        }.queue { command ->
+            command?.let {
+                jda.deleteCommandById(it.idLong).queue {
+                    logger.info("Deleted global command '$name' (may take up to 1h)")
+                }
+            } ?: logger.info("Command '$name' not found")
+        }
     }
 }
 
