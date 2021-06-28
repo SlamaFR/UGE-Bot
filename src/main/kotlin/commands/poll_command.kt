@@ -35,10 +35,10 @@ class Poll(
     private val question = event.getOption("question")
 
     private var options = listOfNotNull(
-        event.getOption("first")?.asString,
-        event.getOption("second")?.asString,
-        event.getOption("third")?.asString,
-        event.getOption("fourth")?.asString,
+        event.getOption("a")?.asString,
+        event.getOption("b")?.asString,
+        event.getOption("c")?.asString,
+        event.getOption("d")?.asString,
     )
 
     init {
