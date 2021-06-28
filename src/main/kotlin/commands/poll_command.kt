@@ -20,7 +20,7 @@ class PollCommand : ListenerAdapter() {
         if (event.name != "poll") return
         if (event.guild == null) return
 
-        Poll(event, event.getOption("timeout")?.asLong ?: DEFAULT_POLL_TIMEOUT)
+        Poll(event, event.getOption("timeout")?.asLong ?: DEFAULT_POLL_TIMEOUT).send()
     }
 
 }
@@ -45,10 +45,9 @@ class Poll(
         event.jda.addEventListener(this)
         options = options.ifEmpty { mutableListOf("Oui", "Non") }
         options.forEachIndexed { i, _ -> answers[i] = mutableSetOf() }
-        send()
     }
 
-    private fun send() {
+    fun send() {
         if (question != null) {
             event.replyEmbeds(
                 EmbedBuilder()
