@@ -1,15 +1,8 @@
 package utils
 
-fun String.pluralize(count: Int) =
+fun String.pluralize(count: Number) =
     pluralize(count, null)
 
-fun String.pluralize(count: Int, form: String?) =
-    if (count > 1) form ?: this + "s"
-    else this
-
-fun String.pluralize(count: Long) =
-    pluralize(count, null)
-
-fun String.pluralize(count: Long, form: String?) =
-    if (count > 1) form ?: this + "s"
+fun String.pluralize(count: Number, form: String?) =
+    if (count.toLong() > 1) form ?: "${this}s"
     else this
