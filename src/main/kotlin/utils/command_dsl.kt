@@ -4,40 +4,32 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import net.dv8tion.jda.api.requests.restaction.CommandCreateAction
 
-operator fun Guild.invoke(dsl: Guild.() -> Unit) {
-    this.dsl()
+operator fun Guild.invoke(dsl: MutableList<CommandData>.() -> Unit) {
+    val commands = mutableListOf<CommandData>()
+    commands.dsl()
+    this.updateCommands().addCommands(commands).queue()
 }
 
-operator fun JDA.invoke(dsl: JDA.() -> Unit) {
-    this.dsl()
+operator fun JDA.invoke(dsl: MutableList<CommandData>.() -> Unit) {
+    val commands = mutableListOf<CommandData>()
+    commands.dsl()
+    this.updateCommands().addCommands(commands).queue()
 }
 
-fun Guild.command(
+fun MutableList<CommandData>.command(
     name: String,
     desc: String,
-    options: CommandCreateAction.() -> Unit = { }
+    options: CommandData.() -> Unit = {}
 ) {
-    this.upsertCommand(name, desc).let { command ->
-        command.options()
-        command.queue()
-    }
+    val command = CommandData(name, desc)
+    command.options()
+    this += command
 }
 
-fun JDA.command(
-    name: String,
-    desc: String,
-    options: CommandCreateAction.() -> Unit = { }
-) {
-    this.upsertCommand(name, desc).let { command ->
-        command.options()
-        command.queue()
-    }
-}
-
-fun CommandCreateAction.option(
+fun CommandData.option(
     type: OptionType,
     name: String,
     desc: String,
