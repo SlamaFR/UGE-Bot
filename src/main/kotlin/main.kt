@@ -5,6 +5,7 @@ import commands.AutoRoleCommand
 import commands.CallCommand
 import events.loadAutoRoles
 import commands.KevalCommand
+import commands.PollCommand
 import core.clearGuildConfigs
 import core.registerGlobalCommands
 import core.registerGuildCommands
@@ -42,7 +43,7 @@ class UGEBot(token: String) : ListenerAdapter() {
     }
 
     override fun onReady(event: ReadyEvent) {
-        jda.addEventListener(CallCommand(), KevalCommand(), AutoRoleCommand())
+        jda.addEventListener(CallCommand(), KevalCommand(), AutoRoleCommand(), PollCommand())
         load()
     }
 
