@@ -118,8 +118,9 @@ class ChanGenCommand : ListenerAdapter() {
     private fun save() {
         val file = File("temporaryChannelGenerators")
         if (!file.exists()) file.createNewFile()
+        file.writeText("")
         generators.forEach {
-            file.writeText(it)
+            file.appendText("$it\n")
         }
     }
 }
