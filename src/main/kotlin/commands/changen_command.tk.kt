@@ -120,8 +120,7 @@ class ChanGenCommand : ListenerAdapter() {
         if (!file.exists()) file.createNewFile()
         file.writeText("")
         generators.forEach {
-            file.appendText(it)
-            file.appendText("\n")
+            file.appendText("$it\n")
         }
     }
 }
