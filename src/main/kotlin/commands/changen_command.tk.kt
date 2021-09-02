@@ -19,18 +19,20 @@ private val logger: Logger = LoggerFactory.getLogger("TemporaryChannels")
 
 class ChanGenCommand : ListenerAdapter() {
 
-    private val generators: MutableSet<String> = mutableSetOf()
-    private val temporaryChannels: MutableMap<String, String> = mutableMapOf()
-    private val deletionTasks: MutableMap<String, TimerTask> = mutableMapOf()
+    private val generators = mutableSetOf<String>()
+    private val temporaryChannels = mutableMapOf<String, String>()
+    private val deletionTasks = mutableMapOf<String, TimerTask>()
 
     init {
         val file = File("temporaryChannelGenerators")
         if (file.exists()) {
-            file.readLines().stream().map {
-                it.trim('\n')
-            }.forEach {
-                generators.add(it)
-                logger.info("Successfully created generator on $it")
+            file.useLines { lines ->
+                lines.map {
+                    it.trim('\n')
+                }.forEach {
+                    generators.add(it)
+                    logger.info("Successfully created generator on $it")
+                }
             }
         }
     }
@@ -39,15 +41,15 @@ class ChanGenCommand : ListenerAdapter() {
         if (event.name != "changen") return
         if (event.guild == null) return
 
-        event.getOption("channel")?.asGuildChannel?.let {
-            if (it.id in generators) {
-                generators.remove(it.id)
-                event.reply(":white_check_mark: Le générateur du salon **${it.name}** a été supprimé.")
+        event.getOption("channel")?.asGuildChannel?.let { channel ->
+            if (channel.id in generators) {
+                generators.remove(channel.id)
+                event.reply(":white_check_mark: Le générateur du salon **${channel.name}** a été supprimé.")
                     .setEphemeral(true)
                     .queue()
             } else {
-                generators.add(it.id)
-                event.reply(":white_check_mark: Le salon **${it.name}** a été lié à un générateur.")
+                generators.add(channel.id)
+                event.reply(":white_check_mark: Le salon **${channel.name}** a été lié à un générateur.")
                     .setEphemeral(true)
                     .queue()
             }
