@@ -23,6 +23,9 @@ fun JDA.registerGlobalCommands() {
             option(OptionType.STRING, name = "c", "Troisième réponse possible.")
             option(OptionType.STRING, name = "d", "Quatrième réponse possible.")
         }
+        command("changen", "Lier un salon à un générateur de salons temporaires.") {
+            option(OptionType.CHANNEL, name = "channel", "Salon qui servira de point de départ.", required = true)
+        }
     }
 }
 
