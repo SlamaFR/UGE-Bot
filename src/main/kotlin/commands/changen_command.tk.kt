@@ -76,7 +76,7 @@ class ChanGenCommand : ListenerAdapter() {
         }
 
         // Creating new temporary channel for the current member.
-        channelJoined.parent?.createVoiceChannel("\uD83D\uDD35 Salon de ${member.effectiveName}")?.queue() {
+        channelJoined.parent?.createVoiceChannel("\uD83D\uDD35 Salon de ${member.effectiveName}")?.queue {
             temporaryChannels[member.id] = it.id
             member.guild.moveVoiceMember(member, it).queue()
         }
@@ -107,7 +107,7 @@ class ChanGenCommand : ListenerAdapter() {
         deletionTasks[channel.id] = Timer().schedule(INITIAL_DELETION_TIMEOUT) {
             channel.manager.setName(channel.name.replace("\uD83D\uDD35", "\uD83D\uDD34")).queue()
             deletionTasks[channel.id] = Timer().schedule(IMMINENT_DELETION_TIMEOUT) {
-                channel.delete().queue() {
+                channel.delete().queue {
                     deletionTasks.remove(channel.id)
                     temporaryChannels.remove(channel.id)
                 }
