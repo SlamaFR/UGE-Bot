@@ -12,7 +12,7 @@ import java.awt.Color
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_TIMEOUT = 5L
@@ -85,7 +85,9 @@ class Call(
                 }
 
                 event.member?.user?.openPrivateChannel()?.queue({
-                    it.sendFile(this).queue()
+                    it.sendFile(this).queue {
+                        this.delete()
+                    }
                     onResultSuccess()
                 }, {
                     onResultFailed()
