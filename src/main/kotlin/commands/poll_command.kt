@@ -160,9 +160,7 @@ class Poll(
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
-                it.sendFile(this).queue {
-                    this.delete()
-                }
+                it.sendFile(this).queue()
             }
         }
     }
