@@ -23,7 +23,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.21")
 
     // kotlin api
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
 
     // JDA & co.
