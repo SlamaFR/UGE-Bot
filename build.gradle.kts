@@ -61,9 +61,11 @@ tasks.jar {
     manifest {
         attributes["Main-Class"] = "io.slama.MainKt"
     }
-    configurations["compileClasspath"].forEach { file ->
-        from(zipTree(file.absoluteFile))
-    }
+    configurations["runtimeClasspath"]
+        .filter { it.name.endsWith("jar") }
+        .forEach { file ->
+            from(zipTree(file.absoluteFile))
+        }
 }
 
 application {
