@@ -1,7 +1,7 @@
-package events
+package io.slama.events
 
-import core.AutoRoleDTO
-import core.getConfigOrNull
+import io.slama.core.AutoRoleDTO
+import io.slama.core.getConfigOrNull
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild

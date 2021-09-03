@@ -1,13 +1,13 @@
-package commands
+package io.slama.commands
 
+import io.slama.utils.TaskScheduler
+import io.slama.utils.pluralize
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
-import utils.TaskScheduler
-import utils.pluralize
 import java.awt.Color
 import java.time.Instant
 import java.util.concurrent.TimeUnit

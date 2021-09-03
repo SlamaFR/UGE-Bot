@@ -1,4 +1,4 @@
-package utils
+package io.slama.utils
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild

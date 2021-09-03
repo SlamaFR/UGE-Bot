@@ -1,12 +1,18 @@
+package io.slama
+
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.stringType
-import commands.*
-import core.clearGuildConfigs
-import core.registerGlobalCommands
-import core.registerGuildCommands
-import events.clearAutoRoles
-import events.loadAutoRoles
+import io.slama.commands.AutoRoleCommand
+import io.slama.commands.CallCommand
+import io.slama.commands.ChanGenCommand
+import io.slama.commands.KevalCommand
+import io.slama.commands.PollCommand
+import io.slama.core.clearGuildConfigs
+import io.slama.core.registerGlobalCommands
+import io.slama.core.registerGuildCommands
+import io.slama.events.clearAutoRoles
+import io.slama.events.loadAutoRoles
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter

@@ -1,4 +1,4 @@
-package utils
+package io.slama.utils
 
 fun String.pluralize(count: Number) =
     pluralize(count, null)

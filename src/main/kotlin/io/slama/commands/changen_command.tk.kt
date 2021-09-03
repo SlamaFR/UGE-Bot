@@ -1,4 +1,4 @@
-package commands
+package io.slama.commands
 
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent

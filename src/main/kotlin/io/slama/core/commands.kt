@@ -1,10 +1,12 @@
-package core
+package io.slama.core
 
+import io.slama.utils.command
+import io.slama.utils.invoke
+import io.slama.utils.option
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import utils.*
 
 fun JDA.registerGlobalCommands() {
     this {

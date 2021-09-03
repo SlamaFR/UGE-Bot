@@ -1,5 +1,6 @@
-package utils
+package io.slama.utils
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -27,6 +28,7 @@ data class OptionDTO(
     val required: Boolean = false,
 )
 
+@OptIn(ExperimentalSerializationApi::class)
 @Deprecated("Moved to DSL")
 fun Guild.addCommands() {
     val json = File("config/commands.json").readText()

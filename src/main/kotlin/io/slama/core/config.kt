@@ -1,5 +1,6 @@
-package core
+package io.slama.core
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -93,6 +94,7 @@ private fun createAutorolesFile(file: File) {
     file.writeText("{}\n")
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 private fun loadConfig(guildId: Long) {
     val configDir = Path("$GUILD_CONFIG_ROOT$guildId")
     if (!configDir.exists()) {

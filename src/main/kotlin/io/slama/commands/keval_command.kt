@@ -1,4 +1,4 @@
-package commands
+package io.slama.commands
 
 import com.notkamui.keval.Keval
 import net.dv8tion.jda.api.EmbedBuilder

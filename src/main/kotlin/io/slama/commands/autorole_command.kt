@@ -1,6 +1,6 @@
-package commands
+package io.slama.commands
 
-import events.createAutoRoleIfAbsent
+import io.slama.events.createAutoRoleIfAbsent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
