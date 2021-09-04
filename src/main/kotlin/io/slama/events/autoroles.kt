@@ -19,7 +19,7 @@ private val logger: Logger = LoggerFactory.getLogger("AutoRolesManager")
 class AutoRole(
     private val config: AutoRoleDTO,
     private val name: String,
-    jda: JDA,
+    val jda: JDA,
 ) : ListenerAdapter() {
 
     private val roles = config.roles.map { it.role }
@@ -103,5 +103,10 @@ fun Guild.loadAutoRoles() {
 }
 
 fun clearAutoRoles() {
+    autoRoles.values.forEach { autoRoles ->
+        autoRoles.values.forEach {
+            it.jda.removeEventListener(it)
+        }
+    }
     autoRoles.clear()
 }
