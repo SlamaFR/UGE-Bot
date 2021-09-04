@@ -1,5 +1,6 @@
 package io.slama.commands
 
+import io.slama.utils.isAdmin
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
@@ -8,7 +9,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import utils.isAdmin
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule

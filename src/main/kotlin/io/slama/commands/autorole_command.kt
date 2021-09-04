@@ -1,9 +1,9 @@
 package io.slama.commands
 
 import io.slama.events.createAutoRoleIfAbsent
+import io.slama.utils.isAdmin
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import utils.isAdmin
 
 class AutoRoleCommand : ListenerAdapter() {
 
