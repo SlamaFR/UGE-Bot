@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
 import utils.TaskScheduler
+import utils.isTeacher
 import utils.pluralize
 import java.awt.Color
 import java.io.File
@@ -22,6 +23,7 @@ class CallCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "call") return
         if (event.guild == null) return
+        if (!isTeacher(event.member!!)) return
 
         Call(event, event.getOption("timeout")?.asLong ?: DEFAULT_TIMEOUT)
     }

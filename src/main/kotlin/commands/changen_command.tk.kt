@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import utils.isAdmin
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
@@ -40,6 +41,7 @@ class ChanGenCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "changen") return
         if (event.guild == null) return
+        if (!isAdmin(event.member!!)) return
 
         event.getOption("channel")?.asGuildChannel?.let { channel ->
             if (channel.id in generators) {
