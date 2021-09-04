@@ -103,10 +103,8 @@ fun Guild.loadAutoRoles() {
 }
 
 fun clearAutoRoles() {
-    autoRoles.values.forEach { autoRoles ->
-        autoRoles.values.forEach {
-            it.jda.removeEventListener(it)
-        }
+    autoRoles.values.flatMap { it.values }.forEach {
+        it.jda.removeEventListener(it)
     }
     autoRoles.clear()
 }
