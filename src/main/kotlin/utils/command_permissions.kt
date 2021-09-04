@@ -1,6 +1,6 @@
 package utils
 
-import core.getConfigOrNull
+import io.slama.core.getConfigOrNull
 import net.dv8tion.jda.api.entities.Member
 
 fun isAdmin(member: Member): Boolean =
