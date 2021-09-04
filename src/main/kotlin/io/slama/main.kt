@@ -40,7 +40,10 @@ class UGEBot(token: String) : ListenerAdapter() {
         while (true) {
             val command = readLine()?.split(" ") ?: listOf("default")
             when (command[0]) {
-                "die" -> exitProcess(0)
+                "die" -> {
+                    jda.shutdown()
+                    exitProcess(0)
+                }
                 "reload" -> load()
                 "delete-commands" -> {
                     if (command.size < 2) continue
