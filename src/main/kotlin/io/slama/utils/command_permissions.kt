@@ -1,4 +1,4 @@
-package utils
+package io.slama.utils
 
 import io.slama.core.getConfigOrNull
 import net.dv8tion.jda.api.entities.Member
