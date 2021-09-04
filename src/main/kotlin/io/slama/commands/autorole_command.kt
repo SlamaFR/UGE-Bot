@@ -3,12 +3,14 @@ package io.slama.commands
 import io.slama.events.createAutoRoleIfAbsent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import utils.isAdmin
 
 class AutoRoleCommand : ListenerAdapter() {
 
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "autorole") return
         if (event.guild == null) return
+        if (!isAdmin(event.member!!)) return
 
         val name = event.getOption("name") ?: return
         val autoRole = event.guild?.let { createAutoRoleIfAbsent(it, name.asString) }
@@ -27,5 +29,4 @@ class AutoRoleCommand : ListenerAdapter() {
                 .queue()
         }
     }
-
 }

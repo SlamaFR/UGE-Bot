@@ -19,7 +19,16 @@ fun JDA.registerGlobalCommands() {
         }
         command("poll", "Lancer un sondage dans le salon courant.") {
             option(OptionType.STRING, name = "question", "Question sur laquelle porte le sondage.", required = true)
-            option(OptionType.INTEGER, name = "timeout", "Temps imparti pour répondre au sondage en minutes. (Défaut = 2 minutes)")
+            option(
+                OptionType.BOOLEAN,
+                name = "log",
+                "Sauvegarde un fichier log du résultat du sondage. (Défaut = false)"
+            )
+            option(
+                OptionType.INTEGER,
+                name = "timeout",
+                "Temps imparti pour répondre au sondage en minutes. (Défaut = 2 minutes)"
+            )
             option(OptionType.STRING, name = "a", "Première réponse possible.")
             option(OptionType.STRING, name = "b", "Seconde réponse possible.")
             option(OptionType.STRING, name = "c", "Troisième réponse possible.")

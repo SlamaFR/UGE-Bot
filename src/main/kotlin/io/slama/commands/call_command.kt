@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
+import utils.isTeacher
 import java.awt.Color
 import java.io.File
 import java.io.IOException
@@ -22,6 +23,7 @@ class CallCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "call") return
         if (event.guild == null) return
+        if (!isTeacher(event.member!!)) return
 
         Call(event, event.getOption("timeout")?.asLong ?: DEFAULT_TIMEOUT)
     }
@@ -76,9 +78,9 @@ class Call(
 
                 bufferedWriter().use { out ->
                     out.write(
-                    "Appel effectué le ${hdf.format(calendar.time)} " +
-                        "par ${event.member?.effectiveName ?: "anonymous"} " +
-                        "dans le salon #${event.textChannel.name}\n\n"
+                        "Appel effectué le ${hdf.format(calendar.time)} " +
+                                "par ${event.member?.effectiveName ?: "anonymous"} " +
+                                "dans le salon #${event.textChannel.name}\n\n"
                     )
                     out.write("${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :\n")
                     out.write(students.joinToString("\n") { " - $it" })
