@@ -42,6 +42,7 @@ class Poll(
 
     private val uniqueId = event.user.id + System.currentTimeMillis().toString()
     private val answers = mutableMapOf<Int, MutableSet<Long>>()
+    private val effectiveNames = mutableMapOf<Long, String>()
     private val question = event.getOption("question")
 
     private var options = listOfNotNull(
@@ -84,9 +85,10 @@ class Poll(
         }
     }
 
-    private fun vote(option: Int, id: Long) {
+    private fun vote(option: Int, id: Long, effectiveName: String) {
         answers.forEach { it.value.remove(id) }
         answers[option]?.add(id)
+        effectiveNames[id] = effectiveName
     }
 
     private fun answerRate(option: Int): Double {
@@ -125,7 +127,7 @@ class Poll(
 
     override fun onButtonClick(event: ButtonClickEvent) {
         if (!event.componentId.startsWith(uniqueId)) return
-        vote(event.componentId.split(".")[1].toInt(), event.user.idLong)
+        vote(event.componentId.split(".")[1].toInt(), event.user.idLong, event.member?.effectiveName ?: "")
         event.reply(":white_check_mark: Votre vote a été pris en compte.").setEphemeral(true).queue()
     }
 
@@ -143,9 +145,7 @@ class Poll(
             bufferedWriter().use { out ->
                 out.write(
                     """
-                    |Sondage effectué le ${hdf.format(calendar.time)}
-                    |par ${event.member?.effectiveName ?: "anonymous"}
-                    |dans le salon #${event.textChannel.name}
+                    |Sondage effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.textChannel.name}
                     |
                     |$totalVoteCount ${"personne".pluralize(totalVoteCount)} ${if (totalVoteCount > 1) "ont" else "à"} voté :
                     |Question : ${question?.asString ?: "Pas de question"}
@@ -156,6 +156,10 @@ class Poll(
                     val rate = "%.2f".format(answerRate(i) * 100)
                     val count = answers[i]?.count() ?: 0
                     out.write("${'A' + i} : $name -> $rate% ($count ${"vote".pluralize(count)})\n")
+                    answers[i]?.forEach { id ->
+                        out.write(" - ${effectiveNames[id]}\n")
+                    }
+                    out.write("\n")
                 }
             }
 
