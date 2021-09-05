@@ -1,6 +1,6 @@
 package io.slama.events
 
-import io.slama.core.getShusherConfigOrNull
+import io.slama.core.getShusherConfig
 import io.slama.utils.isAdmin
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -22,7 +22,7 @@ class Shusher(
 
     private val roles = mutableMapOf<String, String>()
     private val random = Random(System.currentTimeMillis())
-    private val config = getShusherConfigOrNull()
+    private val config = getShusherConfig()
 
     init {
         jda.addEventListener(this)

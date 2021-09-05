@@ -143,7 +143,7 @@ private fun loadConfig(guildId: Long) {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-fun getShusherConfigOrNull(): ShusherDTO {
+fun getShusherConfig(): ShusherDTO {
     val shusherF = File("${CONFIG_ROOT}shusher.json")
     if (!shusherF.exists()) {
         createShusherFile(shusherF)
