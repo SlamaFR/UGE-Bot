@@ -11,6 +11,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.createDirectory
 import kotlin.io.path.exists
 
+private const val CONFIG_ROOT = "config/"
 private const val GUILD_CONFIG_ROOT = "config/guilds/"
 private val guildConfigs: MutableMap<Long, GuildConfig> = mutableMapOf()
 
@@ -45,10 +46,15 @@ data class AutoRoleDTO(
     val maxRoles: Int = 1,
 )
 
+@Serializable
+data class ShusherDTO(
+    val sentences: List<String>
+)
+
 data class GuildConfig(
     val roles: RolesDTO,
     val channels: ChannelsDTO,
-    val autoRoles: Map<String, AutoRoleDTO>,
+    val autoRoles: Map<String, AutoRoleDTO>
 )
 
 fun getConfigOrNull(guildId: Long): GuildConfig? {
@@ -94,6 +100,19 @@ private fun createAutorolesFile(file: File) {
     file.writeText("{}\n")
 }
 
+private fun createShusherFile(file: File) {
+    file.createNewFile()
+    file.writeText(
+        """
+        {
+          "sentences": [
+            "Please stop talking..."
+          ]
+        }
+    """.trimIndent()
+    )
+}
+
 @OptIn(ExperimentalSerializationApi::class)
 private fun loadConfig(guildId: Long) {
     val configDir = Path("$GUILD_CONFIG_ROOT$guildId")
@@ -119,6 +138,15 @@ private fun loadConfig(guildId: Long) {
     guildConfigs[guildId] = GuildConfig(
         Json.decodeFromString(rolesF.readText()),
         Json.decodeFromString(channelsF.readText()),
-        Json.decodeFromString(autorolesF.readText())
+        Json.decodeFromString(autorolesF.readText()),
     )
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+fun getShusherConfigOrNull(): ShusherDTO {
+    val shusherF = File("${CONFIG_ROOT}shusher.json")
+    if (!shusherF.exists()) {
+        createShusherFile(shusherF)
+    }
+    return Json.decodeFromString(shusherF.readText())
 }

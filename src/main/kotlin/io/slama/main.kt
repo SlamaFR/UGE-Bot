@@ -11,6 +11,7 @@ import io.slama.commands.PollCommand
 import io.slama.core.clearGuildConfigs
 import io.slama.core.registerGlobalCommands
 import io.slama.core.registerGuildCommands
+import io.slama.events.Shusher
 import io.slama.events.clearAutoRoles
 import io.slama.events.loadAutoRoles
 import net.dv8tion.jda.api.JDABuilder
@@ -69,6 +70,7 @@ class UGEBot(token: String) : ListenerAdapter() {
             PollCommand(),
             ChanGenCommand()
         )
+        Shusher(jda)
         load()
     }
 
