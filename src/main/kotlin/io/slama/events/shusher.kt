@@ -48,14 +48,14 @@ class Shusher(
 
             if (member.roles.map { it.id }.any { roles[event.guild.id] == it }) {
                 if (random.nextFloat() <= SHUSHER_TRIGGER_THRESHOLD) {
-                    event.channel.sendMessage(config.sentences[random.nextInt(config.sentences.size)]).queue()
+                    event.channel.sendMessage(config.sentences.random()).queue()
                 }
             }
         }
     }
 
     private fun command(event: GuildMessageReceivedEvent) {
-        getOrCreateRole(event.guild)?.let { role ->
+        getOrCreateRole(event.guild).let { role ->
             if (event.message.mentionedMembers.isEmpty()) {
                 event.channel.sendMessage("Qui est la cible chef ?").queue()
                 return
@@ -72,7 +72,7 @@ class Shusher(
         }
     }
 
-    private fun getOrCreateRole(guild: Guild): Role? {
+    private fun getOrCreateRole(guild: Guild): Role {
         if (guild.id in roles.keys) {
             roles[guild.id]?.let {
                 guild.getRoleById(it)?.let { role ->
@@ -81,7 +81,7 @@ class Shusher(
             }
         }
         val role = guild.createRole()
-            .setName("Shusher")
+            .setName("Shushee")
             .setMentionable(false)
             .setHoisted(false)
             .complete()
