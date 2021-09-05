@@ -166,7 +166,11 @@ class Poll(
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
-                it.sendFile(this).queue()
+                it.sendFile(this).queue({}, {
+                    event.channel
+                        .sendMessage(":exclamation: **Une erreur est survenue lors de l'envoi du fichier du sondage !**")
+                        .queue()
+                })
             }
         }
     }
