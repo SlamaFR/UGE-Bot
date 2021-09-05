@@ -25,7 +25,7 @@ class ChanGenCommand : ListenerAdapter() {
     private val deletionTasks = mutableMapOf<String, TimerTask>()
 
     init {
-        val file = File("temporaryChannelGenerators")
+        val file = File("data/temporaryChannelGenerators")
         if (file.exists()) {
             file.useLines { lines ->
                 lines.map {
@@ -118,7 +118,7 @@ class ChanGenCommand : ListenerAdapter() {
     }
 
     private fun save() {
-        val file = File("temporaryChannelGenerators")
+        val file = File("data/temporaryChannelGenerators")
         if (!file.exists()) file.createNewFile()
         file.writeText("")
         generators.forEach {

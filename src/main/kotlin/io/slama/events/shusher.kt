@@ -26,7 +26,7 @@ class Shusher(
 
     init {
         jda.addEventListener(this)
-        val file = File("shusherRolesIds")
+        val file = File("data/shusherRolesIds")
         if (file.exists()) {
             file.useLines { lines ->
                 lines.map {
@@ -91,7 +91,7 @@ class Shusher(
     }
 
     private fun save() {
-        val file = File("shusherRolesIds")
+        val file = File("data/shusherRolesIds")
         if (!file.exists()) file.createNewFile()
         file.writeText("")
         roles.forEach { (guildId, roleId) ->
