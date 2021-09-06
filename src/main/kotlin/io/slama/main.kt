@@ -81,6 +81,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         TaskScheduler.repeat(10, TimeUnit.MINUTES) {
             val (message, type) = presenceConfig.messages.entries.random()
             jda.presence.setPresence(Activity.of(type, message), false)
+            true
         }
     }
 
