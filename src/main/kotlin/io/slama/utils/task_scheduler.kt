@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 object TaskScheduler {
+
     fun later(delay: Long, unit: TimeUnit, block: () -> Unit) =
         CoroutineScope(Dispatchers.IO).launch {
             delay(unit.toMillis(delay))
@@ -16,5 +17,13 @@ object TaskScheduler {
     fun async(block: () -> Unit) =
         CoroutineScope(Dispatchers.IO).launch {
             block()
+        }
+
+    fun repeat(period: Long, unit: TimeUnit, block: () -> Unit) =
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                block()
+                delay(unit.toMillis(period))
+            }
         }
 }
