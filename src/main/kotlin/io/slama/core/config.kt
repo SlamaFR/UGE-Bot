@@ -4,6 +4,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.io.File
@@ -49,6 +50,11 @@ data class AutoRoleDTO(
 @Serializable
 data class ShusherDTO(
     val sentences: List<String>
+)
+
+@Serializable
+data class PresenceDTO(
+    val messages: Map<String, Activity.ActivityType>
 )
 
 data class GuildConfig(
@@ -113,6 +119,21 @@ private fun createShusherFile(file: File) {
     )
 }
 
+private fun createPresenceFile(file: File) {
+    file.createNewFile()
+    file.writeText(
+        """
+        {
+          "messages": {
+            "something": "PLAYING",
+            "something": "WATCHING",
+            "something": "LISTENING"
+          }
+        }
+    """.trimIndent()
+    )
+}
+
 @OptIn(ExperimentalSerializationApi::class)
 private fun loadConfig(guildId: Long) {
     val configDir = Path("$GUILD_CONFIG_ROOT$guildId")
@@ -149,4 +170,13 @@ fun getShusherConfig(): ShusherDTO {
         createShusherFile(shusherF)
     }
     return Json.decodeFromString(shusherF.readText())
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+fun getPresenceConfig(): PresenceDTO {
+    val presenceF = File("${CONFIG_ROOT}presence.json")
+    if (!presenceF.exists()) {
+        createPresenceFile(presenceF)
+    }
+    return Json.decodeFromString(presenceF.readText())
 }
