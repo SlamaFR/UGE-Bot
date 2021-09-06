@@ -9,12 +9,15 @@ import io.slama.commands.ChanGenCommand
 import io.slama.commands.KevalCommand
 import io.slama.commands.PollCommand
 import io.slama.core.clearGuildConfigs
+import io.slama.core.getPresenceConfig
 import io.slama.core.registerGlobalCommands
 import io.slama.core.registerGuildCommands
 import io.slama.events.Shusher
 import io.slama.events.clearAutoRoles
 import io.slama.events.loadAutoRoles
+import io.slama.utils.TaskScheduler
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -22,6 +25,8 @@ import net.dv8tion.jda.api.utils.ChunkingFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 private val logger: Logger = LoggerFactory.getLogger("UGEBot")
@@ -36,6 +41,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         .addEventListeners(this)
         .enableIntents(GatewayIntent.GUILD_MEMBERS)
         .build()
+    private val presenceConfig = getPresenceConfig()
 
     init {
         while (true) {
@@ -72,6 +78,10 @@ class UGEBot(token: String) : ListenerAdapter() {
         )
         Shusher(jda)
         load()
+        TaskScheduler.repeat(10, TimeUnit.MINUTES) {
+            val (message, type) = presenceConfig.messages.entries.random()
+            jda.presence.setPresence(Activity.of(type, message), false)
+        }
     }
 
     private fun load() {
