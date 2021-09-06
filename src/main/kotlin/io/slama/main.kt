@@ -31,7 +31,6 @@ import kotlin.system.exitProcess
 
 private val logger: Logger = LoggerFactory.getLogger("UGEBot")
 private val token = Key("token", stringType)
-private val config = ConfigurationProperties.fromFile(File("bot.properties"))
 
 class UGEBot(token: String) : ListenerAdapter() {
 
@@ -126,5 +125,7 @@ class UGEBot(token: String) : ListenerAdapter() {
 
 fun main() {
     configSetup()
-    UGEBot(config[token])
+    with(ConfigurationProperties.fromFile(File("bot.properties"))) {
+        UGEBot(this[token])
+    }
 }

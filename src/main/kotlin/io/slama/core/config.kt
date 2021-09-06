@@ -21,7 +21,6 @@ fun configSetup() {
             writeText("token=0\n")
         else if (!this.isFile)
             throw IOException("Couldn't create a $BOT_PROPERTIES file as a folder with that name already exists.")
-
     }
     with(File(CONFIG_ROOT)) {
         mkdir()
