@@ -19,10 +19,9 @@ object TaskScheduler {
             block()
         }
 
-    fun repeat(period: Long, unit: TimeUnit, block: () -> Unit) =
+    fun repeat(period: Long, unit: TimeUnit, block: () -> Boolean) =
         CoroutineScope(Dispatchers.IO).launch {
-            while (true) {
-                block()
+            while (block()) {
                 delay(unit.toMillis(period))
             }
         }
