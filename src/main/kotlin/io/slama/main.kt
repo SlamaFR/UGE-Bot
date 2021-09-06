@@ -9,6 +9,7 @@ import io.slama.commands.ChanGenCommand
 import io.slama.commands.KevalCommand
 import io.slama.commands.PollCommand
 import io.slama.core.clearGuildConfigs
+import io.slama.core.configSetup
 import io.slama.core.getPresenceConfig
 import io.slama.core.registerGlobalCommands
 import io.slama.core.registerGuildCommands
@@ -25,13 +26,11 @@ import net.dv8tion.jda.api.utils.ChunkingFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 private val logger: Logger = LoggerFactory.getLogger("UGEBot")
 private val token = Key("token", stringType)
-private val config = ConfigurationProperties.fromFile(File("bot.properties"))
 
 class UGEBot(token: String) : ListenerAdapter() {
 
@@ -41,6 +40,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         .addEventListeners(this)
         .enableIntents(GatewayIntent.GUILD_MEMBERS)
         .build()
+
     private val presenceConfig = getPresenceConfig()
 
     init {
@@ -124,5 +124,8 @@ class UGEBot(token: String) : ListenerAdapter() {
 }
 
 fun main() {
-    UGEBot(config[token])
+    configSetup()
+    with(ConfigurationProperties.fromFile(File("bot.properties"))) {
+        UGEBot(this[token])
+    }
 }

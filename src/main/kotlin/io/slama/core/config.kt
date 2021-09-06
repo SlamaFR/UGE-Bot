@@ -8,13 +8,32 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.io.File
-import kotlin.io.path.Path
-import kotlin.io.path.createDirectory
-import kotlin.io.path.exists
+import java.io.IOException
 
+private const val BOT_PROPERTIES = "bot.properties"
 private const val CONFIG_ROOT = "config/"
-private const val GUILD_CONFIG_ROOT = "config/guilds/"
+private const val GUILD_CONFIG_ROOT = "${CONFIG_ROOT}guilds/"
 private val guildConfigs: MutableMap<Long, GuildConfig> = mutableMapOf()
+
+fun configSetup() {
+    with(File(BOT_PROPERTIES)) {
+        if (!this.exists())
+            writeText("token=0\n")
+        else if (!this.isFile)
+            throw IOException("Couldn't create a $BOT_PROPERTIES file as a folder with that name already exists.")
+    }
+    with(File(CONFIG_ROOT)) {
+        mkdir()
+        if (this.isDirectory) with(File(GUILD_CONFIG_ROOT)) {
+            mkdir()
+            if (!this.isDirectory)
+                throw IOException("Couldn't create the $GUILD_CONFIG_ROOT directory as there is already a file named like that.")
+        }
+        else
+            throw IOException("Couldn't create the $CONFIG_ROOT directory as there is already a file named like that.")
+
+    }
+}
 
 @Serializable
 data class RolesDTO(
@@ -125,9 +144,9 @@ private fun createPresenceFile(file: File) {
         """
         {
           "messages": {
-            "something": "PLAYING",
-            "something": "WATCHING",
-            "something": "LISTENING"
+            "something": "DEFAULT",
+            "something else": "WATCHING",
+            "some other thing": "LISTENING"
           }
         }
     """.trimIndent()
@@ -136,9 +155,10 @@ private fun createPresenceFile(file: File) {
 
 @OptIn(ExperimentalSerializationApi::class)
 private fun loadConfig(guildId: Long) {
-    val configDir = Path("$GUILD_CONFIG_ROOT$guildId")
-    if (!configDir.exists()) {
-        configDir.createDirectory()
+    File("$GUILD_CONFIG_ROOT$guildId").run {
+        mkdir()
+        if (!this.isDirectory)
+            throw IOException("Couldn't create the $name directory as there is already a file named like that.")
     }
 
     val rolesF = File("$GUILD_CONFIG_ROOT$guildId/roles.json")
