@@ -10,11 +10,19 @@ import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.io.File
 import java.io.IOException
 
+private const val BOT_PROPERTIES = "bot.properties"
 private const val CONFIG_ROOT = "config/"
-private const val GUILD_CONFIG_ROOT = "config/guilds/"
+private const val GUILD_CONFIG_ROOT = "${CONFIG_ROOT}guilds/"
 private val guildConfigs: MutableMap<Long, GuildConfig> = mutableMapOf()
 
 fun configSetup() {
+    with(File(BOT_PROPERTIES)) {
+        if (!this.exists())
+            writeText("token=0\n")
+        else if (!this.isFile)
+            throw IOException("Couldn't create a $BOT_PROPERTIES file as a folder with that name already exists.")
+
+    }
     with(File(CONFIG_ROOT)) {
         mkdir()
         if (this.isDirectory) with(File(GUILD_CONFIG_ROOT)) {
