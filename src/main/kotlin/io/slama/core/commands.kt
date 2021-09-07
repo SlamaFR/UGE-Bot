@@ -51,5 +51,8 @@ fun Guild.registerGuildCommands() {
                 } ?: listOf()
             }
         }
+        command("table", "Générer un tableau en caractères ASCII.") {
+            option(OptionType.STRING, name = "content", "Contenu du tableau. Laisser vide pour obtenir un example.")
+        }
     }
 }
