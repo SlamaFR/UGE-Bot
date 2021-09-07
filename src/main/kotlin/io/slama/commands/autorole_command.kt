@@ -10,7 +10,7 @@ class AutoRoleCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "autorole") return
         if (event.guild == null) return
-        if (!isAdmin(event.member!!)) return
+        if (!event.member!!.isAdmin()) return
 
         val name = event.getOption("name") ?: return
         val autoRole = event.guild?.let { createAutoRoleIfAbsent(it, name.asString) }

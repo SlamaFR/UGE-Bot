@@ -23,7 +23,7 @@ class CallCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "call") return
         if (event.guild == null) return
-        if (!isTeacher(event.member!!)) return
+        if (!event.member!!.isTeacher()) return
 
         Call(event, event.getOption("timeout")?.asLong ?: DEFAULT_TIMEOUT)
     }

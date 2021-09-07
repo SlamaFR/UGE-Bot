@@ -25,7 +25,7 @@ class PollCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "poll") return
         if (event.guild == null) return
-        if (!isTeacher(event.member!!)) return
+        if (!event.member!!.isTeacher()) return
 
         Poll(
             event,

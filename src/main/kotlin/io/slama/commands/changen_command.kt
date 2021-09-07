@@ -41,7 +41,7 @@ class ChanGenCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "changen") return
         if (event.guild == null) return
-        if (!isAdmin(event.member!!)) return
+        if (!event.member!!.isAdmin()) return
 
         event.getOption("channel")?.asGuildChannel?.let { channel ->
             if (channel.id in generators) {
