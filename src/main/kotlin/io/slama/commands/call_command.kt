@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
 import java.awt.Color
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -30,78 +29,75 @@ class CallCommand : ListenerAdapter() {
 
 }
 
-class Call(
+private class Call(
     private val event: SlashCommandEvent,
     private val timeout: Long = DEFAULT_TIMEOUT
 ) : ListenerAdapter() {
 
     private val students = mutableSetOf<String>()
-    private val uniqueId = event.user.id + System.currentTimeMillis().toString()
+    private val uniqueId = "${event.user.id}${System.currentTimeMillis()}"
+    private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "anonymous"}"
 
     init {
         event.jda.addEventListener(this)
 
         event.replyEmbeds(
             EmbedBuilder()
-                .setTitle("Appel demandé par ${event.member!!.effectiveName}")
+                .setTitle(embedTitle)
                 .setDescription("Vous avez $timeout ${"minute".pluralize(timeout.toInt())} pour répondre à l'appel.")
                 .setColor(Color(0x2ecc71))
                 .build()
         ).addActionRow(Button.success("$uniqueId.respond", "Répondre à l'appel"))
             .queue {
-                TaskScheduler.later(timeout, TimeUnit.MINUTES) {
-                    sendResult()
-                }
+                TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResult)
             }
     }
 
     override fun onButtonClick(event: ButtonClickEvent) {
         if (event.componentId != "$uniqueId.respond") return
-        event.member?.let {
-            if (it.effectiveName !in students)
+        event.member?.run {
+            if (effectiveName !in students)
                 event.reply(":white_check_mark: Votre présence a été enregistrée.").setEphemeral(true).queue()
-            students.add(it.effectiveName)
+            students.add(effectiveName)
         }
     }
 
     private fun sendResult() {
         event.jda.removeEventListener(this)
-        try {
-            val calendar = Calendar.getInstance()
-            val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
-            val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
-            val fileName = "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
-            File(fileName).apply {
-                if (!createNewFile()) throw IOException("Couldn't create file")
-                calendar.add(Calendar.MINUTE, (-timeout).toInt())
+        val calendar = Calendar.getInstance()
+        val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
+        val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
+        val fileName =
+            "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
-                bufferedWriter().use { out ->
-                    out.write(
-                        "Appel effectué le ${hdf.format(calendar.time)} " +
-                                "par ${event.member?.effectiveName ?: "anonymous"} " +
-                                "dans le salon #${event.textChannel.name}\n\n"
-                    )
-                    out.write("${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :\n")
-                    out.write(students.joinToString("\n") { " - $it" })
-                }
+        File(fileName).apply {
+            if (!createNewFile()) onResultFailed()
+            calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
-                event.member?.user?.openPrivateChannel()?.queue({
-                    it.sendFile(this).queue()
-                    onResultSuccess()
-                }, {
-                    onResultFailed()
-                })
+            bufferedWriter().use { out ->
+                out.write(
+                    """
+                    |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.textChannel.name}
+                    |
+                    |${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :
+                    |${students.joinToString("\n") { " - $it" }}
+                    |
+                """.trimMargin()
+                )
             }
-        } catch (e: IOException) {
-            onResultFailed()
+
+            event.member?.user?.openPrivateChannel()?.queue {
+                it.sendFile(this).queue({}, { onResultFailed() })
+                onResultSuccess()
+            } ?: onResultFailed()
         }
     }
 
     private fun onResultSuccess() {
         event.hook.editOriginalEmbeds(
             EmbedBuilder()
-                .setTitle("Appel demandé par ${event.member!!.effectiveName}")
+                .setTitle(embedTitle)
                 .setDescription("L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.")
                 .setColor(Color(0xe67e22))
                 .build()
@@ -117,10 +113,17 @@ class Call(
     private fun onResultFailed() {
         event.hook.editOriginalEmbeds(
             EmbedBuilder()
-                .setTitle("Appel demandé par ${event.member!!.effectiveName}")
+                .setTitle("Appel demandé par ${event.member?.effectiveName ?: "anonymous"}")
                 .setDescription(
-                    "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.\n\n" +
-                            "**Une erreur est survenue lors de l'envoi du fichier !**"
+                    """
+                    |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
+                        "présente".pluralize(
+                            students.size
+                        )
+                    }.
+                    |
+                    |**Une erreur est survenue lors de l'envoi du fichier !**
+                """.trimMargin()
                 )
                 .setColor(Color(0xe74c3c))
                 .build()
