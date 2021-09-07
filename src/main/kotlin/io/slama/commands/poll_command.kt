@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
 import java.awt.Color
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
@@ -67,7 +66,7 @@ class Poll(
         if (question != null) {
             event.replyEmbeds(
                 EmbedBuilder()
-                    .setTitle("Sondage demandé par ${event.member!!.effectiveName}")
+                    .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "anonymous"}")
                     .setDescription(question.asString)
                     .setFooter("Résultats du sondage dans $timeout minute".pluralize(timeout))
                     .setColor(Color(0x9b59b6))
@@ -103,7 +102,7 @@ class Poll(
         if (question != null) {
             event.hook.editOriginalEmbeds(
                 EmbedBuilder()
-                    .setTitle("Sondage demandé par ${event.member!!.effectiveName}")
+                    .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "anonymous"}")
                     .setDescription(question.asString)
                     .setFooter("Sondage terminé ($totalVoteCount ${"votant".pluralize(totalVoteCount)})")
                     .setTimestamp(Instant.now())
@@ -133,6 +132,13 @@ class Poll(
         event.reply(":white_check_mark: Votre vote a été pris en compte.").setEphemeral(true).queue()
     }
 
+    private fun onFailSendLog() {
+        event.channel
+            .sendMessage(":exclamation: **Une erreur est survenue lors de l'envoi du fichier du sondage !**")
+            .queue()
+
+    }
+
     private fun sendLog() {
         val calendar = Calendar.getInstance()
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
@@ -141,7 +147,10 @@ class Poll(
             "poll_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
         File(fileName).apply {
-            if (!createNewFile()) throw IOException("Couldn't create file")
+            if (!createNewFile()) {
+                onFailSendLog()
+                return
+            }
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
@@ -166,12 +175,8 @@ class Poll(
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
-                it.sendFile(this).queue({}, {
-                    event.channel
-                        .sendMessage(":exclamation: **Une erreur est survenue lors de l'envoi du fichier du sondage !**")
-                        .queue()
-                })
-            }
+                it.sendFile(this).queue({}, { onFailSendLog() })
+            } ?: onFailSendLog()
         }
     }
 }

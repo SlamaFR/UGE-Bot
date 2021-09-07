@@ -72,7 +72,10 @@ private class Call(
             "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
         File(fileName).apply {
-            if (!createNewFile()) onResultFailed()
+            if (!createNewFile()) {
+                onResultFailed()
+                return
+            }
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
@@ -88,8 +91,7 @@ private class Call(
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
-                it.sendFile(this).queue({}, { onResultFailed() })
-                onResultSuccess()
+                it.sendFile(this).queue({ onResultSuccess() }, { onResultFailed() })
             } ?: onResultFailed()
         }
     }
