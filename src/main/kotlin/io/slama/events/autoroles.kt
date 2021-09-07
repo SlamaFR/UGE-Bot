@@ -73,32 +73,32 @@ class AutoRole(
     }
 }
 
-fun createAutoRoleIfAbsent(guild: Guild, name: String, config: AutoRoleDTO): AutoRole? {
-    if (guild.idLong !in autoRoles.keys) {
-        autoRoles[guild.idLong] = mutableMapOf()
+fun Guild.createAutoRoleIfAbsent(name: String, config: AutoRoleDTO): AutoRole? {
+    if (idLong !in autoRoles.keys) {
+        autoRoles[idLong] = mutableMapOf()
     }
 
-    val guildAutoRoles = autoRoles.getOrPut(guild.idLong) { mutableMapOf() }
+    val guildAutoRoles = autoRoles.getOrPut(idLong) { mutableMapOf() }
 
     if (name !in guildAutoRoles.keys) {
-        val autoRole = AutoRole(config, name, guild.jda)
+        val autoRole = AutoRole(config, name, jda)
         guildAutoRoles[name] = autoRole
-        logger.info("Successfully created AutoRole \"$name\" on ${guild.id}")
+        logger.info("Successfully created AutoRole \"$name\" on $id")
         return autoRole
     }
     return guildAutoRoles[name]
 }
 
-fun createAutoRoleIfAbsent(guild: Guild, name: String): AutoRole? {
-    val config = guild.getConfigOrNull() ?: return null
+fun Guild.createAutoRoleIfAbsent(name: String): AutoRole? {
+    val config = getConfigOrNull() ?: return null
     val autoRoleDTO = config.autoRoles[name] ?: return null
-    return createAutoRoleIfAbsent(guild, name, autoRoleDTO)
+    return createAutoRoleIfAbsent(name, autoRoleDTO)
 }
 
 fun Guild.loadAutoRoles() {
-    val config = this.getConfigOrNull() ?: return
+    val config = getConfigOrNull() ?: return
     config.autoRoles.forEach { (name, autoRole) ->
-        createAutoRoleIfAbsent(this, name, autoRole)
+        createAutoRoleIfAbsent(name, autoRole)
     }
 }
 

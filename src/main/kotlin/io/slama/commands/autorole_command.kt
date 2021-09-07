@@ -13,7 +13,7 @@ class AutoRoleCommand : ListenerAdapter() {
         if (!event.member!!.isAdmin()) return
 
         val name = event.getOption("name") ?: return
-        val autoRole = event.guild?.let { createAutoRoleIfAbsent(it, name.asString) }
+        val autoRole = event.guild?.run { createAutoRoleIfAbsent(name.asString) }
 
         if (autoRole != null) {
             event.reply(":white_check_mark: L'attributeur a été créé avec succès !")
@@ -21,10 +21,7 @@ class AutoRoleCommand : ListenerAdapter() {
                 .queue()
             autoRole.send(event.textChannel)
         } else {
-            event.reply(
-                "**Erreur :** l'attributeur `${name.asString}` n'existe pas. " +
-                        "Contactez votre administrateur si vous pensez qu'il s'agit d'une erreur."
-            )
+            event.reply("**Erreur :** l'attributeur `${name.asString}` n'existe pas. Contactez votre administrateur si vous pensez qu'il s'agit d'une erreur.")
                 .setEphemeral(true)
                 .queue()
         }
