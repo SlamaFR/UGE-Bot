@@ -101,7 +101,7 @@ class ASCIITable {
     /**
      * Represents width of each column.
      */
-    private val colWidths: MutableList<Int> = ArrayList()
+    private val colWidths = mutableListOf<Int>()
 
     private var row = 0
     private var col = 0
