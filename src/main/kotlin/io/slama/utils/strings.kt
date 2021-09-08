@@ -12,7 +12,7 @@ fun String.pluralize(count: Number, form: String?) =
 
 fun String.splitArgs(): List<String> {
     val matchList = ArrayList<String>()
-    val regex = Pattern.compile("(?:\\\\\"|[^\\s\"])+|\"(?:\\\\\"|[^\"])*\"")
+    val regex = Pattern.compile("""(?:\\"|[^\s"])+|"(?:\\"|[^"])*"""")
     val regexMatcher = regex.matcher(this)
     while (regexMatcher.find()) {
         matchList.add(
