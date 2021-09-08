@@ -46,41 +46,47 @@ private val helpEmbed = EmbedBuilder()
     .setTitle("Keval")
     .setDescription("Help")
     .addField(
-        "Opérateurs binaires", """
-                        - Soustraction `-`
-                        - Addition `+`
-                        - Multiplication `*`
-                        - Division `/`
-                        - Puissance `^`
-                        - Modulo `%`
-                    """.trimIndent(), false
+        "Opérateurs binaires",
+        """
+        - Soustraction `-`
+        - Addition `+`
+        - Multiplication `*`
+        - Division `/`
+        - Puissance `^`
+        - Modulo `%`
+        """.trimIndent(),
+        false
     )
     .addField(
-        "Fonctions", """
-                        - Opposé `neg(expr)`
-                        - Maximum `max(a, b)`
-                        - Minimum `min(a, b)`
-                        - Racine carrée `sqrt(expr)`
-                        - Sinus `sin(expr)`
-                        - Cosinus `cos(expr)`
-                        - Tangente `tan(expr)`
-                        - Arcsinus `asin(expr)`
-                        - Arccosinus `acos(expr)`
-                        - Arctangente `atan(expr)`
-                        - Random `rand()` ([0; 1[)
-                        - Arrondi inférieur `floor(expr)`
-                        - Arrondi supérieur `ceil(expr)`
-                        - Logarithme base 10 `log(expr)`
-                        - Logarithme base 2 `logB(expr)`
-                        - Logarithme népérien `ln(expr)`
-                    """.trimIndent(), false
+        "Fonctions",
+        """
+        - Opposé `neg(expr)`
+        - Maximum `max(a, b)`
+        - Minimum `min(a, b)`
+        - Racine carrée `sqrt(expr)`
+        - Sinus `sin(expr)`
+        - Cosinus `cos(expr)`
+        - Tangente `tan(expr)`
+        - Arcsinus `asin(expr)`
+        - Arccosinus `acos(expr)`
+        - Arctangente `atan(expr)`
+        - Random `rand()` ([0; 1[)
+        - Arrondi inférieur `floor(expr)`
+        - Arrondi supérieur `ceil(expr)`
+        - Logarithme base 10 `log(expr)`
+        - Logarithme base 2 `logB(expr)`
+        - Logarithme népérien `ln(expr)`
+        """.trimIndent(),
+        false
     )
     .addField(
-        "Constantes", """
-                        - π `PI`
-                        - *e* `e` (constante de Néper)
-                        - φ `PHI`
-                    """.trimIndent(), false
+        "Constantes",
+        """
+        - π `PI`
+        - *e* `e` (constante de Néper)
+        - φ `PHI`
+        """.trimIndent(),
+        false
     )
     .setFooter("N'hésitez pas à proposer de nouvelles fonctions (avec nom et arité)")
     .setColor(Color(0x1ABC9C))

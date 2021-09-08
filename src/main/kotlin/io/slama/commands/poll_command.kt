@@ -79,9 +79,7 @@ class Poll(
             ).addActionRows(ActionRow.of(
                 options.mapIndexed { i, _ -> Button.secondary("$uniqueId.${i}", ('A' + i).toString()) }
             )).queue {
-                TaskScheduler.later(timeout, TimeUnit.MINUTES) {
-                    sendResults()
-                }
+                TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResults)
             }
         }
     }
@@ -136,7 +134,6 @@ class Poll(
         event.channel
             .sendMessage(":exclamation: **Une erreur est survenue lors de l'envoi du fichier du sondage !**")
             .queue()
-
     }
 
     private fun sendLog() {
@@ -163,6 +160,7 @@ class Poll(
                     |
                 """.trimMargin()
                 )
+
                 options.forEachIndexed { i, name ->
                     val rate = "%.2f".format(answerRate(i) * 100)
                     val count = answers[i]?.count() ?: 0

@@ -56,9 +56,10 @@ private class Call(
     override fun onButtonClick(event: ButtonClickEvent) {
         if (event.componentId != "$uniqueId.respond") return
         event.member?.run {
-            if (effectiveName !in students)
+            if (effectiveName !in students) {
                 event.reply(":white_check_mark: Votre présence a été enregistrée.").setEphemeral(true).queue()
-            students.add(effectiveName)
+                students.add(effectiveName)
+            }
         }
     }
 
@@ -106,8 +107,7 @@ private class Call(
         ).queue()
         event.hook.editOriginalComponents(
             ActionRow.of(
-                Button.danger("0", "Appel terminé")
-                    .withDisabled(true)
+                Button.danger("0", "Appel terminé").withDisabled(true)
             )
         ).queue()
     }
@@ -132,8 +132,7 @@ private class Call(
         ).queue()
         event.hook.editOriginalComponents(
             ActionRow.of(
-                Button.danger("0", "Appel terminé")
-                    .withDisabled(true)
+                Button.danger("0", "Appel terminé").withDisabled(true)
             )
         ).queue()
     }
