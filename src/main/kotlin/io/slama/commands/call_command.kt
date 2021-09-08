@@ -37,7 +37,7 @@ private class Call(
 
     private val students = mutableSetOf<String>()
     private val uniqueId = "${event.user.id}${System.currentTimeMillis()}"
-    private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un petit chachottier"}"
+    private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}"
 
     init {
         event.jda.addEventListener(this)
@@ -57,7 +57,7 @@ private class Call(
         if (event.componentId != "$uniqueId.respond") return
         event.member?.run {
             if (effectiveName !in students) {
-                event.replySuccess(":white_check_mark: Votre présence a été enregistrée.").setEphemeral(true).queue()
+                event.replySuccess("Votre présence a été enregistrée.").setEphemeral(true).queue()
                 students.add(effectiveName)
             }
         }

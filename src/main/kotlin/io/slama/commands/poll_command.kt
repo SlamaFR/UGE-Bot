@@ -127,12 +127,12 @@ class Poll(
     override fun onButtonClick(event: ButtonClickEvent) {
         if (!event.componentId.startsWith(uniqueId)) return
         vote(event.componentId.split(".")[1].toInt(), event.user.idLong, event.member?.effectiveName ?: "")
-        event.replySuccess(":white_check_mark: Votre vote a été pris en compte.").setEphemeral(true).queue()
+        event.replySuccess("Votre vote a été pris en compte.").setEphemeral(true).queue()
     }
 
     private fun onFailSendLog() {
         event.channel
-            .sendWarning(":exclamation: **Une erreur est survenue lors de l'envoi du fichier du sondage !**")
+            .sendWarning("Une erreur est survenue lors de l'envoi du fichier du sondage !")
             .queue()
     }
 
