@@ -46,7 +46,7 @@ class TableCommand : ListenerAdapter() {
                 .setDescription(
                     "Cette commande permet de générer rapidement des tableaux avec des caractères ASCII."
                 )
-                .addField("Utilisation", "`!table <Ligne 1> <Ligne 2> ... <Ligne N>`", false)
+                .addField("Utilisation", "`/table <Ligne 1> <Ligne 2> ... <Ligne N>`", false)
                 .addField(
                     "Syntaxe", """
                         |Une ligne est divisée en colonnes par le caractère `;`.
@@ -229,7 +229,6 @@ class ASCIITable {
     }
 
     override fun toString(): String {
-        println(table)
         val builder = StringBuilder()
         for (row in 0 until row) {
             builder.append(getHorizontalLine(row))
