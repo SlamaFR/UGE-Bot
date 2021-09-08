@@ -8,12 +8,16 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction
 import java.awt.Color
 
+val GREEN = Color(0x2ecc71)
+val YELLOW = Color(0xf1c40f)
+val RED = Color(0xe74c3c)
+
 fun SlashCommandEvent.replySuccess(message: String): ReplyAction {
     return this.replyEmbeds(
         EmbedBuilder()
             .setTitle("Succès")
             .setDescription(message)
-            .setColor(Color(0x2ecc71))
+            .setColor(GREEN)
             .build()
     )
 }
@@ -23,7 +27,7 @@ fun MessageChannel.sendSuccess(message: String): MessageAction {
         EmbedBuilder()
             .setTitle("Succès")
             .setDescription(message)
-            .setColor(Color(0x2ecc71))
+            .setColor(GREEN)
             .build()
     )
 }
@@ -33,7 +37,7 @@ fun SlashCommandEvent.replyWarning(message: String): ReplyAction {
         EmbedBuilder()
             .setTitle("Avertissement")
             .setDescription(message)
-            .setColor(Color(0xf1c40f))
+            .setColor(YELLOW)
             .build()
     )
 }
@@ -43,7 +47,7 @@ fun MessageChannel.sendWarning(message: String): MessageAction {
         EmbedBuilder()
             .setTitle("Avertissement")
             .setDescription(message)
-            .setColor(Color(0xf1c40f))
+            .setColor(YELLOW)
             .build()
     )
 }
@@ -53,7 +57,7 @@ fun SlashCommandEvent.replyError(message: String): ReplyAction {
         EmbedBuilder()
             .setTitle("Erreur")
             .setDescription(message)
-            .setColor(Color(0xe74c3c))
+            .setColor(RED)
             .build()
     )
 }
@@ -63,7 +67,7 @@ fun MessageChannel.sendError(message: String): MessageAction {
         EmbedBuilder()
             .setTitle("Erreur")
             .setDescription(message)
-            .setColor(Color(0xe74c3c))
+            .setColor(RED)
             .build()
     )
 }
