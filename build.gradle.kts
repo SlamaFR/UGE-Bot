@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.slama"
-version = "0.1"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
