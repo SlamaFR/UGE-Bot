@@ -1,10 +1,8 @@
 ## UGEBot
-___
 UGEBot is a private Discord bot made in Kotlin created for the different Discord servers of the Université Gustave Eiffel.
 Its main purpose is to help manage the servers.
 
 ### Main features
-___
 - AutoRole : Automated system to allow any member to request a given role.
 - Polls : Allow teachers to ask something to their students and gather the result in a file.
 - Calls : Allow students to confirm their presence during a class. A file is sent at the end to the teacher listing every student present.
@@ -13,7 +11,6 @@ ___
 - ASCII table generation : Anyone can quickly draw a table automatically formatted.
 
 ### Librairies used
-___
 - [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA)
 - [LOGBack](http://logback.qos.ch/)
 - [SLF4J](http://www.slf4j.org/)
@@ -21,7 +18,6 @@ ___
 - [Keval](https://github.com/notKamui/Keval)
 
 ### Credits
-___
 - Irwin "Slama" Madet
 - Jimmy "notKamui" Teillard
 - ~~Lorris "ZwenDo" Creantor~~
