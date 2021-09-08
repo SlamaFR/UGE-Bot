@@ -1,6 +1,7 @@
 package io.slama.commands
 
 import io.slama.utils.isAdmin
+import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
@@ -46,12 +47,12 @@ class ChanGenCommand : ListenerAdapter() {
         event.getOption("channel")?.asGuildChannel?.let { channel ->
             if (channel.id in generators) {
                 generators.remove(channel.id)
-                event.reply(":white_check_mark: Le générateur du salon **${channel.name}** a été supprimé.")
+                event.replySuccess(":white_check_mark: Le générateur du salon **${channel.name}** a été supprimé.")
                     .setEphemeral(true)
                     .queue()
             } else {
                 generators.add(channel.id)
-                event.reply(":white_check_mark: Le salon **${channel.name}** a été lié à un générateur.")
+                event.replySuccess(":white_check_mark: Le salon **${channel.name}** a été lié à un générateur.")
                     .setEphemeral(true)
                     .queue()
             }

@@ -2,6 +2,8 @@ package io.slama.events
 
 import io.slama.core.AutoRoleDTO
 import io.slama.core.getConfigOrNull
+import io.slama.utils.replyError
+import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -29,12 +31,11 @@ class AutoRole(
     }
 
     fun send(textChannel: TextChannel) {
-        textChannel.sendMessage(
-            EmbedBuilder()
-                .setTitle(config.title)
-                .setDescription(config.description)
-                .setColor(config.color)
-                .build()
+        textChannel.sendMessage(EmbedBuilder()
+            .setTitle(config.title)
+            .setDescription(config.description)
+            .setColor(config.color)
+            .build()
         ).apply {
             for (i in roles.indices.chunked(5)) {
                 this.setActionRows(ActionRow.of(
@@ -58,7 +59,7 @@ class AutoRole(
 
         val role = guild.getRoleById(roles[index])
         if (role == null) {
-            event.reply("**Erreur :** Le rôle demandé est introuvable. Contactez l'administrateur.")
+            event.replyError("**Erreur :** Le rôle demandé est introuvable. Contactez l'administrateur.")
                 .setEphemeral(true)
                 .queue()
             return
@@ -66,7 +67,7 @@ class AutoRole(
         if (role in member.roles) return
 
         guild.addRoleToMember(event.user.id, role).queue {
-            event.reply(":white_check_mark: Le rôle ${role.asMention} vous a été attribué !")
+            event.replySuccess(":white_check_mark: Le rôle ${role.asMention} vous a été attribué !")
                 .setEphemeral(true)
                 .queue()
         }

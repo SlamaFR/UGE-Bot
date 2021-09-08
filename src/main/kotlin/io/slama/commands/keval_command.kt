@@ -1,10 +1,10 @@
 package io.slama.commands
 
 import com.notkamui.keval.Keval
+import io.slama.utils.EmbedColors
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.awt.Color
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.atan
@@ -31,15 +31,14 @@ class KevalCommand : ListenerAdapter() {
         }
 
         val res = keval.eval(expr.asString)
-        event.replyEmbeds(
-            EmbedBuilder()
-                .setTitle("Eval")
-                .addField("Expression", expr.asString, false)
-                .addField("Résultat", res.toString(), false)
-                .setFooter("Powered by Keval.")
-                .setColor(Color(0x1ABC9C))
-                .build()
-        ).queue()
+        event.replyEmbeds(EmbedBuilder()
+            .setTitle("Eval")
+            .addField("Expression", expr.asString, false)
+            .addField("Résultat", res.toString(), false)
+            .setFooter("Powered by Keval.")
+            .setColor(EmbedColors.BLUE)
+            .build())
+            .queue()
     }
 }
 
@@ -90,7 +89,7 @@ private val helpEmbed = EmbedBuilder()
         false
     )
     .setFooter("N'hésitez pas à proposer de nouvelles fonctions (avec nom et arité). Powered by Keval.")
-    .setColor(Color(0x1ABC9C))
+    .setColor(EmbedColors.BLUE)
     .build()
 
 private val keval = Keval {

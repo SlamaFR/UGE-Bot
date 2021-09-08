@@ -1,15 +1,16 @@
 package io.slama.commands
 
+import io.slama.utils.EmbedColors
 import io.slama.utils.TaskScheduler
 import io.slama.utils.isTeacher
 import io.slama.utils.pluralize
+import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
-import java.awt.Color
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,18 +37,17 @@ private class Call(
 
     private val students = mutableSetOf<String>()
     private val uniqueId = "${event.user.id}${System.currentTimeMillis()}"
-    private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "anonymous"}"
+    private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un petit chachottier"}"
 
     init {
         event.jda.addEventListener(this)
 
-        event.replyEmbeds(
-            EmbedBuilder()
-                .setTitle(embedTitle)
-                .setDescription("Vous avez $timeout ${"minute".pluralize(timeout.toInt())} pour répondre à l'appel.")
-                .setColor(Color(0x2ecc71))
-                .build()
-        ).addActionRow(Button.success("$uniqueId.respond", "Répondre à l'appel"))
+        event.replyEmbeds(EmbedBuilder()
+            .setTitle(embedTitle)
+            .setDescription("Vous avez $timeout ${"minute".pluralize(timeout.toInt())} pour répondre à l'appel.")
+            .setColor(EmbedColors.GREEN)
+            .build())
+            .addActionRow(Button.success("$uniqueId.respond", "Répondre à l'appel"))
             .queue {
                 TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResult)
             }
@@ -57,7 +57,7 @@ private class Call(
         if (event.componentId != "$uniqueId.respond") return
         event.member?.run {
             if (effectiveName !in students) {
-                event.reply(":white_check_mark: Votre présence a été enregistrée.").setEphemeral(true).queue()
+                event.replySuccess(":white_check_mark: Votre présence a été enregistrée.").setEphemeral(true).queue()
                 students.add(effectiveName)
             }
         }
@@ -69,8 +69,7 @@ private class Call(
         val calendar = Calendar.getInstance()
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
-        val fileName =
-            "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+        val fileName = "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
         File(fileName).apply {
             if (!createNewFile()) {
@@ -82,7 +81,7 @@ private class Call(
             bufferedWriter().use { out ->
                 out.write(
                     """
-                    |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.textChannel.name}
+                    |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "un certain A. N. Onym"} dans le salon #${event.textChannel.name}
                     |
                     |${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :
                     |${students.joinToString("\n") { " - $it" }}
@@ -98,43 +97,37 @@ private class Call(
     }
 
     private fun onResultSuccess() {
-        event.hook.editOriginalEmbeds(
-            EmbedBuilder()
-                .setTitle(embedTitle)
-                .setDescription("L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.")
-                .setColor(Color(0xe67e22))
-                .build()
-        ).queue()
-        event.hook.editOriginalComponents(
-            ActionRow.of(
-                Button.danger("0", "Appel terminé").withDisabled(true)
-            )
-        ).queue()
+        event.hook.editOriginalEmbeds(EmbedBuilder()
+            .setTitle(embedTitle)
+            .setDescription("L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.")
+            .setColor(EmbedColors.ORANGE)
+            .build())
+            .queue()
+        event.hook.editOriginalComponents(ActionRow.of(
+            Button.danger("0", "Appel terminé").withDisabled(true)))
+            .queue()
     }
 
     private fun onResultFailed() {
-        event.hook.editOriginalEmbeds(
-            EmbedBuilder()
-                .setTitle("Appel demandé par ${event.member?.effectiveName ?: "anonymous"}")
-                .setDescription(
-                    """
-                    |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
-                        "présente".pluralize(
-                            students.size
-                        )
-                    }.
-                    |
-                    |**Une erreur est survenue lors de l'envoi du fichier !**
-                """.trimMargin()
-                )
-                .setColor(Color(0xe74c3c))
-                .build()
-        ).queue()
-        event.hook.editOriginalComponents(
-            ActionRow.of(
-                Button.danger("0", "Appel terminé").withDisabled(true)
+        event.hook.editOriginalEmbeds(EmbedBuilder()
+            .setTitle("Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
+            .setDescription(
+                """
+                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
+                    "présente".pluralize(
+                        students.size
+                    )
+                }.
+                |
+                |**Une erreur est survenue lors de l'envoi du fichier !**
+            """.trimMargin()
             )
-        ).queue()
+            .setColor(EmbedColors.RED)
+            .build())
+            .queue()
+        event.hook.editOriginalComponents(ActionRow.of(
+            Button.danger("0", "Appel terminé").withDisabled(true)))
+            .queue()
     }
 
 }
