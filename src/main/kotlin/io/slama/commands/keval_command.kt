@@ -21,7 +21,7 @@ import kotlin.math.tan
 
 class KevalCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
-        if (event.name != "keval") return
+        if (event.name != "eval") return
         if (event.guild == null) return
 
         val expr = event.getOption("expression")
@@ -33,9 +33,10 @@ class KevalCommand : ListenerAdapter() {
         val res = keval.eval(expr.asString)
         event.replyEmbeds(
             EmbedBuilder()
-                .setTitle("Keval")
+                .setTitle("Eval")
                 .addField("Expression", expr.asString, false)
                 .addField("Résultat", res.toString(), false)
+                .setFooter("Powered by Keval.")
                 .setColor(Color(0x1ABC9C))
                 .build()
         ).queue()
@@ -43,7 +44,7 @@ class KevalCommand : ListenerAdapter() {
 }
 
 private val helpEmbed = EmbedBuilder()
-    .setTitle("Keval")
+    .setTitle("Eval")
     .setDescription("Help")
     .addField(
         "Opérateurs binaires",
@@ -88,7 +89,7 @@ private val helpEmbed = EmbedBuilder()
         """.trimIndent(),
         false
     )
-    .setFooter("N'hésitez pas à proposer de nouvelles fonctions (avec nom et arité)")
+    .setFooter("N'hésitez pas à proposer de nouvelles fonctions (avec nom et arité). Powered by Keval.")
     .setColor(Color(0x1ABC9C))
     .build()
 
