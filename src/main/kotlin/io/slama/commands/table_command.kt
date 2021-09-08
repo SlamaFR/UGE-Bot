@@ -13,31 +13,35 @@ class TableCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "table") return
 
-        event.getOption("content")?.let {
-            val args = it.asString.splitArgs()
-            val table = ASCIITable()
-            for (row in args) {
-                table.nextRow()
-                for (col in row.split(";")) {
-                    if (col.isEmpty()) {
-                        table.nextCell().blank()
-                    } else {
-                        table.nextCell().setText(col.replace("`", ""))
-                    }
-                }
-            }
+        val content = event.getOption("content")
+        if (content == null) {
+            sendUsage(event)
+            return
+        }
 
-            if (table.isEmpty) {
-                event.reply(":warning: Le tableau est vide !").queue()
-            } else {
-                val finalTable = table.toString()
-                if (finalTable.length > 1990) {
-                    event.reply(":warning: Le tableau est trop grand !").queue()
+        val args = content.asString.splitArgs()
+        val table = ASCIITable()
+        for (row in args) {
+            table.nextRow()
+            for (col in row.split(";")) {
+                if (col.isEmpty()) {
+                    table.nextCell().blank()
                 } else {
-                    event.reply("```\n$finalTable\n```").queue()
+                    table.nextCell().setText(col.replace("`", ""))
                 }
             }
-        } ?: sendUsage(event)
+        }
+
+        if (table.isEmpty) {
+            event.reply(":warning: Le tableau est vide !").queue()
+        } else {
+            val finalTable = table.toString()
+            if (finalTable.length > 1990) {
+                event.reply(":warning: Le tableau est trop grand !").queue()
+            } else {
+                event.reply("```\n$finalTable\n```").queue()
+            }
+        }
     }
 
     private fun sendUsage(event: SlashCommandEvent) {
