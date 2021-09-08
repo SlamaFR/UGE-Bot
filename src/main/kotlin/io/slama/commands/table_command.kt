@@ -2,7 +2,6 @@ package io.slama.commands
 
 import io.slama.utils.splitArgs
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.*
@@ -97,7 +96,7 @@ class ASCIITable {
     /**
      * Represents a list of rows, themselves representing a list of cells.
      */
-    private val table: MutableList<MutableList<String>> = ArrayList()
+    private val table = mutableListOf<MutableList<String>>()
 
     /**
      * Represents width of each column.
@@ -108,6 +107,19 @@ class ASCIITable {
     private var col = 0
     private var currentRow = -1
     private var currentCol = -1
+
+    /**
+     * @return whether every cell of the table is empty.
+     */
+    val isEmpty: Boolean
+        get() {
+            for (row in 0..row) for (col in 0..col) {
+                if (!empty(row, col)) {
+                    return false
+                }
+            }
+            return true
+        }
 
     /**
      * @return current instance of ASCIITable.
@@ -148,26 +160,10 @@ class ASCIITable {
         val content = if (" " != text) " $text " else text
         table[currentRow][currentCol] = content
         if (content.length > colWidths[currentCol]) {
-            colWidths[currentCol] =
-                content.length - (content.split("\\\\§").dropLastWhile { it.isEmpty() }.toTypedArray().size - 1)
+            colWidths[currentCol] = content.length - (content.split("\\\\§").dropLastWhile { it.isEmpty() }.size - 1)
         }
         return this
     }
-
-    /**
-     * @return whether every cell of the table is empty.
-     */
-    val isEmpty: Boolean
-        get() {
-            for (row in 0 until row) {
-                for (col in 0 until col) {
-                    if (!empty(row, col)) {
-                        return false
-                    }
-                }
-            }
-            return true
-        }
 
     /**
      * Adds a new row to the bottom, filled with blank cells.
@@ -175,7 +171,7 @@ class ASCIITable {
      * @return new row count.
      */
     private fun addRow(): Int {
-        table.add(ArrayList())
+        table.add(mutableListOf())
         table[row].addAll(Collections.nCopies(col, ""))
         return ++row
     }
@@ -234,11 +230,13 @@ class ASCIITable {
 
     override fun toString(): String {
         val builder = StringBuilder()
+        val r1 = """(?<!\\)§""".toRegex()
+        val r2 = """\\§""".toRegex()
         for (row in 0 until row) {
             builder.append(getHorizontalLine(row))
             builder.append('\n')
             for (col in 0 until col) {
-                val cellValue = table[row][col].replace("(?<!\\\\)§".toRegex(), "").replace("\\\\§".toRegex(), "§")
+                val cellValue = table[row][col].replace(r1, "").replace(r2, "§")
                 builder.append(if (!empty(row, col) || !empty(row, col - 1)) VERTICAL else ' ')
                 builder.append(cellValue).append(" ".repeat(colWidths[col] - cellValue.length))
             }
