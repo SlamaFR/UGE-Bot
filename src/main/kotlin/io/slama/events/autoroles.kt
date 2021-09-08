@@ -2,6 +2,8 @@ package io.slama.events
 
 import io.slama.core.AutoRoleDTO
 import io.slama.core.getConfigOrNull
+import io.slama.utils.replyError
+import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -29,12 +31,11 @@ class AutoRole(
     }
 
     fun send(textChannel: TextChannel) {
-        textChannel.sendMessage(
-            EmbedBuilder()
-                .setTitle(config.title)
-                .setDescription(config.description)
-                .setColor(config.color)
-                .build()
+        textChannel.sendMessage(EmbedBuilder()
+            .setTitle(config.title)
+            .setDescription(config.description)
+            .setColor(config.color)
+            .build()
         ).apply {
             for (i in roles.indices.chunked(5)) {
                 this.setActionRows(ActionRow.of(
@@ -58,7 +59,7 @@ class AutoRole(
 
         val role = guild.getRoleById(roles[index])
         if (role == null) {
-            event.reply("**Erreur :** Le rôle demandé est introuvable. Contactez l'administrateur.")
+            event.replyError("Le rôle demandé est introuvable. Contactez l'administrateur.")
                 .setEphemeral(true)
                 .queue()
             return
@@ -66,39 +67,39 @@ class AutoRole(
         if (role in member.roles) return
 
         guild.addRoleToMember(event.user.id, role).queue {
-            event.reply(":white_check_mark: Le rôle ${role.asMention} vous a été attribué !")
+            event.replySuccess("Le rôle ${role.asMention} vous a été attribué !")
                 .setEphemeral(true)
                 .queue()
         }
     }
 }
 
-fun createAutoRoleIfAbsent(guild: Guild, name: String, config: AutoRoleDTO): AutoRole? {
-    if (guild.idLong !in autoRoles.keys) {
-        autoRoles[guild.idLong] = mutableMapOf()
+fun Guild.createAutoRoleIfAbsent(name: String, config: AutoRoleDTO): AutoRole? {
+    if (idLong !in autoRoles.keys) {
+        autoRoles[idLong] = mutableMapOf()
     }
 
-    val guildAutoRoles = autoRoles.getOrPut(guild.idLong) { mutableMapOf() }
+    val guildAutoRoles = autoRoles.getOrPut(idLong) { mutableMapOf() }
 
     if (name !in guildAutoRoles.keys) {
-        val autoRole = AutoRole(config, name, guild.jda)
+        val autoRole = AutoRole(config, name, jda)
         guildAutoRoles[name] = autoRole
-        logger.info("Successfully created AutoRole \"$name\" on ${guild.id}")
+        logger.info("Successfully created AutoRole \"$name\" on $id")
         return autoRole
     }
     return guildAutoRoles[name]
 }
 
-fun createAutoRoleIfAbsent(guild: Guild, name: String): AutoRole? {
-    val config = guild.getConfigOrNull() ?: return null
+fun Guild.createAutoRoleIfAbsent(name: String): AutoRole? {
+    val config = getConfigOrNull() ?: return null
     val autoRoleDTO = config.autoRoles[name] ?: return null
-    return createAutoRoleIfAbsent(guild, name, autoRoleDTO)
+    return createAutoRoleIfAbsent(name, autoRoleDTO)
 }
 
 fun Guild.loadAutoRoles() {
-    val config = this.getConfigOrNull() ?: return
+    val config = getConfigOrNull() ?: return
     config.autoRoles.forEach { (name, autoRole) ->
-        createAutoRoleIfAbsent(this, name, autoRole)
+        createAutoRoleIfAbsent(name, autoRole)
     }
 }
 

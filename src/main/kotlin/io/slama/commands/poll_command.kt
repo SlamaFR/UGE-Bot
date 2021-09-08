@@ -1,17 +1,18 @@
 package io.slama.commands
 
+import io.slama.utils.EmbedColors
 import io.slama.utils.TaskScheduler
 import io.slama.utils.isTeacher
 import io.slama.utils.pluralize
+import io.slama.utils.replySuccess
+import io.slama.utils.sendWarning
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
-import java.awt.Color
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
@@ -25,7 +26,7 @@ class PollCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "poll") return
         if (event.guild == null) return
-        if (!isTeacher(event.member!!)) return
+        if (!event.member!!.isTeacher()) return
 
         Poll(
             event,
@@ -65,24 +66,21 @@ class Poll(
 
     fun send() {
         if (question != null) {
-            event.replyEmbeds(
-                EmbedBuilder()
-                    .setTitle("Sondage demandé par ${event.member!!.effectiveName}")
-                    .setDescription(question.asString)
-                    .setFooter("Résultats du sondage dans $timeout minute".pluralize(timeout))
-                    .setColor(Color(0x9b59b6))
-                    .apply {
-                        options.forEachIndexed { i, name ->
-                            if (i % 2 != 0) addBlankField(true)
-                            addField("Réponse ${'A' + i}", name, true)
-                        }
-                    }.build()
+            event.replyEmbeds(EmbedBuilder()
+                .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
+                .setDescription(question.asString)
+                .setFooter("Résultats du sondage dans $timeout minute".pluralize(timeout))
+                .setColor(EmbedColors.VIOLET)
+                .apply {
+                    options.forEachIndexed { i, name ->
+                        if (i % 2 != 0) addBlankField(true)
+                        addField("Réponse ${'A' + i}", name, true)
+                    }
+                }.build()
             ).addActionRows(ActionRow.of(
                 options.mapIndexed { i, _ -> Button.secondary("$uniqueId.${i}", ('A' + i).toString()) }
             )).queue {
-                TaskScheduler.later(timeout, TimeUnit.MINUTES) {
-                    sendResults()
-                }
+                TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResults)
             }
         }
     }
@@ -101,23 +99,22 @@ class Poll(
     private fun sendResults() {
         event.jda.removeEventListener(this)
         if (question != null) {
-            event.hook.editOriginalEmbeds(
-                EmbedBuilder()
-                    .setTitle("Sondage demandé par ${event.member!!.effectiveName}")
-                    .setDescription(question.asString)
-                    .setFooter("Sondage terminé ($totalVoteCount ${"votant".pluralize(totalVoteCount)})")
-                    .setTimestamp(Instant.now())
-                    .setColor(Color(0x9b59b6))
-                    .apply {
-                        options.forEachIndexed { i, name ->
-                            if (i % 2 != 0) addBlankField(true)
-                            addField(
-                                "Réponse ${'A' + i}",
-                                "**(${"%.2f".format(answerRate(i) * 100)}%)** $name",
-                                true
-                            )
-                        }
-                    }.build()
+            event.hook.editOriginalEmbeds(EmbedBuilder()
+                .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
+                .setDescription(question.asString)
+                .setFooter("Sondage terminé ($totalVoteCount ${"votant".pluralize(totalVoteCount)})")
+                .setTimestamp(Instant.now())
+                .setColor(EmbedColors.PURPLE)
+                .apply {
+                    options.forEachIndexed { i, name ->
+                        if (i % 2 != 0) addBlankField(true)
+                        addField(
+                            "Réponse ${'A' + i}",
+                            "**(${"%.2f".format(answerRate(i) * 100)}%)** $name",
+                            true
+                        )
+                    }
+                }.build()
             ).queue()
             event.hook.editOriginalComponents(ActionRow.of(
                 options.mapIndexed { i, _ -> Button.secondary("$uniqueId.${i}", ('A' + i).toString()).asDisabled() }
@@ -130,18 +127,26 @@ class Poll(
     override fun onButtonClick(event: ButtonClickEvent) {
         if (!event.componentId.startsWith(uniqueId)) return
         vote(event.componentId.split(".")[1].toInt(), event.user.idLong, event.member?.effectiveName ?: "")
-        event.reply(":white_check_mark: Votre vote a été pris en compte.").setEphemeral(true).queue()
+        event.replySuccess("Votre vote a été pris en compte.").setEphemeral(true).queue()
+    }
+
+    private fun onFailSendLog() {
+        event.channel
+            .sendWarning("Une erreur est survenue lors de l'envoi du fichier du sondage !")
+            .queue()
     }
 
     private fun sendLog() {
         val calendar = Calendar.getInstance()
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
-        val fileName =
-            "poll_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+        val fileName = "poll_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
         File(fileName).apply {
-            if (!createNewFile()) throw IOException("Couldn't create file")
+            if (!createNewFile()) {
+                onFailSendLog()
+                return
+            }
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
@@ -154,6 +159,7 @@ class Poll(
                     |
                 """.trimMargin()
                 )
+
                 options.forEachIndexed { i, name ->
                     val rate = "%.2f".format(answerRate(i) * 100)
                     val count = answers[i]?.count() ?: 0
@@ -166,12 +172,8 @@ class Poll(
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
-                it.sendFile(this).queue({}, {
-                    event.channel
-                        .sendMessage(":exclamation: **Une erreur est survenue lors de l'envoi du fichier du sondage !**")
-                        .queue()
-                })
-            }
+                it.sendFile(this).queue({}, { onFailSendLog() })
+            } ?: onFailSendLog()
         }
     }
 }

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 
 fun JDA.registerGlobalCommands() {
     this {
-        command("keval", "Évaluer une expression mathématique.") {
+        command("eval", "Évaluer une expression mathématique.") {
             option(OptionType.STRING, name = "expression", "Expression à évaluer.")
         }
         command("call", "Lancer un appel dans le salon courant.") {

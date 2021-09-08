@@ -1,5 +1,7 @@
 package io.slama.commands
 
+import io.slama.utils.EmbedColors
+import io.slama.utils.replyWarning
 import io.slama.utils.splitArgs
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
@@ -32,11 +34,11 @@ class TableCommand : ListenerAdapter() {
         }
 
         if (table.isEmpty) {
-            event.reply(":warning: Le tableau est vide !").queue()
+            event.replyWarning("Le tableau est vide !").queue()
         } else {
             val finalTable = table.toString()
             if (finalTable.length > 1990) {
-                event.reply(":warning: Le tableau est trop grand !").queue()
+                event.replyWarning("Le tableau est trop grand !").queue()
             } else {
                 event.reply("```\n$finalTable\n```").queue()
             }
@@ -44,49 +46,50 @@ class TableCommand : ListenerAdapter() {
     }
 
     private fun sendUsage(event: SlashCommandEvent) {
-        event.replyEmbeds(
-            EmbedBuilder().setTitle("Générateur de tableaux ASCII")
-                .setDescription(
-                    "Cette commande permet de générer rapidement des tableaux avec des caractères ASCII."
-                )
-                .addField("Utilisation", "`/table <Ligne 1> <Ligne 2> ... <Ligne N>`", false)
-                .addField(
-                    "Syntaxe", """
-                        |Une ligne est divisée en colonnes par le caractère `;`.
-                        |Si une ligne contient un ou plusieurs espaces, il faut l'encadrer avec des guillemets pour éviter des comportements inattendus.
-                        |Pour dessiner une case vide, sans les bordures, la cellule ne doit contenir que des espaces.
-                    """.trimMargin(), false
-                )
-                .addField(
-                    "Exemple 1", """
-                        |`/table ";Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
-                        |```
-                        |┌─────────┬───────────┬───────────┐
-                        |│         │ Colonne 1 │ Colonne 2 │
-                        |├─────────┼───────────┼───────────┤
-                        |│ Ligne 1 │ Val 1     │ Val 2     │
-                        |├─────────┼───────────┼───────────┤
-                        |│ ou      │ comme     │ ceci      │
-                        |└─────────┴───────────┴───────────┘
-                        |```
-                    """.trimMargin(), false
-                )
-                .addField(
-                    "Exemple 2", """
-                        |`/table " ;Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
-                        |```
-                        |          ┌───────────┬───────────┐
-                        |          │ Colonne 1 │ Colonne 2 │
-                        |┌─────────┼───────────┼───────────┤
-                        |│ Ligne 1 │ Val 1     │ Val 2     │
-                        |├─────────┼───────────┼───────────┤
-                        |│ ou      │ comme     │ ceci      │
-                        |└─────────┴───────────┴───────────┘
-                        |```
-                    """.trimMargin(), false
-                )
-                .build()
-        ).queue()
+        event.replyEmbeds(EmbedBuilder()
+            .setTitle("Générateur de tableaux ASCII")
+            .setDescription(
+                "Cette commande permet de générer rapidement des tableaux avec des caractères ASCII."
+            )
+            .addField("Utilisation", "`/table <Ligne 1> <Ligne 2> ... <Ligne N>`", false)
+            .addField(
+                "Syntaxe", """
+                    |Une ligne est divisée en colonnes par le caractère `;`.
+                    |Si une ligne contient un ou plusieurs espaces, il faut l'encadrer avec des guillemets pour éviter des comportements inattendus.
+                    |Pour dessiner une case vide, sans les bordures, la cellule ne doit contenir que des espaces.
+                """.trimMargin(), false
+            )
+            .addField(
+                "Exemple 1", """
+                    |`/table ";Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
+                    |```
+                    |┌─────────┬───────────┬───────────┐
+                    |│         │ Colonne 1 │ Colonne 2 │
+                    |├─────────┼───────────┼───────────┤
+                    |│ Ligne 1 │ Val 1     │ Val 2     │
+                    |├─────────┼───────────┼───────────┤
+                    |│ ou      │ comme     │ ceci      │
+                    |└─────────┴───────────┴───────────┘
+                    |```
+                """.trimMargin(), false
+            )
+            .addField(
+                "Exemple 2", """
+                    |`/table " ;Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
+                    |```
+                    |          ┌───────────┬───────────┐
+                    |          │ Colonne 1 │ Colonne 2 │
+                    |┌─────────┼───────────┼───────────┤
+                    |│ Ligne 1 │ Val 1     │ Val 2     │
+                    |├─────────┼───────────┼───────────┤
+                    |│ ou      │ comme     │ ceci      │
+                    |└─────────┴───────────┴───────────┘
+                    |```
+                """.trimMargin(), false
+            )
+            .setColor(EmbedColors.BLUE)
+            .build())
+            .queue()
     }
 
 }
@@ -250,7 +253,7 @@ class ASCIITable {
     companion object {
 
         /**
-         * Represents chars composing the ASCII table `[bottom][up][left][right]`.
+         * Represents chars composing the ASCII table `<bottom><up><left><right>`.
          *
          * Watch out, speaking in Minecraft Enchant Table is mandatory!
          */

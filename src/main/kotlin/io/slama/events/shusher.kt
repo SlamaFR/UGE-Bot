@@ -41,7 +41,7 @@ class Shusher(
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         event.member?.let { member ->
-            if (event.message.contentRaw.startsWith("!tg") && isAdmin(member)) {
+            if (event.message.contentRaw.startsWith("!tg") && member.isAdmin()) {
                 command(event)
                 return
             }
