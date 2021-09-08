@@ -37,6 +37,9 @@ fun JDA.registerGlobalCommands() {
         command("changen", "Lier un salon à un générateur de salons temporaires.") {
             option(OptionType.CHANNEL, name = "channel", "Salon qui servira de point de départ.", required = true)
         }
+        command("table", "Générer un tableau en caractères ASCII.") {
+            option(OptionType.STRING, name = "content", "Contenu du tableau. Laisser vide pour obtenir un example.")
+        }
     }
 }
 
@@ -50,9 +53,6 @@ fun Guild.registerGuildCommands() {
                     }
                 } ?: listOf()
             }
-        }
-        command("table", "Générer un tableau en caractères ASCII.") {
-            option(OptionType.STRING, name = "content", "Contenu du tableau. Laisser vide pour obtenir un example.")
         }
     }
 }
