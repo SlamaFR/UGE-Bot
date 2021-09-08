@@ -1,3 +1,1 @@
-
-rootProject.name = "UGEBot_v2"
-
+rootProject.name = "UGEBot"
