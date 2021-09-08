@@ -59,7 +59,7 @@ class AutoRole(
 
         val role = guild.getRoleById(roles[index])
         if (role == null) {
-            event.replyError("**Erreur :** Le rôle demandé est introuvable. Contactez l'administrateur.")
+            event.replyError("Le rôle demandé est introuvable. Contactez l'administrateur.")
                 .setEphemeral(true)
                 .queue()
             return
@@ -67,7 +67,7 @@ class AutoRole(
         if (role in member.roles) return
 
         guild.addRoleToMember(event.user.id, role).queue {
-            event.replySuccess(":white_check_mark: Le rôle ${role.asMention} vous a été attribué !")
+            event.replySuccess("Le rôle ${role.asMention} vous a été attribué !")
                 .setEphemeral(true)
                 .queue()
         }

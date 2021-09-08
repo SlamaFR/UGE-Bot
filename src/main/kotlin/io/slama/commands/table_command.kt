@@ -34,11 +34,11 @@ class TableCommand : ListenerAdapter() {
         }
 
         if (table.isEmpty) {
-            event.replyWarning(":warning: Le tableau est vide !").queue()
+            event.replyWarning("Le tableau est vide !").queue()
         } else {
             val finalTable = table.toString()
             if (finalTable.length > 1990) {
-                event.replyWarning(":warning: Le tableau est trop grand !").queue()
+                event.replyWarning("Le tableau est trop grand !").queue()
             } else {
                 event.reply("```\n$finalTable\n```").queue()
             }

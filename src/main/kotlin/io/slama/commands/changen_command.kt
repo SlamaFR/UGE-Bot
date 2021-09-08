@@ -47,12 +47,12 @@ class ChanGenCommand : ListenerAdapter() {
         event.getOption("channel")?.asGuildChannel?.let { channel ->
             if (channel.id in generators) {
                 generators.remove(channel.id)
-                event.replySuccess(":white_check_mark: Le générateur du salon **${channel.name}** a été supprimé.")
+                event.replySuccess("Le générateur du salon **${channel.name}** a été supprimé.")
                     .setEphemeral(true)
                     .queue()
             } else {
                 generators.add(channel.id)
-                event.replySuccess(":white_check_mark: Le salon **${channel.name}** a été lié à un générateur.")
+                event.replySuccess("Le salon **${channel.name}** a été lié à un générateur.")
                     .setEphemeral(true)
                     .queue()
             }
