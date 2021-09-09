@@ -1,5 +1,11 @@
 package io.slama.core
 
+import io.slama.core.ConfigFolders.BOT_PROPERTIES
+import io.slama.core.ConfigFolders.CALLS_DATA_ROOT
+import io.slama.core.ConfigFolders.CONFIG_ROOT
+import io.slama.core.ConfigFolders.DATA_ROOT
+import io.slama.core.ConfigFolders.GUILD_CONFIG_ROOT
+import io.slama.core.ConfigFolders.POLLS_DATA_ROOT
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -10,28 +16,48 @@ import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.io.File
 import java.io.IOException
 
-private const val BOT_PROPERTIES = "bot.properties"
-private const val CONFIG_ROOT = "config/"
-private const val GUILD_CONFIG_ROOT = "${CONFIG_ROOT}guilds/"
+object ConfigFolders {
+    const val BOT_PROPERTIES = "bot.properties"
+    const val CONFIG_ROOT = "config/"
+    const val DATA_ROOT = "data/"
+    const val CALLS_DATA_ROOT = "${DATA_ROOT}calls/"
+    const val POLLS_DATA_ROOT = "${DATA_ROOT}polls/"
+    const val GUILD_CONFIG_ROOT = "${CONFIG_ROOT}guilds/"
+}
+
 private val guildConfigs: MutableMap<Long, GuildConfig> = mutableMapOf()
 
 fun configSetup() {
     with(File(BOT_PROPERTIES)) {
-        if (!this.exists())
+        if (!exists())
             writeText("token=0\n")
-        else if (!this.isFile)
-            throw IOException("Couldn't create a $BOT_PROPERTIES file as a folder with that name already exists.")
+        else if (!isFile)
+            throw IOException("Couldn't create a $BOT_PROPERTIES file.")
     }
     with(File(CONFIG_ROOT)) {
         mkdir()
-        if (this.isDirectory) with(File(GUILD_CONFIG_ROOT)) {
+        if (!isDirectory) throw IOException("Couldn't create the $CONFIG_ROOT directory.")
+        else with(File(GUILD_CONFIG_ROOT)) {
             mkdir()
-            if (!this.isDirectory)
-                throw IOException("Couldn't create the $GUILD_CONFIG_ROOT directory as there is already a file named like that.")
+            if (!isDirectory)
+                throw IOException("Couldn't create the $GUILD_CONFIG_ROOT directory.")
         }
-        else
-            throw IOException("Couldn't create the $CONFIG_ROOT directory as there is already a file named like that.")
 
+
+    }
+    with(File(DATA_ROOT)) {
+        mkdir()
+        if (!this.isDirectory) throw IOException("Couldn't create the $DATA_ROOT directory.")
+        else {
+            with(File(CALLS_DATA_ROOT)) {
+                mkdir()
+                if (!this.isDirectory) throw IOException("Couldn't create the $CALLS_DATA_ROOT directory.")
+            }
+            with(File(POLLS_DATA_ROOT)) {
+                mkdir()
+                if (!this.isDirectory) throw IOException("Couldn't create the $POLLS_DATA_ROOT directory.")
+            }
+        }
     }
 }
 
