@@ -14,6 +14,7 @@ import java.io.File
 import kotlin.random.Random
 
 private const val SHUSHER_TRIGGER_THRESHOLD = .009
+private const val SHUSHER_FILE = "shusherRolesIds"
 
 private val logger: Logger = LoggerFactory.getLogger("Shusher")
 
@@ -27,7 +28,7 @@ class Shusher(
 
     init {
         jda.addEventListener(this)
-        val file = File("${ConfigFolders.DATA_ROOT}shusherRolesIds")
+        val file = File(ConfigFolders.DATA_ROOT, SHUSHER_FILE)
         if (file.exists()) {
             file.useLines { lines ->
                 lines.map {
@@ -92,7 +93,7 @@ class Shusher(
     }
 
     private fun save() {
-        val file = File("data/shusherRolesIds")
+        val file = File(ConfigFolders.DATA_ROOT, SHUSHER_FILE)
         if (!file.exists()) file.createNewFile()
         file.writeText("")
         roles.forEach { (guildId, roleId) ->

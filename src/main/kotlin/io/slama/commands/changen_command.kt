@@ -17,6 +17,7 @@ import kotlin.concurrent.schedule
 
 const val INITIAL_DELETION_TIMEOUT = 150 * 1000L
 const val IMMINENT_DELETION_TIMEOUT = 30 * 1000L
+private const val TMP_CHANNELS_FILE = "temporaryChannelsGenerator"
 
 private val logger: Logger = LoggerFactory.getLogger("TemporaryChannels")
 
@@ -27,7 +28,7 @@ class ChanGenCommand : ListenerAdapter() {
     private val deletionTasks = mutableMapOf<String, TimerTask>()
 
     init {
-        val file = File("${ConfigFolders.DATA_ROOT}temporaryChannelGenerators")
+        val file = File(ConfigFolders.DATA_ROOT, TMP_CHANNELS_FILE)
         if (file.exists()) {
             file.useLines { lines ->
                 lines.map {
@@ -120,7 +121,7 @@ class ChanGenCommand : ListenerAdapter() {
     }
 
     private fun save() {
-        val file = File("data/temporaryChannelGenerators")
+        val file = File(ConfigFolders.DATA_ROOT, TMP_CHANNELS_FILE)
         if (!file.exists()) file.createNewFile()
         file.writeText("")
         generators.forEach {
