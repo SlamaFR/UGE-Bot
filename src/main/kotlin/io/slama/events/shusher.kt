@@ -63,10 +63,10 @@ class Shusher(
             event.message.mentionedMembers.forEach { member ->
                 if (member.roles.contains(role)) {
                     event.guild.removeRoleFromMember(member, role).queue()
-                    event.channel.sendMessage("Aller c'est parti, ${member.asMention} je tiens ta veste !").queue()
+                    event.channel.sendMessage("C'est bon ${member.asMention}, je te laisse tranquille...").queue()
                 } else {
                     event.guild.addRoleToMember(member, role).queue()
-                    event.channel.sendMessage("C'est bon ${member.asMention}, je te laisse tranquille...").queue()
+                    event.channel.sendMessage("Aller c'est parti, ${member.asMention} je tiens ta veste !").queue()
                 }
             }
         }
