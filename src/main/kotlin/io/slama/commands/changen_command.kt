@@ -1,5 +1,6 @@
 package io.slama.commands
 
+import io.slama.core.ConfigFolders
 import io.slama.utils.isAdmin
 import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.entities.VoiceChannel
@@ -26,7 +27,7 @@ class ChanGenCommand : ListenerAdapter() {
     private val deletionTasks = mutableMapOf<String, TimerTask>()
 
     init {
-        val file = File("data/temporaryChannelGenerators")
+        val file = File("${ConfigFolders.DATA_ROOT}temporaryChannelGenerators")
         if (file.exists()) {
             file.useLines { lines ->
                 lines.map {

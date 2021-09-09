@@ -1,5 +1,6 @@
 package io.slama.events
 
+import io.slama.core.ConfigFolders
 import io.slama.core.getShusherConfig
 import io.slama.utils.isAdmin
 import net.dv8tion.jda.api.JDA
@@ -26,7 +27,7 @@ class Shusher(
 
     init {
         jda.addEventListener(this)
-        val file = File("data/shusherRolesIds")
+        val file = File("${ConfigFolders.DATA_ROOT}shusherRolesIds")
         if (file.exists()) {
             file.useLines { lines ->
                 lines.map {
