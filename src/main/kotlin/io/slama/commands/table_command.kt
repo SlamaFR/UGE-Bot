@@ -221,7 +221,7 @@ class ASCIITable {
     }
 
     /**
-     * @return the char at the intersection of the north west edge of the cell at [`row`, `col`].
+     * @return the char at the intersection of the north-west edge of the cell at [`row`, `col`].
      */
     private fun getIntersect(row: Int, col: Int): Char {
         val up = if (empty(row - 1, col - 1) && empty(row - 1, col)) 0 else 1

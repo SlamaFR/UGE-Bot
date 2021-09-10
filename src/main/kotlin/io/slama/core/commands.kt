@@ -47,7 +47,7 @@ fun Guild.registerGuildCommands() {
     this {
         command("autorole", "Créer un attributeur automatique de rôle.") {
             option(OptionType.STRING, name = "name", "Nom de l'attributeur.") {
-                this@registerGuildCommands.getConfigOrNull()?.let {
+                BotConfiguration.guilds[this@registerGuildCommands.idLong]?.let {
                     it.autoRoles.keys.map { name ->
                         Command.Choice(name, name)
                     }
