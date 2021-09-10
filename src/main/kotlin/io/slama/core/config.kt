@@ -12,8 +12,11 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
+
+private val logger = LoggerFactory.getLogger("Configuration")
 
 object ConfigFolders {
     const val BOT_PROPERTIES = "bot.properties"
@@ -186,6 +189,8 @@ class BotConfiguration private constructor() {
                 createAutorolesFile(autorolesF)
             }
 
+
+            logger.info("Loaded config of guild $guildId")
             guildConfigsMap[guildId] = GuildConfig(
                 Json.decodeFromString(rolesF.readText()),
                 Json.decodeFromString(channelsF.readText()),
