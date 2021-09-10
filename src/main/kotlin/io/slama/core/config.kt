@@ -92,25 +92,29 @@ class BotConfiguration private constructor() {
 
         private fun createRolesFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "adminRoleID": 0,
                   "managerRoleID": 1,
                   "teacherRoleID": 2,
                   "studentRoleID": 3
                 }
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
 
         private fun createChannelsFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "announcementsChannelID": 0,
                   "moodleAnnouncementsChannelsIDs": {
                   }
                 }
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
 
         private fun createAutorolesFile(file: File) {
@@ -120,18 +124,21 @@ class BotConfiguration private constructor() {
 
         private fun createShusherFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "sentences": [
                     "Please stop talking..."
                   ]
                 }
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
 
         private fun createPresenceFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "messages": {
                     "something": "DEFAULT",
@@ -139,7 +146,8 @@ class BotConfiguration private constructor() {
                     "some other thing": "LISTENING"
                   }
                 }
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
     }
 
@@ -186,35 +194,37 @@ class BotConfiguration private constructor() {
         }
     }
 
-    private val guildConfigs = GuildConfigManager()
+    private val guildConfigs by lazy {
+        GuildConfigManager()
+    }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private val shusherConfig: ShusherConfig
-        get() {
-            with(File(CONFIG_ROOT)) {
-                if (!exists() || !isDirectory)
-                    resetConfig()
-            }
-            val shusherF = File("${CONFIG_ROOT}shusher.json")
-            if (!shusherF.exists()) {
-                createShusherFile(shusherF)
-            }
-            return Json.decodeFromString(shusherF.readText())
+    private val shusherConfig: ShusherConfig by lazy {
+        with(File(CONFIG_ROOT)) {
+            if (!exists() || !isDirectory)
+                resetConfig()
         }
+        val shusherF = File("${CONFIG_ROOT}shusher.json")
+        if (!shusherF.exists()) {
+            createShusherFile(shusherF)
+        }
+        logger.info("Loaded shusher config")
+        Json.decodeFromString(shusherF.readText())
+    }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private val presenceConfig: PresenceConfig
-        get() {
-            with(File(CONFIG_ROOT)) {
-                if (!exists() || !isDirectory)
-                    resetConfig()
-            }
-            val presenceF = File("${CONFIG_ROOT}presence.json")
-            if (!presenceF.exists()) {
-                createPresenceFile(presenceF)
-            }
-            return Json.decodeFromString(presenceF.readText())
+    private val presenceConfig: PresenceConfig by lazy {
+        with(File(CONFIG_ROOT)) {
+            if (!exists() || !isDirectory)
+                resetConfig()
         }
+        val presenceF = File("${CONFIG_ROOT}presence.json")
+        if (!presenceF.exists()) {
+            createPresenceFile(presenceF)
+        }
+        logger.info("Loaded presence config")
+        Json.decodeFromString(presenceF.readText())
+    }
 }
 
 @Serializable
