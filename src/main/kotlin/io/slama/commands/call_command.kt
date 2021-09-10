@@ -31,14 +31,12 @@ class CallCommand : ListenerAdapter() {
 
         Call(event, event.getOption("timeout")?.asLong ?: DEFAULT_TIMEOUT)
     }
-
 }
 
 private class Call(
     private val event: SlashCommandEvent,
     private val timeout: Long = DEFAULT_TIMEOUT
 ) : ListenerAdapter() {
-
     private val students = mutableSetOf<String>()
     private val uniqueId = "${event.user.id}${System.currentTimeMillis()}"
     private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}"
@@ -89,15 +87,13 @@ private class Call(
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
-                out.write(
-                    """
+                out.write("""
                     |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "un certain A. N. Onym"} dans le salon #${event.textChannel.name}
                     |
                     |${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :
                     |${students.joinToString("\n") { " - $it" }}
                     |
-                """.trimMargin()
-                )
+                """.trimMargin())
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
@@ -124,17 +120,11 @@ private class Call(
     private fun onResultFailed() {
         event.hook.editOriginalEmbeds(EmbedBuilder()
             .setTitle("Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
-            .setDescription(
-                """
-                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
-                    "présente".pluralize(
-                        students.size
-                    )
-                }.
+            .setDescription("""
+                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.
                 |
                 |**Une erreur est survenue lors de l'envoi du fichier !**
-            """.trimMargin()
-            )
+            """.trimMargin())
             .setColor(EmbedColors.RED)
             .build())
             .queue()
@@ -142,5 +132,4 @@ private class Call(
             Button.danger("0", "Appel terminé").withDisabled(true)))
             .queue()
     }
-
 }

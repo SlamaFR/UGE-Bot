@@ -23,6 +23,7 @@ import kotlin.math.sqrt
 import kotlin.math.tan
 
 class KevalCommand : ListenerAdapter() {
+
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "eval") return
         if (event.guild == null) return
