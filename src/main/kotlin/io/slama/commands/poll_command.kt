@@ -39,7 +39,6 @@ class PollCommand : ListenerAdapter() {
             event.getOption("log")?.asBoolean ?: DEFAULT_POLL_LOG,
         ).send()
     }
-
 }
 
 class Poll(
@@ -161,15 +160,13 @@ class Poll(
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
-                out.write(
-                    """
+                out.write("""
                     |Sondage effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.textChannel.name}
                     |
                     |$totalVoteCount ${"personne".pluralize(totalVoteCount)} ${if (totalVoteCount > 1) "ont" else "à"} voté :
                     |Question : ${question?.asString ?: "Pas de question"}
                     |
-                """.trimMargin()
-                )
+                """.trimMargin())
 
                 options.forEachIndexed { i, name ->
                     val rate = "%.2f".format(answerRate(i) * 100)

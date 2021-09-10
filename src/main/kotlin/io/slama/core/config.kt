@@ -28,6 +28,7 @@ object ConfigFolders {
 }
 
 class BotConfiguration private constructor() {
+
     companion object {
         val guilds: GuildConfigManager
             get() = innerConfig!!.guildConfigs /*
@@ -55,11 +56,11 @@ class BotConfiguration private constructor() {
             }
 
         fun resetConfig() {
-            setupDir()
+            setup()
             innerConfig = null
         }
 
-        private fun setupDir() {
+        private fun setup() {
             with(File(BOT_PROPERTIES)) {
                 if (!exists())
                     writeText("token=0\n")
@@ -74,8 +75,6 @@ class BotConfiguration private constructor() {
                     if (!isDirectory)
                         throw IOException("Couldn't create the $GUILD_CONFIG_ROOT directory.")
                 }
-
-
             }
             with(File(DATA_ROOT)) {
                 mkdir()
@@ -95,29 +94,25 @@ class BotConfiguration private constructor() {
 
         private fun createRolesFile(file: File) {
             file.createNewFile()
-            file.writeText(
-                """
+            file.writeText("""
                 {
                   "adminRoleID": 0,
                   "managerRoleID": 1,
                   "teacherRoleID": 2,
                   "studentRoleID": 3
                 }
-            """.trimIndent()
-            )
+            """.trimIndent())
         }
 
         private fun createChannelsFile(file: File) {
             file.createNewFile()
-            file.writeText(
-                """
+            file.writeText("""
                 {
                   "announcementsChannelID": 0,
                   "moodleAnnouncementsChannelsIDs": {
                   }
                 }
-            """.trimIndent()
-            )
+            """.trimIndent())
         }
 
         private fun createAutorolesFile(file: File) {
@@ -127,21 +122,18 @@ class BotConfiguration private constructor() {
 
         private fun createShusherFile(file: File) {
             file.createNewFile()
-            file.writeText(
-                """
+            file.writeText("""
                 {
                   "sentences": [
                     "Please stop talking..."
                   ]
                 }
-            """.trimIndent()
-            )
+            """.trimIndent())
         }
 
         private fun createPresenceFile(file: File) {
             file.createNewFile()
-            file.writeText(
-                """
+            file.writeText("""
                 {
                   "messages": {
                     "something": "DEFAULT",
@@ -149,12 +141,12 @@ class BotConfiguration private constructor() {
                     "some other thing": "LISTENING"
                   }
                 }
-            """.trimIndent()
-            )
+            """.trimIndent())
         }
     }
 
     class GuildConfigManager {
+
         private val guildConfigsMap: MutableMap<Long, GuildConfig> = mutableMapOf()
 
         operator fun get(guildId: Long): GuildConfig? {
@@ -198,7 +190,7 @@ class BotConfiguration private constructor() {
         }
     }
 
-    private val guildConfigs by lazy {
+    private val guildConfigs: GuildConfigManager by lazy {
         GuildConfigManager()
     }
 
@@ -264,16 +256,16 @@ data class AutoRoleDTO(
 
 @Serializable
 data class ShusherConfig(
-    val sentences: List<String>
+    val sentences: List<String>,
 )
 
 @Serializable
 data class PresenceConfig(
-    val messages: Map<String, Activity.ActivityType>
+    val messages: Map<String, Activity.ActivityType>,
 )
 
 data class GuildConfig(
     val roles: RolesDTO,
     val channels: ChannelsDTO,
-    val autoRoles: Map<String, AutoRoleDTO>
+    val autoRoles: Map<String, AutoRoleDTO>,
 )
