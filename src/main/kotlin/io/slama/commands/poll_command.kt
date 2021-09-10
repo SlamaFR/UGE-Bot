@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -22,6 +23,8 @@ import java.util.concurrent.TimeUnit
 
 const val DEFAULT_POLL_TIMEOUT = 2L
 const val DEFAULT_POLL_LOG = false
+
+private val logger = LoggerFactory.getLogger("PollCommand")
 
 class PollCommand : ListenerAdapter() {
 
@@ -151,6 +154,7 @@ class Poll(
 
         File(ConfigFolders.POLLS_DATA_ROOT, fileName).apply {
             if (!createNewFile()) {
+                logger.error("Couldn't created poll file '$fileName'")
                 onFailSendLog()
                 return
             }
