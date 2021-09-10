@@ -50,7 +50,7 @@ class UGEBot(token: String) : ListenerAdapter() {
                     jda.shutdown()
                     exitProcess(0)
                 }
-                "reset" -> BotConfiguration.resetConfig()
+                "reload", "reset" -> BotConfiguration.resetConfig()
                 "delete-commands" -> {
                     if (command.size < 2) continue
                     command.drop(1).forEach { name ->
@@ -124,6 +124,7 @@ class UGEBot(token: String) : ListenerAdapter() {
 }
 
 fun main() {
+    BotConfiguration.resetConfig()
     with(ConfigurationProperties.fromFile(File("bot.properties"))) {
         UGEBot(this[token])
     }

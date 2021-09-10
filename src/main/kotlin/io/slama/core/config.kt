@@ -46,14 +46,13 @@ class BotConfiguration private constructor() {
 
         private var innerConfig: BotConfiguration? = null
             get() {
-                if (field == null) {
-                    setupDir()
+                if (field == null)
                     field = BotConfiguration()
-                }
                 return field
             }
 
         fun resetConfig() {
+            setupDir()
             innerConfig = null
         }
 
@@ -154,6 +153,10 @@ class BotConfiguration private constructor() {
 
         @OptIn(ExperimentalSerializationApi::class)
         private fun loadConfig(guildId: Long) {
+            with(File(GUILD_CONFIG_ROOT)) {
+                if (!exists() || !isDirectory)
+                    resetConfig()
+            }
             File("$GUILD_CONFIG_ROOT$guildId").run {
                 mkdir()
                 if (!this.isDirectory)
@@ -188,6 +191,10 @@ class BotConfiguration private constructor() {
     @OptIn(ExperimentalSerializationApi::class)
     private val shusherConfig: ShusherConfig
         get() {
+            with(File(CONFIG_ROOT)) {
+                if (!exists() || !isDirectory)
+                    resetConfig()
+            }
             val shusherF = File("${CONFIG_ROOT}shusher.json")
             if (!shusherF.exists()) {
                 createShusherFile(shusherF)
@@ -198,6 +205,10 @@ class BotConfiguration private constructor() {
     @OptIn(ExperimentalSerializationApi::class)
     private val presenceConfig: PresenceConfig
         get() {
+            with(File(CONFIG_ROOT)) {
+                if (!exists() || !isDirectory)
+                    resetConfig()
+            }
             val presenceF = File("${CONFIG_ROOT}presence.json")
             if (!presenceF.exists()) {
                 createPresenceFile(presenceF)
