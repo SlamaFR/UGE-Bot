@@ -1,5 +1,6 @@
 package io.slama.commands
 
+import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
 import io.slama.utils.EmbedColors
 import io.slama.utils.TaskScheduler
@@ -142,6 +143,11 @@ class Poll(
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
         val fileName = "poll_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+
+        with(File(ConfigFolders.POLLS_DATA_ROOT)) {
+            if (!exists() || !isDirectory)
+                BotConfiguration.resetConfig()
+        }
 
         File(ConfigFolders.POLLS_DATA_ROOT, fileName).apply {
             if (!createNewFile()) {

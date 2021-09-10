@@ -3,10 +3,13 @@ package io.slama
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.stringType
-import io.slama.commands.*
-import io.slama.core.clearGuildConfigs
-import io.slama.core.configSetup
-import io.slama.core.getPresenceConfig
+import io.slama.commands.AutoRoleCommand
+import io.slama.commands.CallCommand
+import io.slama.commands.ChanGenCommand
+import io.slama.commands.KevalCommand
+import io.slama.commands.PollCommand
+import io.slama.commands.TableCommand
+import io.slama.core.BotConfiguration
 import io.slama.core.registerGlobalCommands
 import io.slama.core.registerGuildCommands
 import io.slama.events.Shusher
@@ -37,8 +40,6 @@ class UGEBot(token: String) : ListenerAdapter() {
         .enableIntents(GatewayIntent.GUILD_MEMBERS)
         .build()
 
-    private val presenceConfig = getPresenceConfig()
-
     init {
         while (true) {
             val command = readLine()?.split(" ") ?: listOf("default")
@@ -47,7 +48,7 @@ class UGEBot(token: String) : ListenerAdapter() {
                     jda.shutdown()
                     exitProcess(0)
                 }
-                "reload" -> load()
+                "reload", "reset" -> load()
                 "delete-commands" -> {
                     if (command.size < 2) continue
                     command.drop(1).forEach { name ->
@@ -76,15 +77,15 @@ class UGEBot(token: String) : ListenerAdapter() {
         Shusher(jda)
         load()
         TaskScheduler.repeat(10, TimeUnit.MINUTES) {
-            val (message, type) = presenceConfig.messages.entries.random()
+            val (message, type) = BotConfiguration.presence.messages.entries.random()
             jda.presence.setPresence(Activity.of(type, message), false)
             true
         }
     }
 
     private fun load() {
+        BotConfiguration.resetConfig()
         clearAutoRoles()
-        clearGuildConfigs()
         jda.registerGlobalCommands()
         jda.guilds.forEach {
             it.loadAutoRoles()
@@ -121,7 +122,7 @@ class UGEBot(token: String) : ListenerAdapter() {
 }
 
 fun main() {
-    configSetup()
+    BotConfiguration.resetConfig()
     with(ConfigurationProperties.fromFile(File("bot.properties"))) {
         UGEBot(this[token])
     }

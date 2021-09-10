@@ -1,7 +1,7 @@
 package io.slama.events
 
+import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
-import io.slama.core.getShusherConfig
 import io.slama.utils.isAdmin
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -24,7 +24,6 @@ class Shusher(
 
     private val roles = mutableMapOf<String, String>()
     private val random = Random(System.currentTimeMillis())
-    private val config = getShusherConfig()
 
     init {
         jda.addEventListener(this)
@@ -50,7 +49,7 @@ class Shusher(
 
             if (member.roles.map { it.id }.any { roles[event.guild.id] == it }) {
                 if (random.nextFloat() <= SHUSHER_TRIGGER_THRESHOLD) {
-                    event.channel.sendMessage(config.sentences.random()).queue()
+                    event.channel.sendMessage(BotConfiguration.shusher.sentences.random()).queue()
                 }
             }
         }
