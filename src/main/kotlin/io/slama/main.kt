@@ -54,7 +54,11 @@ class UGEBot(token: String) : ListenerAdapter() {
                     jda.shutdown()
                     exitProcess(0)
                 }
-                "reload", "reset" -> load()
+                "reload", "reset" -> {
+                    logger.warn("Reload is not reliable, consider restarting the bot if you encounter issues")
+                    load()
+                    logger.info("Reload complete!")
+                }
                 "delete-commands" -> {
                     if (command.size < 2) continue
                     command.drop(1).forEach { name ->
