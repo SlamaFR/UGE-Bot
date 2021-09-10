@@ -189,7 +189,6 @@ class BotConfiguration private constructor() {
                 createAutorolesFile(autorolesF)
             }
 
-
             logger.info("Loaded config of guild $guildId")
             guildConfigsMap[guildId] = GuildConfig(
                 Json.decodeFromString(rolesF.readText()),
