@@ -2,6 +2,7 @@
 .gradle/
 build/
 .idea/
-log
+log/
 bot.properties
-config/*
+config/
+data/

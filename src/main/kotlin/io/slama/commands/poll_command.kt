@@ -1,5 +1,7 @@
 package io.slama.commands
 
+import io.slama.core.BotConfiguration
+import io.slama.core.ConfigFolders
 import io.slama.utils.EmbedColors
 import io.slama.utils.TaskScheduler
 import io.slama.utils.isTeacher
@@ -12,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -20,6 +23,8 @@ import java.util.concurrent.TimeUnit
 
 const val DEFAULT_POLL_TIMEOUT = 2L
 const val DEFAULT_POLL_LOG = false
+
+private val logger = LoggerFactory.getLogger("PollCommand")
 
 class PollCommand : ListenerAdapter() {
 
@@ -34,7 +39,6 @@ class PollCommand : ListenerAdapter() {
             event.getOption("log")?.asBoolean ?: DEFAULT_POLL_LOG,
         ).send()
     }
-
 }
 
 class Poll(
@@ -142,23 +146,27 @@ class Poll(
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
         val fileName = "poll_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
-        File(fileName).apply {
+        with(File(ConfigFolders.POLLS_DATA_ROOT)) {
+            if (!exists() || !isDirectory)
+                BotConfiguration.resetConfig()
+        }
+
+        File(ConfigFolders.POLLS_DATA_ROOT, fileName).apply {
             if (!createNewFile()) {
+                logger.error("Couldn't created poll file '$fileName'")
                 onFailSendLog()
                 return
             }
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
-                out.write(
-                    """
+                out.write("""
                     |Sondage effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.textChannel.name}
                     |
                     |$totalVoteCount ${"personne".pluralize(totalVoteCount)} ${if (totalVoteCount > 1) "ont" else "à"} voté :
                     |Question : ${question?.asString ?: "Pas de question"}
                     |
-                """.trimMargin()
-                )
+                """.trimMargin())
 
                 options.forEachIndexed { i, name ->
                     val rate = "%.2f".format(answerRate(i) * 100)

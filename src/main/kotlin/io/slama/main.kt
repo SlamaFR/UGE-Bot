@@ -3,10 +3,13 @@ package io.slama
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.stringType
-import io.slama.commands.*
-import io.slama.core.clearGuildConfigs
-import io.slama.core.configSetup
-import io.slama.core.getPresenceConfig
+import io.slama.commands.AutoRoleCommand
+import io.slama.commands.CallCommand
+import io.slama.commands.ChanGenCommand
+import io.slama.commands.KevalCommand
+import io.slama.commands.PollCommand
+import io.slama.commands.TableCommand
+import io.slama.core.BotConfiguration
 import io.slama.core.registerGlobalCommands
 import io.slama.core.registerGuildCommands
 import io.slama.events.Shusher
@@ -23,6 +26,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
+import javax.security.auth.login.LoginException
 import kotlin.system.exitProcess
 
 private val logger: Logger = LoggerFactory.getLogger("UGEBot")
@@ -30,14 +34,17 @@ private val token = Key("token", stringType)
 
 class UGEBot(token: String) : ListenerAdapter() {
 
-    private val jda = JDABuilder
-        .createDefault(token)
-        .setChunkingFilter(ChunkingFilter.ALL)
-        .addEventListeners(this)
-        .enableIntents(GatewayIntent.GUILD_MEMBERS)
-        .build()
-
-    private val presenceConfig = getPresenceConfig()
+    private val jda = try {
+        JDABuilder
+            .createDefault(token)
+            .setChunkingFilter(ChunkingFilter.ALL)
+            .addEventListeners(this)
+            .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .build()
+    } catch (e: LoginException) {
+        logger.error("Invalid token.")
+        exitProcess(1)
+    }
 
     init {
         while (true) {
@@ -47,7 +54,11 @@ class UGEBot(token: String) : ListenerAdapter() {
                     jda.shutdown()
                     exitProcess(0)
                 }
-                "reload" -> load()
+                "reload", "reset" -> {
+                    logger.warn("Reload is not reliable, consider restarting the bot if you encounter issues")
+                    load()
+                    logger.info("Reload complete!")
+                }
                 "delete-commands" -> {
                     if (command.size < 2) continue
                     command.drop(1).forEach { name ->
@@ -76,15 +87,15 @@ class UGEBot(token: String) : ListenerAdapter() {
         Shusher(jda)
         load()
         TaskScheduler.repeat(10, TimeUnit.MINUTES) {
-            val (message, type) = presenceConfig.messages.entries.random()
+            val (message, type) = BotConfiguration.presence.messages.entries.random()
             jda.presence.setPresence(Activity.of(type, message), false)
             true
         }
     }
 
     private fun load() {
+        BotConfiguration.resetConfig()
         clearAutoRoles()
-        clearGuildConfigs()
         jda.registerGlobalCommands()
         jda.guilds.forEach {
             it.loadAutoRoles()
@@ -121,7 +132,7 @@ class UGEBot(token: String) : ListenerAdapter() {
 }
 
 fun main() {
-    configSetup()
+    BotConfiguration.resetConfig()
     with(ConfigurationProperties.fromFile(File("bot.properties"))) {
         UGEBot(this[token])
     }

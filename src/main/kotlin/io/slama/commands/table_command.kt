@@ -52,41 +52,35 @@ class TableCommand : ListenerAdapter() {
                 "Cette commande permet de générer rapidement des tableaux avec des caractères ASCII."
             )
             .addField("Utilisation", "`/table <Ligne 1> <Ligne 2> ... <Ligne N>`", false)
-            .addField(
-                "Syntaxe", """
-                    |Une ligne est divisée en colonnes par le caractère `;`.
-                    |Si une ligne contient un ou plusieurs espaces, il faut l'encadrer avec des guillemets pour éviter des comportements inattendus.
-                    |Pour dessiner une case vide, sans les bordures, la cellule ne doit contenir que des espaces.
-                """.trimMargin(), false
-            )
-            .addField(
-                "Exemple 1", """
-                    |`/table ";Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
-                    |```
-                    |┌─────────┬───────────┬───────────┐
-                    |│         │ Colonne 1 │ Colonne 2 │
-                    |├─────────┼───────────┼───────────┤
-                    |│ Ligne 1 │ Val 1     │ Val 2     │
-                    |├─────────┼───────────┼───────────┤
-                    |│ ou      │ comme     │ ceci      │
-                    |└─────────┴───────────┴───────────┘
-                    |```
-                """.trimMargin(), false
-            )
-            .addField(
-                "Exemple 2", """
-                    |`/table " ;Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
-                    |```
-                    |          ┌───────────┬───────────┐
-                    |          │ Colonne 1 │ Colonne 2 │
-                    |┌─────────┼───────────┼───────────┤
-                    |│ Ligne 1 │ Val 1     │ Val 2     │
-                    |├─────────┼───────────┼───────────┤
-                    |│ ou      │ comme     │ ceci      │
-                    |└─────────┴───────────┴───────────┘
-                    |```
-                """.trimMargin(), false
-            )
+            .addField("Syntaxe", """
+                |Une ligne est divisée en colonnes par le caractère `;`.
+                |Si une ligne contient un ou plusieurs espaces, il faut l'encadrer avec des guillemets pour éviter des comportements inattendus.
+                |Pour dessiner une case vide, sans les bordures, la cellule ne doit contenir que des espaces.
+            """.trimMargin(), false)
+            .addField("Exemple 1", """
+                |`/table ";Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
+                |```
+                |┌─────────┬───────────┬───────────┐
+                |│         │ Colonne 1 │ Colonne 2 │
+                |├─────────┼───────────┼───────────┤
+                |│ Ligne 1 │ Val 1     │ Val 2     │
+                |├─────────┼───────────┼───────────┤
+                |│ ou      │ comme     │ ceci      │
+                |└─────────┴───────────┴───────────┘
+                |```
+            """.trimMargin(), false)
+            .addField("Exemple 2", """
+                |`/table " ;Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
+                |```
+                |          ┌───────────┬───────────┐
+                |          │ Colonne 1 │ Colonne 2 │
+                |┌─────────┼───────────┼───────────┤
+                |│ Ligne 1 │ Val 1     │ Val 2     │
+                |├─────────┼───────────┼───────────┤
+                |│ ou      │ comme     │ ceci      │
+                |└─────────┴───────────┴───────────┘
+                |```
+            """.trimMargin(), false)
             .setColor(EmbedColors.BLUE)
             .build())
             .queue()
@@ -95,6 +89,27 @@ class TableCommand : ListenerAdapter() {
 }
 
 class ASCIITable {
+
+    companion object {
+
+        /**
+         * Represents chars composing the ASCII table `<bottom><up><left><right>`.
+         *
+         * Watch out, speaking in Minecraft Enchant Table is mandatory!
+         */
+        private val CHARS = arrayOf(
+            arrayOf(
+                arrayOf(charArrayOf(' ', '╶'), charArrayOf('╴', '─')),
+                arrayOf(charArrayOf('╵', '└'), charArrayOf('┘', '┴'))
+            ),
+            arrayOf(
+                arrayOf(charArrayOf('╷', '┌'), charArrayOf('┐', '┬')),
+                arrayOf(charArrayOf('│', '├'), charArrayOf('┤', '┼'))
+            )
+        )
+        private val HORIZONTAL = CHARS[0][0][1][1]
+        private val VERTICAL = CHARS[1][1][0][0]
+    }
 
     /**
      * Represents a list of rows, themselves representing a list of cells.
@@ -221,7 +236,7 @@ class ASCIITable {
     }
 
     /**
-     * @return the char at the intersection of the north west edge of the cell at [`row`, `col`].
+     * @return the char at the intersection of the north-west edge of the cell at [`row`, `col`].
      */
     private fun getIntersect(row: Int, col: Int): Char {
         val up = if (empty(row - 1, col - 1) && empty(row - 1, col)) 0 else 1
@@ -248,26 +263,5 @@ class ASCIITable {
         }
         builder.append(getHorizontalLine(row))
         return builder.toString()
-    }
-
-    companion object {
-
-        /**
-         * Represents chars composing the ASCII table `<bottom><up><left><right>`.
-         *
-         * Watch out, speaking in Minecraft Enchant Table is mandatory!
-         */
-        private val CHARS = arrayOf(
-            arrayOf(
-                arrayOf(charArrayOf(' ', '╶'), charArrayOf('╴', '─')),
-                arrayOf(charArrayOf('╵', '└'), charArrayOf('┘', '┴'))
-            ),
-            arrayOf(
-                arrayOf(charArrayOf('╷', '┌'), charArrayOf('┐', '┬')),
-                arrayOf(charArrayOf('│', '├'), charArrayOf('┤', '┼'))
-            )
-        )
-        private val HORIZONTAL = CHARS[0][0][1][1]
-        private val VERTICAL = CHARS[1][1][0][0]
     }
 }

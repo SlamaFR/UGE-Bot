@@ -1,7 +1,7 @@
 package io.slama.events
 
 import io.slama.core.AutoRoleDTO
-import io.slama.core.getConfigOrNull
+import io.slama.core.BotConfiguration
 import io.slama.utils.replyError
 import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.EmbedBuilder
@@ -91,13 +91,13 @@ fun Guild.createAutoRoleIfAbsent(name: String, config: AutoRoleDTO): AutoRole? {
 }
 
 fun Guild.createAutoRoleIfAbsent(name: String): AutoRole? {
-    val config = getConfigOrNull() ?: return null
+    val config = BotConfiguration.guilds[idLong] ?: return null
     val autoRoleDTO = config.autoRoles[name] ?: return null
     return createAutoRoleIfAbsent(name, autoRoleDTO)
 }
 
 fun Guild.loadAutoRoles() {
-    val config = getConfigOrNull() ?: return
+    val config = BotConfiguration.guilds[idLong] ?: return
     config.autoRoles.forEach { (name, autoRole) ->
         createAutoRoleIfAbsent(name, autoRole)
     }

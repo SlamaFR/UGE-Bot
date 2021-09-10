@@ -1,5 +1,7 @@
 package io.slama.commands
 
+import io.slama.core.BotConfiguration
+import io.slama.core.ConfigFolders
 import io.slama.utils.EmbedColors
 import io.slama.utils.TaskScheduler
 import io.slama.utils.isTeacher
@@ -11,12 +13,14 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_TIMEOUT = 5L
+private val logger = LoggerFactory.getLogger("CallCommand")
 
 class CallCommand : ListenerAdapter() {
 
@@ -27,20 +31,19 @@ class CallCommand : ListenerAdapter() {
 
         Call(event, event.getOption("timeout")?.asLong ?: DEFAULT_TIMEOUT)
     }
-
 }
 
 private class Call(
     private val event: SlashCommandEvent,
     private val timeout: Long = DEFAULT_TIMEOUT
 ) : ListenerAdapter() {
-
     private val students = mutableSetOf<String>()
     private val uniqueId = "${event.user.id}${System.currentTimeMillis()}"
     private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}"
 
     init {
         event.jda.addEventListener(this)
+        logger.info("${event.member} initiated a call in ${event.channel} with a timeout of $timeout minutes")
 
         event.replyEmbeds(EmbedBuilder()
             .setTitle(embedTitle)
@@ -69,9 +72,14 @@ private class Call(
         val calendar = Calendar.getInstance()
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
-        val fileName = "${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+        val fileName = "call_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
-        File(fileName).apply {
+        with(File(ConfigFolders.CALLS_DATA_ROOT)) {
+            if (!exists() || !isDirectory)
+                BotConfiguration.resetConfig()
+        }
+
+        File(ConfigFolders.CALLS_DATA_ROOT, fileName).apply {
             if (!createNewFile()) {
                 onResultFailed()
                 return
@@ -79,20 +87,21 @@ private class Call(
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
-                out.write(
-                    """
+                out.write("""
                     |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "un certain A. N. Onym"} dans le salon #${event.textChannel.name}
                     |
                     |${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :
                     |${students.joinToString("\n") { " - $it" }}
                     |
-                """.trimMargin()
-                )
+                """.trimMargin())
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
                 it.sendFile(this).queue({ onResultSuccess() }, { onResultFailed() })
-            } ?: onResultFailed()
+            } ?: run {
+                logger.error("Couldn't created call file '$fileName'")
+                onResultFailed()
+            }
         }
     }
 
@@ -111,17 +120,11 @@ private class Call(
     private fun onResultFailed() {
         event.hook.editOriginalEmbeds(EmbedBuilder()
             .setTitle("Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
-            .setDescription(
-                """
-                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
-                    "présente".pluralize(
-                        students.size
-                    )
-                }.
+            .setDescription("""
+                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.
                 |
                 |**Une erreur est survenue lors de l'envoi du fichier !**
-            """.trimMargin()
-            )
+            """.trimMargin())
             .setColor(EmbedColors.RED)
             .build())
             .queue()
@@ -129,5 +132,4 @@ private class Call(
             Button.danger("0", "Appel terminé").withDisabled(true)))
             .queue()
     }
-
 }

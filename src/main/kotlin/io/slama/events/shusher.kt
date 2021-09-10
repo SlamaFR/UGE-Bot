@@ -1,6 +1,7 @@
 package io.slama.events
 
-import io.slama.core.getShusherConfig
+import io.slama.core.BotConfiguration
+import io.slama.core.ConfigFolders
 import io.slama.utils.isAdmin
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -13,6 +14,7 @@ import java.io.File
 import kotlin.random.Random
 
 private const val SHUSHER_TRIGGER_THRESHOLD = .009
+private const val SHUSHER_FILE = "shusherRolesIds"
 
 private val logger: Logger = LoggerFactory.getLogger("Shusher")
 
@@ -22,11 +24,10 @@ class Shusher(
 
     private val roles = mutableMapOf<String, String>()
     private val random = Random(System.currentTimeMillis())
-    private val config = getShusherConfig()
 
     init {
         jda.addEventListener(this)
-        val file = File("data/shusherRolesIds")
+        val file = File(ConfigFolders.DATA_ROOT, SHUSHER_FILE)
         if (file.exists()) {
             file.useLines { lines ->
                 lines.map {
@@ -48,7 +49,7 @@ class Shusher(
 
             if (member.roles.map { it.id }.any { roles[event.guild.id] == it }) {
                 if (random.nextFloat() <= SHUSHER_TRIGGER_THRESHOLD) {
-                    event.channel.sendMessage(config.sentences.random()).queue()
+                    event.channel.sendMessage(BotConfiguration.shusher.sentences.random()).queue()
                 }
             }
         }
@@ -63,10 +64,10 @@ class Shusher(
             event.message.mentionedMembers.forEach { member ->
                 if (member.roles.contains(role)) {
                     event.guild.removeRoleFromMember(member, role).queue()
-                    event.channel.sendMessage("Aller c'est parti, ${member.asMention} je tiens ta veste !").queue()
+                    event.channel.sendMessage("C'est bon ${member.asMention}, je te laisse tranquille...").queue()
                 } else {
                     event.guild.addRoleToMember(member, role).queue()
-                    event.channel.sendMessage("C'est bon ${member.asMention}, je te laisse tranquille...").queue()
+                    event.channel.sendMessage("Aller c'est parti, ${member.asMention} je tiens ta veste !").queue()
                 }
             }
         }
@@ -91,7 +92,7 @@ class Shusher(
     }
 
     private fun save() {
-        val file = File("data/shusherRolesIds")
+        val file = File(ConfigFolders.DATA_ROOT, SHUSHER_FILE)
         if (!file.exists()) file.createNewFile()
         file.writeText("")
         roles.forEach { (guildId, roleId) ->

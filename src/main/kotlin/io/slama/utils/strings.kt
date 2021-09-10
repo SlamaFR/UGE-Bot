@@ -2,11 +2,10 @@ package io.slama.utils
 
 import java.util.regex.Pattern
 
-
-fun String.pluralize(count: Number) =
+fun String.pluralize(count: Number): String =
     pluralize(count, null)
 
-fun String.pluralize(count: Number, form: String?) =
+fun String.pluralize(count: Number, form: String?): String =
     if (count.toLong() > 1) form ?: "${this}s"
     else this
 

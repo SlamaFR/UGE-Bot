@@ -1,6 +1,9 @@
 package io.slama.commands
 
 import com.notkamui.keval.Keval
+import com.notkamui.keval.KevalInvalidExpressionException
+import com.notkamui.keval.KevalInvalidSymbolException
+import com.notkamui.keval.KevalZeroDivisionException
 import io.slama.utils.EmbedColors
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
@@ -20,6 +23,7 @@ import kotlin.math.sqrt
 import kotlin.math.tan
 
 class KevalCommand : ListenerAdapter() {
+
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "eval") return
         if (event.guild == null) return
@@ -30,15 +34,39 @@ class KevalCommand : ListenerAdapter() {
             return
         }
 
-        val res = keval.eval(expr.asString)
-        event.replyEmbeds(EmbedBuilder()
+        val embed = EmbedBuilder()
             .setTitle("Eval")
-            .addField("Expression", expr.asString, false)
-            .addField("Résultat", res.toString(), false)
             .setFooter("Powered by Keval.")
-            .setColor(EmbedColors.BLUE)
-            .build())
-            .queue()
+            .addField("Expression", expr.asString, false)
+
+        try {
+            val res = keval.eval(expr.asString)
+            embed.addField("Résultat", res.toString(), false)
+                .setColor(EmbedColors.BLUE)
+        } catch (e: KevalInvalidSymbolException) {
+            embed.clearFields().addField("Erreur", """
+                Symbol invalide : `${e.invalidSymbol}`
+                ```
+                ${e.expression}
+                ${" ".repeat(e.position)}^
+                ```
+            """.trimIndent(), false)
+                .setColor(EmbedColors.RED)
+        } catch (e: KevalInvalidExpressionException) {
+            embed.clearFields().addField("Erreur", """
+                Expression invalide :
+                ```
+                ${e.expression}
+                ${" ".repeat(e.position)}^
+                ```
+            """.trimIndent(), false)
+                .setColor(EmbedColors.RED)
+        } catch (e: KevalZeroDivisionException) {
+            embed.addField("Erreur", "Division par zéro", false)
+                .setColor(EmbedColors.RED)
+        } finally {
+            event.replyEmbeds(embed.build()).queue()
+        }
     }
 }
 
