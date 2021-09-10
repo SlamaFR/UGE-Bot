@@ -26,6 +26,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
+import javax.security.auth.login.LoginException
 import kotlin.system.exitProcess
 
 private val logger: Logger = LoggerFactory.getLogger("UGEBot")
@@ -33,12 +34,17 @@ private val token = Key("token", stringType)
 
 class UGEBot(token: String) : ListenerAdapter() {
 
-    private val jda = JDABuilder
-        .createDefault(token)
-        .setChunkingFilter(ChunkingFilter.ALL)
-        .addEventListeners(this)
-        .enableIntents(GatewayIntent.GUILD_MEMBERS)
-        .build()
+    private val jda = try {
+        JDABuilder
+            .createDefault(token)
+            .setChunkingFilter(ChunkingFilter.ALL)
+            .addEventListeners(this)
+            .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .build()
+    } catch (e: LoginException) {
+        System.err.println("Invalid token")
+        exitProcess(1)
+    }
 
     init {
         while (true) {
