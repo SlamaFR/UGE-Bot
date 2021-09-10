@@ -42,7 +42,7 @@ class UGEBot(token: String) : ListenerAdapter() {
             .enableIntents(GatewayIntent.GUILD_MEMBERS)
             .build()
     } catch (e: LoginException) {
-        System.err.println("Invalid token")
+        logger.error("Invalid token.")
         exitProcess(1)
     }
 
