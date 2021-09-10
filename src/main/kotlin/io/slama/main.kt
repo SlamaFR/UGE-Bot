@@ -40,8 +40,6 @@ class UGEBot(token: String) : ListenerAdapter() {
         .enableIntents(GatewayIntent.GUILD_MEMBERS)
         .build()
 
-    private val presenceConfig = BotConfiguration.presence
-
     init {
         while (true) {
             val command = readLine()?.split(" ") ?: listOf("default")
@@ -50,7 +48,7 @@ class UGEBot(token: String) : ListenerAdapter() {
                     jda.shutdown()
                     exitProcess(0)
                 }
-                "reload", "reset" -> BotConfiguration.resetConfig()
+                "reload", "reset" -> load()
                 "delete-commands" -> {
                     if (command.size < 2) continue
                     command.drop(1).forEach { name ->
@@ -79,15 +77,15 @@ class UGEBot(token: String) : ListenerAdapter() {
         Shusher(jda)
         load()
         TaskScheduler.repeat(10, TimeUnit.MINUTES) {
-            val (message, type) = presenceConfig.messages.entries.random()
+            val (message, type) = BotConfiguration.presence.messages.entries.random()
             jda.presence.setPresence(Activity.of(type, message), false)
             true
         }
     }
 
     private fun load() {
-        clearAutoRoles()
         BotConfiguration.resetConfig()
+        clearAutoRoles()
         jda.registerGlobalCommands()
         jda.guilds.forEach {
             it.loadAutoRoles()
