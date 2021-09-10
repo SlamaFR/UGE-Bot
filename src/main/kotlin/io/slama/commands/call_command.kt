@@ -13,12 +13,14 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_TIMEOUT = 5L
+private val logger = LoggerFactory.getLogger("CallCommand")
 
 class CallCommand : ListenerAdapter() {
 
@@ -43,6 +45,7 @@ private class Call(
 
     init {
         event.jda.addEventListener(this)
+        logger.info("${event.member} initiated a call in ${event.channel} with a timeout of $timeout minutes")
 
         event.replyEmbeds(EmbedBuilder()
             .setTitle(embedTitle)
@@ -99,7 +102,10 @@ private class Call(
 
             event.member?.user?.openPrivateChannel()?.queue {
                 it.sendFile(this).queue({ onResultSuccess() }, { onResultFailed() })
-            } ?: onResultFailed()
+            } ?: run {
+                logger.error("Couldn't created call file '$fileName'")
+                onResultFailed()
+            }
         }
     }
 
