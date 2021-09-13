@@ -21,6 +21,7 @@ private val logger: Logger = LoggerFactory.getLogger("AutoRolesManager")
 class AutoRole(
     private val config: AutoRoleDTO,
     private val name: String,
+    private val guildId: String,
     val jda: JDA,
 ) : ListenerAdapter() {
 
@@ -52,6 +53,7 @@ class AutoRole(
     override fun onButtonClick(event: ButtonClickEvent) {
         if (!event.componentId.startsWith(name)) return
         val guild = event.guild ?: return
+        if (guild.id != guildId) return
         val member = event.member ?: return
 
         val index = event.componentId.split(".")[1].toInt()
@@ -82,7 +84,7 @@ fun Guild.createAutoRoleIfAbsent(name: String, config: AutoRoleDTO): AutoRole? {
     val guildAutoRoles = autoRoles.getOrPut(idLong) { mutableMapOf() }
 
     if (name !in guildAutoRoles.keys) {
-        val autoRole = AutoRole(config, name, jda)
+        val autoRole = AutoRole(config, name, id, jda)
         guildAutoRoles[name] = autoRole
         logger.info("Successfully created AutoRole \"$name\" on $id")
         return autoRole
