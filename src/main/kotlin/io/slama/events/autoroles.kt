@@ -21,6 +21,7 @@ private val logger: Logger = LoggerFactory.getLogger("AutoRolesManager")
 class AutoRole(
     private val config: AutoRoleDTO,
     private val name: String,
+    private val guild: Guild,
     val jda: JDA,
 ) : ListenerAdapter() {
 
@@ -51,13 +52,14 @@ class AutoRole(
 
     override fun onButtonClick(event: ButtonClickEvent) {
         if (!event.componentId.startsWith(name)) return
-        val guild = event.guild ?: return
+        val currGuild = event.guild ?: return
+        if (currGuild.id != guild.id) return
         val member = event.member ?: return
 
         val index = event.componentId.split(".")[1].toInt()
         if (index >= roles.size) return
 
-        val role = guild.getRoleById(roles[index])
+        val role = currGuild.getRoleById(roles[index])
         if (role == null) {
             event.replyError("Le rôle demandé est introuvable. Contactez l'administrateur.")
                 .setEphemeral(true)
@@ -66,7 +68,7 @@ class AutoRole(
         }
         if (role in member.roles) return
 
-        guild.addRoleToMember(event.user.id, role).queue {
+        currGuild.addRoleToMember(event.user.id, role).queue {
             event.replySuccess("Le rôle ${role.asMention} vous a été attribué !")
                 .setEphemeral(true)
                 .queue()
@@ -82,7 +84,7 @@ fun Guild.createAutoRoleIfAbsent(name: String, config: AutoRoleDTO): AutoRole? {
     val guildAutoRoles = autoRoles.getOrPut(idLong) { mutableMapOf() }
 
     if (name !in guildAutoRoles.keys) {
-        val autoRole = AutoRole(config, name, jda)
+        val autoRole = AutoRole(config, name, this, jda)
         guildAutoRoles[name] = autoRole
         logger.info("Successfully created AutoRole \"$name\" on $id")
         return autoRole
