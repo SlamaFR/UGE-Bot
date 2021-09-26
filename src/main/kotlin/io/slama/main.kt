@@ -15,6 +15,7 @@ import io.slama.core.registerGuildCommands
 import io.slama.events.Shusher
 import io.slama.events.clearAutoRoles
 import io.slama.events.loadAutoRoles
+import io.slama.managers.MailManager
 import io.slama.utils.TaskScheduler
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -46,6 +47,8 @@ class UGEBot(token: String) : ListenerAdapter() {
         exitProcess(1)
     }
 
+    private lateinit var mailManager: MailManager
+
     init {
         while (true) {
             val command = readLine()?.split(" ") ?: listOf("default")
@@ -56,6 +59,7 @@ class UGEBot(token: String) : ListenerAdapter() {
                 }
                 "reload", "reset" -> {
                     logger.warn("Reload is not reliable, consider restarting the bot if you encounter issues")
+                    mailManager.close()
                     load()
                     logger.info("Reload complete!")
                 }
@@ -95,6 +99,7 @@ class UGEBot(token: String) : ListenerAdapter() {
 
     private fun load() {
         BotConfiguration.resetConfig()
+        mailManager = MailManager(BotConfiguration.mail, jda)
         clearAutoRoles()
         jda.registerGlobalCommands()
         jda.guilds.forEach {
