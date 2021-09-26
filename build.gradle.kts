@@ -37,7 +37,7 @@ dependencies {
     // Others
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("com.notkamui.libs:keval:0.7.5")
-    implementation("com.notkamui.libs:kourrier:0.2.1")
+    implementation("com.notkamui.libs:kourrier:0.2.2")
     implementation("com.sun.mail:javax.mail:1.6.2")
 }
 

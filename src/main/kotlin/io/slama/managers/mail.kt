@@ -1,6 +1,8 @@
 package io.slama.managers
 
 import com.notkamui.kourrier.core.Kourrier
+import com.notkamui.kourrier.core.KourrierAuthenticationException
+import com.notkamui.kourrier.core.KourrierConnectException
 import com.notkamui.kourrier.core.KourrierConnectionInfo
 import com.notkamui.kourrier.core.KourrierIMAPFolderStateException
 import com.notkamui.kourrier.core.KourrierIMAPSessionStateException
@@ -55,8 +57,11 @@ class MailManager(config: MailConfig, jda: JDA) {
         Kourrier.imap(connectionInfo).also {
             logger.info("Opened IMAP session")
         }
-    } catch (e: AuthenticationFailedException) {
-        logger.error("Authentication to mail server failed. Mail feature unavailable.")
+    } catch (e: KourrierAuthenticationException) {
+        logger.error("Authentication to mail server failed. Mail features unavailable.")
+        null
+    } catch (e: KourrierConnectException) {
+        logger.error("Unknown host mail server. Mail features unavailable.")
         null
     }
 
@@ -70,7 +75,7 @@ class MailManager(config: MailConfig, jda: JDA) {
             logger.info("Opened INBOX folder at ${connectionInfo.username}")
         }
     } catch (e: KourrierIMAPSessionStateException) {
-        logger.error("Couldn't open INBOX since the session is closed. Mail feature unavailable.")
+        logger.error("Couldn't open INBOX since the session is closed. Mail features unavailable.")
         null
     }
 
