@@ -14,12 +14,14 @@ import com.notkamui.kourrier.imap.imap
 import io.slama.core.MailConfig
 import io.slama.utils.courseID
 import io.slama.utils.courseName
+import io.slama.utils.getCourseChannelByID
 import io.slama.utils.isFromMoodle
 import io.slama.utils.senderName
 import java.awt.Color
 import javax.mail.AuthenticationFailedException
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -115,7 +117,13 @@ private fun KourrierIMAPMessage.dispatch(jda: JDA) {
     var avatarUrl: String? = null
 
     for (guild in jda.guilds) {
-        // TODO obtain channel, color and avatarUrl
+        channel = guild.getCourseChannelByID(courseID) ?: continue
+        if (senderName.isEmpty()) break
+        val members: List<Member> = guild.retrieveMembersByPrefix(senderName, 1).get()
+        if (members.isEmpty()) break
+        color = members.first().color
+        avatarUrl = members.first().user.avatarUrl
+        break
     }
 
     if (channel == null) {
