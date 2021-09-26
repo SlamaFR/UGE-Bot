@@ -1,14 +1,26 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     kotlin("jvm") version "1.5.30"
     kotlin("plugin.serialization") version "1.5.20"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
     java
     application
 }
 
 group = "io.slama"
 version = "2.0.2"
+
+ktlint {
+    debug.set(true)
+    outputToConsole.set(true)
+    disabledRules.add("filename")
+    reporters {
+        reporter(ReporterType.CHECKSTYLE)
+        reporter(ReporterType.PLAIN)
+    }
+}
 
 repositories {
     mavenCentral()
