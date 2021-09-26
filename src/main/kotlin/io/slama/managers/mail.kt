@@ -12,13 +12,22 @@ import com.notkamui.kourrier.imap.KourrierIMAPMessage
 import com.notkamui.kourrier.imap.KourrierIMAPSession
 import com.notkamui.kourrier.imap.imap
 import io.slama.core.MailConfig
+import io.slama.utils.courseID
+import io.slama.utils.courseName
+import io.slama.utils.isFromMoodle
+import io.slama.utils.senderName
+import java.awt.Color
 import javax.mail.AuthenticationFailedException
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.TextChannel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 private val logger: Logger = LoggerFactory.getLogger("MailManager")
+private const val SEPARATOR = "---------------------------------------------------------------------"
 
-class MailManager(config: MailConfig) {
+class MailManager(config: MailConfig, jda: JDA) {
     private val connectionInfo = KourrierConnectionInfo(
         config.hostname,
         config.port,
@@ -30,7 +39,13 @@ class MailManager(config: MailConfig) {
 
     private val dispatcher: KourrierFolderListener = object : KourrierFolderAdapter() {
         override fun onMessageReceived(message: KourrierIMAPMessage) {
-            // TODO dispatch
+            logger.info("Received a new mail !")
+            if (!message.isFromMoodle) {
+                logger.info("Not from Moodle, aborting...")
+                return
+            }
+            logger.info("Mail is from Moodle !")
+            message.dispatch(jda)
         }
     }
 
@@ -39,7 +54,7 @@ class MailManager(config: MailConfig) {
             logger.info("Opened IMAP session")
         }
     } catch (e: AuthenticationFailedException) {
-        logger.error("Authentication to mail server failed")
+        logger.error("Authentication to mail server failed. Mail feature unavailable.")
         null
     }
 
@@ -53,7 +68,7 @@ class MailManager(config: MailConfig) {
             logger.info("Opened INBOX folder at ${connectionInfo.username}")
         }
     } catch (e: KourrierIMAPSessionStateException) {
-        logger.error("Couldn't open INBOX since the session is closed")
+        logger.error("Couldn't open INBOX since the session is closed. Mail feature unavailable.")
         null
     }
 
@@ -62,9 +77,9 @@ class MailManager(config: MailConfig) {
             session?.open()
             inbox?.open(KourrierFolderMode.ReadOnly)
         } catch (e: KourrierIMAPSessionStateException) {
-            logger.info("Tried to open an opened session")
+            logger.warn("Tried to open an opened session")
         } catch (e: KourrierIMAPFolderStateException) {
-            logger.info("Tried to open an opened folder")
+            logger.warn("Tried to open an opened folder")
         }
     }
 
@@ -73,9 +88,50 @@ class MailManager(config: MailConfig) {
             inbox?.close()
             session?.close()
         } catch (e: KourrierIMAPSessionStateException) {
-            logger.info("Tried to close an closed session")
+            logger.warn("Tried to close an closed session")
         } catch (e: KourrierIMAPFolderStateException) {
-            logger.info("Tried to close an closed folder")
+            logger.warn("Tried to close an closed folder")
         }
     }
+}
+
+private fun KourrierIMAPMessage.dispatch(jda: JDA) {
+    val content = with(body.split(SEPARATOR)) {
+        if (size < 2) body.trim()
+        else this[1].trim()
+    }
+    val courseID = courseID
+
+    if (courseID == null) {
+        logger.warn("No course ID detected, aborting...")
+        return
+    }
+    logger.info("Course ID detected ! ($courseID)")
+
+    val courseName = courseName ?: "Annonce"
+
+    var channel: TextChannel? = null
+    var color: Color? = null
+    var avatarUrl: String? = null
+
+    for (guild in jda.guilds) {
+        // TODO obtain channel, color and avatarUrl
+    }
+
+    if (channel == null) {
+        logger.warn("No text channel found, aborting...")
+        return
+    }
+
+    logger.info("Sender name: $senderName")
+    logger.info("Course name: $courseName")
+    logger.info("Sending e-Learning announcement !")
+    channel.sendMessage(EmbedBuilder()
+        .setTitle(courseName)
+        .setAuthor(senderName, null, avatarUrl)
+        .setDescription(content)
+        .setColor(color)
+        .setFooter("Via e-Learning - Powered by Kourrier")
+        .build())
+        .queue()
 }

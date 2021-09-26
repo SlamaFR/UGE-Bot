@@ -43,10 +43,10 @@ val KourrierIMAPMessage.senderName: String
         if (" " in name) {
             val fullName = name.split(" ")
             if (fullName[0] == fullName[0].uppercase()) {
-                return "${fullName[1]} ${fullName[0]}".capitalize()
+                return "${fullName[1]} ${fullName[0]}".capitalize().trim()
             }
         }
-        return name
+        return name.trim()
     }
 
 val KourrierIMAPMessage.courseName: String?
