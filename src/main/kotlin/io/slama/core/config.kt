@@ -6,6 +6,8 @@ import io.slama.core.ConfigFolders.CONFIG_ROOT
 import io.slama.core.ConfigFolders.DATA_ROOT
 import io.slama.core.ConfigFolders.GUILD_CONFIG_ROOT
 import io.slama.core.ConfigFolders.POLLS_DATA_ROOT
+import java.io.File
+import java.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -13,8 +15,6 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.io.IOException
 
 private val logger = LoggerFactory.getLogger("Configuration")
 
@@ -44,6 +44,12 @@ class BotConfiguration private constructor() {
 
         val presence: PresenceConfig
             get() = innerConfig!!.presenceConfig /*
+            Explicitly want an NPE if it's null here,
+            because it can only happen if the JVM is literally dying
+            */
+
+        val mail: MailConfig
+            get() = innerConfig!!.mailConfig /*
             Explicitly want an NPE if it's null here,
             because it can only happen if the JVM is literally dying
             */
@@ -143,6 +149,18 @@ class BotConfiguration private constructor() {
                 }
             """.trimIndent())
         }
+
+        private fun createMailFile(file: File) {
+            file.createNewFile()
+            file.writeText("""
+                {
+                  "hostname": "mail.server.com",
+                  "port": 993,
+                  "username": "john.doe@server.com",
+                  "password": "1234"
+                }
+            """.trimIndent())
+        }
     }
 
     class GuildConfigManager {
@@ -221,6 +239,20 @@ class BotConfiguration private constructor() {
         logger.info("Loaded presence config")
         Json.decodeFromString(presenceF.readText())
     }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private val mailConfig: MailConfig by lazy {
+        with(File(CONFIG_ROOT)) {
+            if (!exists() || !isDirectory)
+                resetConfig()
+        }
+        val mailF = File("${CONFIG_ROOT}mail.json")
+        if (!mailF.exists()) {
+            createMailFile(mailF)
+        }
+        logger.info("Loaded mail config")
+        Json.decodeFromString(mailF.readText())
+    }
 }
 
 @Serializable
@@ -262,6 +294,16 @@ data class ShusherConfig(
 @Serializable
 data class PresenceConfig(
     val messages: Map<String, Activity.ActivityType>,
+)
+
+@Serializable
+data class MailConfig(
+    val hostname: String,
+    val port: Int,
+    val username: String,
+    val password: String,
+    val debugMode: Boolean = false,
+    val enableSSL: Boolean = true,
 )
 
 data class GuildConfig(
