@@ -6,6 +6,8 @@ import io.slama.core.ConfigFolders.CONFIG_ROOT
 import io.slama.core.ConfigFolders.DATA_ROOT
 import io.slama.core.ConfigFolders.GUILD_CONFIG_ROOT
 import io.slama.core.ConfigFolders.POLLS_DATA_ROOT
+import java.io.File
+import java.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -13,8 +15,6 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.io.IOException
 
 private val logger = LoggerFactory.getLogger("Configuration")
 
@@ -94,25 +94,29 @@ class BotConfiguration private constructor() {
 
         private fun createRolesFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "adminRoleID": 0,
                   "managerRoleID": 1,
                   "teacherRoleID": 2,
                   "studentRoleID": 3
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         private fun createChannelsFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "announcementsChannelID": 0,
                   "moodleAnnouncementsChannelsIDs": {
                   }
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         private fun createAutorolesFile(file: File) {
@@ -122,18 +126,21 @@ class BotConfiguration private constructor() {
 
         private fun createShusherFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "sentences": [
                     "Please stop talking..."
                   ]
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         private fun createPresenceFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "messages": {
                     "something": "DEFAULT",
@@ -141,7 +148,8 @@ class BotConfiguration private constructor() {
                     "some other thing": "LISTENING"
                   }
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
     }
 

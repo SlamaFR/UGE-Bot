@@ -42,14 +42,13 @@ dependencies {
     implementation("net.dv8tion:JDA:4.2.1_270") {
         exclude("opus-java")
     }
-    implementation("ch.qos.logback:logback-classic:1.2.5")
-    implementation("ch.qos.logback:logback-core:1.2.5")
+    implementation("ch.qos.logback:logback-classic:1.2.6")
+    implementation("ch.qos.logback:logback-core:1.2.6")
     implementation("org.slf4j:slf4j-api:1.7.32")
 
     // Others
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("com.notkamui.libs:keval:0.7.5")
-
 }
 
 tasks.test {

@@ -5,9 +5,6 @@ import com.notkamui.keval.KevalInvalidExpressionException
 import com.notkamui.keval.KevalInvalidSymbolException
 import com.notkamui.keval.KevalZeroDivisionException
 import io.slama.utils.EmbedColors
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.atan
@@ -21,6 +18,9 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class KevalCommand : ListenerAdapter() {
 
@@ -44,22 +44,30 @@ class KevalCommand : ListenerAdapter() {
             embed.addField("Résultat", res.toString(), false)
                 .setColor(EmbedColors.BLUE)
         } catch (e: KevalInvalidSymbolException) {
-            embed.clearFields().addField("Erreur", """
+            embed.clearFields().addField(
+                "Erreur",
+                """
                 Symbol invalide : `${e.invalidSymbol}`
                 ```
                 ${e.expression}
                 ${" ".repeat(e.position)}^
                 ```
-            """.trimIndent(), false)
+                """.trimIndent(),
+                false
+            )
                 .setColor(EmbedColors.RED)
         } catch (e: KevalInvalidExpressionException) {
-            embed.clearFields().addField("Erreur", """
+            embed.clearFields().addField(
+                "Erreur",
+                """
                 Expression invalide :
                 ```
                 ${e.expression}
                 ${" ".repeat(e.position)}^
                 ```
-            """.trimIndent(), false)
+                """.trimIndent(),
+                false
+            )
                 .setColor(EmbedColors.RED)
         } catch (e: KevalZeroDivisionException) {
             embed.addField("Erreur", "Division par zéro", false)
