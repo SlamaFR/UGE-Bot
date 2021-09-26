@@ -54,6 +54,7 @@ class UGEBot(token: String) : ListenerAdapter() {
             val command = readLine()?.split(" ") ?: listOf("default")
             when (command[0]) {
                 "die" -> {
+                    mailManager.close()
                     jda.shutdown()
                     exitProcess(0)
                 }
@@ -63,6 +64,8 @@ class UGEBot(token: String) : ListenerAdapter() {
                     load()
                     logger.info("Reload complete!")
                 }
+                "mail-close" -> mailManager.close()
+                "mail-open" -> mailManager.reOpen()
                 "delete-commands" -> {
                     if (command.size < 2) continue
                     command.drop(1).forEach { name ->

@@ -83,6 +83,8 @@ class MailManager(config: MailConfig, jda: JDA) {
         try {
             session?.open()
             inbox?.open(KourrierFolderMode.ReadOnly)
+            logger.info("Re-opened session and INBOX folder")
+            logger.warn("Folder listener may take time to restart again")
         } catch (e: KourrierIMAPSessionStateException) {
             logger.warn("Tried to open an opened session")
         } catch (e: KourrierIMAPFolderStateException) {
@@ -94,6 +96,7 @@ class MailManager(config: MailConfig, jda: JDA) {
         try {
             inbox?.close()
             session?.close()
+            logger.info("Closed session and INBOX folder")
         } catch (e: KourrierIMAPSessionStateException) {
             logger.warn("Tried to close an closed session")
         } catch (e: KourrierIMAPFolderStateException) {
