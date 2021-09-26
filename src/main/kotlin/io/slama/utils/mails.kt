@@ -1,6 +1,19 @@
 package io.slama.utils
 
 import com.notkamui.kourrier.imap.KourrierIMAPMessage
+import javax.mail.internet.MimeUtility
+import javax.mail.internet.ParseException
+
+fun String.fromRFC2047(): String = this
+    .replace("[\n\r\t]".toRegex(), "")
+    .split(" ")
+    .joinToString(transform = {
+        try {
+            MimeUtility.decodeWord(it)
+        } catch (e: ParseException) {
+            "$it "
+        }
+    }).trim()
 
 val KourrierIMAPMessage.isFromMoodle: Boolean
     get() {
