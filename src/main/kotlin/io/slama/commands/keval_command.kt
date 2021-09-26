@@ -5,6 +5,9 @@ import com.notkamui.keval.KevalInvalidExpressionException
 import com.notkamui.keval.KevalInvalidSymbolException
 import com.notkamui.keval.KevalZeroDivisionException
 import io.slama.utils.EmbedColors
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.atan
@@ -18,9 +21,6 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class KevalCommand : ListenerAdapter() {
 

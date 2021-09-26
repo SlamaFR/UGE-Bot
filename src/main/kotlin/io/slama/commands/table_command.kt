@@ -3,10 +3,10 @@ package io.slama.commands
 import io.slama.utils.EmbedColors
 import io.slama.utils.replyWarning
 import io.slama.utils.splitArgs
-import java.util.Collections
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.util.Collections
 
 class TableCommand : ListenerAdapter() {
 

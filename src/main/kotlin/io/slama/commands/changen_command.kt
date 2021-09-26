@@ -3,10 +3,6 @@ package io.slama.commands
 import io.slama.core.ConfigFolders
 import io.slama.utils.isAdmin
 import io.slama.utils.replySuccess
-import java.io.File
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.concurrent.schedule
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
@@ -15,6 +11,10 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.concurrent.schedule
 
 const val INITIAL_DELETION_TIMEOUT = 150 * 1000L
 const val IMMINENT_DELETION_TIMEOUT = 30 * 1000L
