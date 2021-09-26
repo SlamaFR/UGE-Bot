@@ -4,8 +4,10 @@ import com.notkamui.kourrier.imap.KourrierIMAPMessage
 import javax.mail.internet.MimeUtility
 import javax.mail.internet.ParseException
 
+private const val WHITESPACE = "[\n\r\t]"
+
 fun String.fromRFC2047(): String = this
-    .replace("[\n\r\t]".toRegex(), "")
+    .replace(WHITESPACE.toRegex(), "")
     .split(" ")
     .joinToString(transform = {
         try {
@@ -27,3 +29,37 @@ val KourrierIMAPMessage.isFromMoodle: Boolean
             .map { it.value }
             .any { it.lowercase().matches("(.*annonces?.*)".toRegex()) }
     }
+
+val KourrierIMAPMessage.senderName: String
+    get() {
+        val name = headers
+            .filter { it.name == "From" }
+            .joinToString(" ")
+            .replace("${WHITESPACE}|\"".toRegex(), "")
+            .fromRFC2047()
+            .split("( \\(via| <)".toRegex()).first()
+            .replace("\"", "")
+
+        if (" " in name) {
+            val fullName = name.split(" ")
+            if (fullName[0] == fullName[0].uppercase()) {
+                return "${fullName[1]} ${fullName[0]}".capitalize()
+            }
+        }
+        return name
+    }
+
+val KourrierIMAPMessage.courseName: String?
+    get() = headers
+        .filter { it.name == "Subject" }
+        .joinToString(" ")
+        .fromRFC2047()
+        .replaceBefore(":", "").drop(1)
+        .replace("${WHITESPACE}|\"".toRegex(), "")
+        .takeUnless(String::isEmpty)
+        ?.trim()
+
+val KourrierIMAPMessage.courseID: String?
+    get() = headers
+        .firstOrNull { it.name == "X-Course-Id" }
+        ?.value
