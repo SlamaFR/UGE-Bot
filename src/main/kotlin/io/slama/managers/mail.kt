@@ -19,14 +19,13 @@ import io.slama.utils.courseName
 import io.slama.utils.getCourseChannelByID
 import io.slama.utils.isFromMoodle
 import io.slama.utils.senderName
-import java.awt.Color
-import javax.mail.AuthenticationFailedException
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.awt.Color
 
 private val logger: Logger = LoggerFactory.getLogger("MailManager")
 private const val SEPARATOR = "---------------------------------------------------------------------"
@@ -142,12 +141,14 @@ private fun KourrierIMAPMessage.dispatch(jda: JDA) {
     logger.info("Sender name: $senderName")
     logger.info("Course name: $courseName")
     logger.info("Sending e-Learning announcement !")
-    channel.sendMessage(EmbedBuilder()
-        .setTitle(courseName)
-        .setAuthor(senderName, null, avatarUrl)
-        .setDescription(content)
-        .setColor(color)
-        .setFooter("Via e-Learning - Powered by Kourrier")
-        .build())
+    channel.sendMessage(
+        EmbedBuilder()
+            .setTitle(courseName)
+            .setAuthor(senderName, null, avatarUrl)
+            .setDescription(content)
+            .setColor(color)
+            .setFooter("Via e-Learning - Powered by Kourrier")
+            .build()
+    )
         .queue()
 }

@@ -32,20 +32,23 @@ class AutoRole(
     }
 
     fun send(textChannel: TextChannel) {
-        textChannel.sendMessage(EmbedBuilder()
-            .setTitle(config.title)
-            .setDescription(config.description)
-            .setColor(config.color)
-            .build()
+        textChannel.sendMessage(
+            EmbedBuilder()
+                .setTitle(config.title)
+                .setDescription(config.description)
+                .setColor(config.color)
+                .build()
         ).apply {
             for (i in roles.indices.chunked(5)) {
-                this.setActionRows(ActionRow.of(
-                    i.associateWith {
-                        config.roles[it]
-                    }.map {
-                        Button.of(it.value.color, "${name}.${it.key}", it.value.title)
-                    }
-                ))
+                this.setActionRows(
+                    ActionRow.of(
+                        i.associateWith {
+                            config.roles[it]
+                        }.map {
+                            Button.of(it.value.color, "$name.${it.key}", it.value.title)
+                        }
+                    )
+                )
             }
         }.queue()
     }
