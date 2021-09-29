@@ -71,7 +71,7 @@ class MailManager(config: MailConfig, jda: JDA) {
             mode = KourrierFolderMode.ReadOnly,
             keepAlive = true,
             listener = dispatcher
-        ).also {
+        )?.also {
             logger.info("Opened INBOX folder at ${connectionInfo.username}")
         }
     } catch (e: KourrierIMAPSessionStateException) {
