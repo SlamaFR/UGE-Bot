@@ -35,7 +35,7 @@ val KourrierIMAPMessage.senderName: String
         val name = headers
             .filter { it.name == "From" }
             .joinToString(" ") { it.value }
-            .replace("${WHITESPACE}|\"".toRegex(), "")
+            .replace("$WHITESPACE|\"".toRegex(), "")
             .fromRFC2047()
             .split("( \\(via| <)".toRegex()).first()
             .replace("\"", "")
@@ -55,7 +55,7 @@ val KourrierIMAPMessage.courseName: String?
         .joinToString(" ") { it.value }
         .fromRFC2047()
         .replaceBefore(":", "").drop(1)
-        .replace("${WHITESPACE}|\"".toRegex(), "")
+        .replace("$WHITESPACE|\"".toRegex(), "")
         .takeUnless(String::isEmpty)
         ?.trim()
 

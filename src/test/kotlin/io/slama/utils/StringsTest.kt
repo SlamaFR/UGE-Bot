@@ -1,7 +1,7 @@
 package io.slama.utils
 
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 internal class StringsTest {
 
