@@ -9,7 +9,7 @@ private const val WHITESPACE = "[\n\r\t]"
 fun String.fromRFC2047(): String = this
     .replace(WHITESPACE.toRegex(), "")
     .split(" ")
-    .joinToString(transform = {
+    .joinToString("", transform = {
         try {
             MimeUtility.decodeWord(it)
         } catch (e: ParseException) {
