@@ -44,22 +44,30 @@ class KevalCommand : ListenerAdapter() {
             embed.addField("Résultat", res.toString(), false)
                 .setColor(EmbedColors.BLUE)
         } catch (e: KevalInvalidSymbolException) {
-            embed.clearFields().addField("Erreur", """
+            embed.clearFields().addField(
+                "Erreur",
+                """
                 Symbol invalide : `${e.invalidSymbol}`
                 ```
                 ${e.expression}
                 ${" ".repeat(e.position)}^
                 ```
-            """.trimIndent(), false)
+                """.trimIndent(),
+                false
+            )
                 .setColor(EmbedColors.RED)
         } catch (e: KevalInvalidExpressionException) {
-            embed.clearFields().addField("Erreur", """
+            embed.clearFields().addField(
+                "Erreur",
+                """
                 Expression invalide :
                 ```
                 ${e.expression}
                 ${" ".repeat(e.position)}^
                 ```
-            """.trimIndent(), false)
+                """.trimIndent(),
+                false
+            )
                 .setColor(EmbedColors.RED)
         } catch (e: KevalZeroDivisionException) {
             embed.addField("Erreur", "Division par zéro", false)

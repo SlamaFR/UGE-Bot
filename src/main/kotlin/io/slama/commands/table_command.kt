@@ -6,8 +6,7 @@ import io.slama.utils.splitArgs
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.util.*
-
+import java.util.Collections
 
 class TableCommand : ListenerAdapter() {
 
@@ -46,18 +45,25 @@ class TableCommand : ListenerAdapter() {
     }
 
     private fun sendUsage(event: SlashCommandEvent) {
-        event.replyEmbeds(EmbedBuilder()
-            .setTitle("Générateur de tableaux ASCII")
-            .setDescription(
-                "Cette commande permet de générer rapidement des tableaux avec des caractères ASCII."
-            )
-            .addField("Utilisation", "`/table <Ligne 1> <Ligne 2> ... <Ligne N>`", false)
-            .addField("Syntaxe", """
+        event.replyEmbeds(
+            EmbedBuilder()
+                .setTitle("Générateur de tableaux ASCII")
+                .setDescription(
+                    "Cette commande permet de générer rapidement des tableaux avec des caractères ASCII."
+                )
+                .addField("Utilisation", "`/table <Ligne 1> <Ligne 2> ... <Ligne N>`", false)
+                .addField(
+                    "Syntaxe",
+                    """
                 |Une ligne est divisée en colonnes par le caractère `;`.
                 |Si une ligne contient un ou plusieurs espaces, il faut l'encadrer avec des guillemets pour éviter des comportements inattendus.
                 |Pour dessiner une case vide, sans les bordures, la cellule ne doit contenir que des espaces.
-            """.trimMargin(), false)
-            .addField("Exemple 1", """
+            """.trimMargin(),
+                    false
+                )
+                .addField(
+                    "Exemple 1",
+                    """
                 |`/table ";Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
                 |```
                 |┌─────────┬───────────┬───────────┐
@@ -68,8 +74,12 @@ class TableCommand : ListenerAdapter() {
                 |│ ou      │ comme     │ ceci      │
                 |└─────────┴───────────┴───────────┘
                 |```
-            """.trimMargin(), false)
-            .addField("Exemple 2", """
+            """.trimMargin(),
+                    false
+                )
+                .addField(
+                    "Exemple 2",
+                    """
                 |`/table " ;Colonne 1;Colonne 2" "Ligne 1;Val 1;Val 2" ou;comme;ceci`
                 |```
                 |          ┌───────────┬───────────┐
@@ -80,12 +90,14 @@ class TableCommand : ListenerAdapter() {
                 |│ ou      │ comme     │ ceci      │
                 |└─────────┴───────────┴───────────┘
                 |```
-            """.trimMargin(), false)
-            .setColor(EmbedColors.BLUE)
-            .build())
+            """.trimMargin(),
+                    false
+                )
+                .setColor(EmbedColors.BLUE)
+                .build()
+        )
             .queue()
     }
-
 }
 
 class ASCIITable {

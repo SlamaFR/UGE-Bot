@@ -1,6 +1,7 @@
 package io.slama.utils
 
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 internal class StringsTest {
 
@@ -27,5 +28,11 @@ internal class StringsTest {
     @Test
     fun splitComplexArgsWithEscapingDoubleQuotes2() {
         assert("this \"is \\\"still\\\" a\" test".splitArgs() == listOf("this", "is \"still\" a", "test"))
+    }
+
+    @Test
+    fun testCapitalizingString() {
+        val capitalized = "john dOe".capitalize()
+        assertEquals("John Doe", capitalized)
     }
 }

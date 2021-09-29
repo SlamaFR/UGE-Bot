@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_POLL_TIMEOUT = 2L
@@ -70,20 +70,23 @@ class Poll(
 
     fun send() {
         if (question != null) {
-            event.replyEmbeds(EmbedBuilder()
-                .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
-                .setDescription(question.asString)
-                .setFooter("Résultats du sondage dans $timeout minute".pluralize(timeout))
-                .setColor(EmbedColors.VIOLET)
-                .apply {
-                    options.forEachIndexed { i, name ->
-                        if (i % 2 != 0) addBlankField(true)
-                        addField("Réponse ${'A' + i}", name, true)
-                    }
-                }.build()
-            ).addActionRows(ActionRow.of(
-                options.mapIndexed { i, _ -> Button.secondary("$uniqueId.${i}", ('A' + i).toString()) }
-            )).queue {
+            event.replyEmbeds(
+                EmbedBuilder()
+                    .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
+                    .setDescription(question.asString)
+                    .setFooter("Résultats du sondage dans $timeout minute".pluralize(timeout))
+                    .setColor(EmbedColors.VIOLET)
+                    .apply {
+                        options.forEachIndexed { i, name ->
+                            if (i % 2 != 0) addBlankField(true)
+                            addField("Réponse ${'A' + i}", name, true)
+                        }
+                    }.build()
+            ).addActionRows(
+                ActionRow.of(
+                    options.mapIndexed { i, _ -> Button.secondary("$uniqueId.$i", ('A' + i).toString()) }
+                )
+            ).queue {
                 TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResults)
             }
         }
@@ -103,26 +106,29 @@ class Poll(
     private fun sendResults() {
         event.jda.removeEventListener(this)
         if (question != null) {
-            event.hook.editOriginalEmbeds(EmbedBuilder()
-                .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
-                .setDescription(question.asString)
-                .setFooter("Sondage terminé ($totalVoteCount ${"votant".pluralize(totalVoteCount)})")
-                .setTimestamp(Instant.now())
-                .setColor(EmbedColors.PURPLE)
-                .apply {
-                    options.forEachIndexed { i, name ->
-                        if (i % 2 != 0) addBlankField(true)
-                        addField(
-                            "Réponse ${'A' + i}",
-                            "**(${"%.2f".format(answerRate(i) * 100)}%)** $name",
-                            true
-                        )
-                    }
-                }.build()
+            event.hook.editOriginalEmbeds(
+                EmbedBuilder()
+                    .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
+                    .setDescription(question.asString)
+                    .setFooter("Sondage terminé ($totalVoteCount ${"votant".pluralize(totalVoteCount)})")
+                    .setTimestamp(Instant.now())
+                    .setColor(EmbedColors.PURPLE)
+                    .apply {
+                        options.forEachIndexed { i, name ->
+                            if (i % 2 != 0) addBlankField(true)
+                            addField(
+                                "Réponse ${'A' + i}",
+                                "**(${"%.2f".format(answerRate(i) * 100)}%)** $name",
+                                true
+                            )
+                        }
+                    }.build()
             ).queue()
-            event.hook.editOriginalComponents(ActionRow.of(
-                options.mapIndexed { i, _ -> Button.secondary("$uniqueId.${i}", ('A' + i).toString()).asDisabled() }
-            )).queue()
+            event.hook.editOriginalComponents(
+                ActionRow.of(
+                    options.mapIndexed { i, _ -> Button.secondary("$uniqueId.$i", ('A' + i).toString()).asDisabled() }
+                )
+            ).queue()
         }
 
         if (toBeLogged) sendLog()
@@ -160,13 +166,15 @@ class Poll(
             calendar.add(Calendar.MINUTE, (-timeout).toInt())
 
             bufferedWriter().use { out ->
-                out.write("""
+                out.write(
+                    """
                     |Sondage effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.textChannel.name}
                     |
                     |$totalVoteCount ${"personne".pluralize(totalVoteCount)} ${if (totalVoteCount > 1) "ont" else "à"} voté :
                     |Question : ${question?.asString ?: "Pas de question"}
                     |
-                """.trimMargin())
+                """.trimMargin()
+                )
 
                 options.forEachIndexed { i, name ->
                     val rate = "%.2f".format(answerRate(i) * 100)
