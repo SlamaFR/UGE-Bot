@@ -98,9 +98,9 @@ class MailManager(config: MailConfig, jda: JDA) {
             session?.close()
             logger.info("Closed session and INBOX folder")
         } catch (e: KourrierIMAPSessionStateException) {
-            logger.warn("Tried to close an closed session")
+            logger.warn("Tried to close a closed session")
         } catch (e: KourrierIMAPFolderStateException) {
-            logger.warn("Tried to close an closed folder")
+            logger.warn("Tried to close a closed folder")
         }
     }
 }
