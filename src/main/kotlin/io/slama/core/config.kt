@@ -48,6 +48,12 @@ class BotConfiguration private constructor() {
             because it can only happen if the JVM is literally dying
             */
 
+        val mail: MailConfig
+            get() = innerConfig!!.mailConfig /*
+            Explicitly want an NPE if it's null here,
+            because it can only happen if the JVM is literally dying
+            */
+
         private var innerConfig: BotConfiguration? = null
             get() {
                 if (field == null)
@@ -94,25 +100,29 @@ class BotConfiguration private constructor() {
 
         private fun createRolesFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "adminRoleID": 0,
                   "managerRoleID": 1,
                   "teacherRoleID": 2,
                   "studentRoleID": 3
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         private fun createChannelsFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "announcementsChannelID": 0,
                   "moodleAnnouncementsChannelsIDs": {
                   }
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         private fun createAutorolesFile(file: File) {
@@ -122,18 +132,21 @@ class BotConfiguration private constructor() {
 
         private fun createShusherFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "sentences": [
                     "Please stop talking..."
                   ]
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         private fun createPresenceFile(file: File) {
             file.createNewFile()
-            file.writeText("""
+            file.writeText(
+                """
                 {
                   "messages": {
                     "something": "DEFAULT",
@@ -141,7 +154,22 @@ class BotConfiguration private constructor() {
                     "some other thing": "LISTENING"
                   }
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
+        }
+
+        private fun createMailFile(file: File) {
+            file.createNewFile()
+            file.writeText(
+                """
+                {
+                  "hostname": "mail.server.com",
+                  "port": 993,
+                  "username": "john.doe@server.com",
+                  "password": "1234"
+                }
+                """.trimIndent()
+            )
         }
     }
 
@@ -221,6 +249,20 @@ class BotConfiguration private constructor() {
         logger.info("Loaded presence config")
         Json.decodeFromString(presenceF.readText())
     }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private val mailConfig: MailConfig by lazy {
+        with(File(CONFIG_ROOT)) {
+            if (!exists() || !isDirectory)
+                resetConfig()
+        }
+        val mailF = File("${CONFIG_ROOT}mail.json")
+        if (!mailF.exists()) {
+            createMailFile(mailF)
+        }
+        logger.info("Loaded mail config")
+        Json.decodeFromString(mailF.readText())
+    }
 }
 
 @Serializable
@@ -262,6 +304,16 @@ data class ShusherConfig(
 @Serializable
 data class PresenceConfig(
     val messages: Map<String, Activity.ActivityType>,
+)
+
+@Serializable
+data class MailConfig(
+    val hostname: String,
+    val port: Int,
+    val username: String,
+    val password: String,
+    val debugMode: Boolean = false,
+    val enableSSL: Boolean = true,
 )
 
 data class GuildConfig(

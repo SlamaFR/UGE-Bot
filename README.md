@@ -9,6 +9,7 @@ Its main purpose is to help manage the servers.
 - Temporary channels : Admins can link specific voice channels to a generator so that if someone joins it, the bot creates a temporary channel for them, that will disappear when it gets empty.
 - Mathematical expression evaluation : Thanks to the Kotlin library [Keval](https://github.com/notKamui/Keval), anyone can quickly evaluate an expression.
 - ASCII table generation : Anyone can quickly draw a table automatically formatted.
+- Moodle Mails : Thanks to [Kourrier](https://github.com/notKamui/Kourrier), the bot can listen to the inbox of the university's mailbox, and dispatch the messages accordingly between the channels if they come from Moodle.
 
 ### Librairies used
 - [JDA (Java Discord API)](https://github.com/DV8FromTheWorld/JDA)
@@ -16,6 +17,7 @@ Its main purpose is to help manage the servers.
 - [SLF4J](http://www.slf4j.org/)
 - [Konfig](https://github.com/npryce/Konfig)
 - [Keval](https://github.com/notKamui/Keval)
+- [Kourrier](https://github.com/notKamui/Kourrier)
 
 ### Credits
 - Irwin "Slama" Madet
