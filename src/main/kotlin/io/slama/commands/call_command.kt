@@ -2,11 +2,7 @@ package io.slama.commands
 
 import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
-import io.slama.utils.EmbedColors
-import io.slama.utils.TaskScheduler
-import io.slama.utils.isTeacher
-import io.slama.utils.pluralize
-import io.slama.utils.replySuccess
+import io.slama.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
@@ -16,7 +12,7 @@ import net.dv8tion.jda.api.interactions.components.Button
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_TIMEOUT = 5L
@@ -41,6 +37,8 @@ private class Call(
     private val uniqueId = "${event.user.id}${System.currentTimeMillis()}"
     private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}"
 
+    private lateinit var responseId: String
+
     init {
         event.jda.addEventListener(this)
         logger.info("${event.member} initiated a call in ${event.channel} with a timeout of $timeout minutes")
@@ -54,6 +52,7 @@ private class Call(
         )
             .addActionRow(Button.success("$uniqueId.respond", "Répondre à l'appel"))
             .queue {
+                it.retrieveOriginal().queue { message -> responseId = message.id }
                 TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResult)
             }
     }
@@ -110,24 +109,25 @@ private class Call(
     }
 
     private fun onResultSuccess() {
-        event.hook.editOriginalEmbeds(
+        event.channel.editMessageEmbedsById(
+            responseId,
             EmbedBuilder()
                 .setTitle(embedTitle)
                 .setDescription("L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.")
                 .setColor(EmbedColors.ORANGE)
                 .build()
-        )
-            .queue()
-        event.hook.editOriginalComponents(
+        ).queue()
+        event.channel.editMessageComponentsById(
+            responseId,
             ActionRow.of(
                 Button.danger("0", "Appel terminé").withDisabled(true)
             )
-        )
-            .queue()
+        ).queue()
     }
 
     private fun onResultFailed() {
-        event.hook.editOriginalEmbeds(
+        event.channel.editMessageEmbedsById(
+            responseId,
             EmbedBuilder()
                 .setTitle("Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
                 .setDescription(
@@ -139,13 +139,12 @@ private class Call(
                 )
                 .setColor(EmbedColors.RED)
                 .build()
-        )
-            .queue()
-        event.hook.editOriginalComponents(
+        ).queue()
+        event.channel.editMessageComponentsById(
+            responseId,
             ActionRow.of(
                 Button.danger("0", "Appel terminé").withDisabled(true)
             )
-        )
-            .queue()
+        ).queue()
     }
 }
