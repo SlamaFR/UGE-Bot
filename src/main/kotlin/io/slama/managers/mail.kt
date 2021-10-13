@@ -21,7 +21,6 @@ import io.slama.utils.isFromMoodle
 import io.slama.utils.senderName
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -119,29 +118,44 @@ private fun KourrierIMAPMessage.dispatch(jda: JDA) {
 
     val courseName = courseName ?: "Annonce"
 
-    var channel: TextChannel? = null
-    var color: Color? = null
-    var avatarUrl: String? = null
-
-    for (guild in jda.guilds) {
-        channel = guild.getCourseChannelByID(courseID) ?: continue
-        if (senderName.isEmpty()) break
-        val members: List<Member> = guild.retrieveMembersByPrefix(senderName, 1).get()
-        if (members.isEmpty()) break
-        color = members.first().color
-        avatarUrl = members.first().user.avatarUrl
-        break
-    }
+    val channel = jda.guilds.map {
+        it.getCourseChannelByID(courseID)
+    }.firstOrNull()
 
     if (channel == null) {
         logger.warn("No text channel found, aborting...")
         return
     }
 
+    if (senderName.isEmpty()) return
+    channel.guild
+        .retrieveMembersByPrefix(senderName, 1)
+        .onSuccess {
+            if (it.isEmpty()) {
+                channel.sendMail(courseName, content, senderName)
+                return@onSuccess
+            }
+            val color = it.first().color
+            val avatarUrl = it.first().user.avatarUrl
+
+            channel.sendMail(courseName, content, senderName, avatarUrl, color)
+        }.onError {
+            logger.warn("Failed to retrieve member")
+            channel.sendMail(courseName, content, senderName)
+        }
+}
+
+private fun TextChannel.sendMail(
+    courseName: String = "Annonce",
+    content: String,
+    senderName: String,
+    avatarUrl: String? = null,
+    color: Color? = null
+) {
     logger.info("Sender name: $senderName")
     logger.info("Course name: $courseName")
     logger.info("Sending e-Learning announcement !")
-    channel.sendMessage(
+    sendMessageEmbeds(
         EmbedBuilder()
             .setTitle(courseName)
             .setAuthor(senderName, null, avatarUrl)
@@ -149,6 +163,5 @@ private fun KourrierIMAPMessage.dispatch(jda: JDA) {
             .setColor(color)
             .setFooter("Via e-Learning - Powered by Kourrier")
             .build()
-    )
-        .queue()
+    ).queue()
 }
