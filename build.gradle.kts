@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.slama"
-version = "2.1.0"
+version = "2.1.1"
 
 ktlint {
     debug.set(true)

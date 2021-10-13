@@ -118,7 +118,7 @@ private fun KourrierIMAPMessage.dispatch(jda: JDA) {
 
     val courseName = courseName ?: "Annonce"
 
-    val channel = jda.guilds.map {
+    val channel = jda.guilds.mapNotNull {
         it.getCourseChannelByID(courseID)
     }.firstOrNull()
 
