@@ -2,7 +2,12 @@ package io.slama.commands
 
 import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
-import io.slama.utils.*
+import io.slama.utils.EmbedColors
+import io.slama.utils.TaskScheduler
+import io.slama.utils.isTeacher
+import io.slama.utils.pluralize
+import io.slama.utils.replySuccess
+import io.slama.utils.sendWarning
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
@@ -13,7 +18,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_POLL_TIMEOUT = 2L
