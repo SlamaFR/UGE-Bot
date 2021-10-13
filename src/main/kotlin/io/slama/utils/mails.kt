@@ -39,14 +39,7 @@ val KourrierIMAPMessage.senderName: String
             .fromRFC2047()
             .split("( \\(via| <)".toRegex()).first()
             .replace("\"", "")
-
-        if (" " in name) {
-            val fullName = name.split(" ")
-            if (fullName[0] == fullName[0].uppercase()) {
-                return "${fullName[1]} ${fullName[0]}".capitalize().trim()
-            }
-        }
-        return name.trim()
+        return name.capitalize().trim()
     }
 
 val KourrierIMAPMessage.courseName: String?
