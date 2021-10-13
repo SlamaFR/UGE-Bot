@@ -62,6 +62,8 @@ class Poll(
     private val totalVoteCount: Int
         get() = answers.flatMap { it.value }.count()
 
+    private lateinit var responseId: String
+
     init {
         event.jda.addEventListener(this)
         options = options.ifEmpty { mutableListOf("Oui", "Non") }
@@ -87,6 +89,7 @@ class Poll(
                     options.mapIndexed { i, _ -> Button.secondary("$uniqueId.$i", ('A' + i).toString()) }
                 )
             ).queue {
+                it.retrieveOriginal().queue { message -> responseId = message.id }
                 TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResults)
             }
         }
@@ -106,7 +109,8 @@ class Poll(
     private fun sendResults() {
         event.jda.removeEventListener(this)
         if (question != null) {
-            event.hook.editOriginalEmbeds(
+            event.channel.editMessageEmbedsById(
+                responseId,
                 EmbedBuilder()
                     .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
                     .setDescription(question.asString)
@@ -124,7 +128,8 @@ class Poll(
                         }
                     }.build()
             ).queue()
-            event.hook.editOriginalComponents(
+            event.channel.editMessageComponentsById(
+                responseId,
                 ActionRow.of(
                     options.mapIndexed { i, _ -> Button.secondary("$uniqueId.$i", ('A' + i).toString()).asDisabled() }
                 )
