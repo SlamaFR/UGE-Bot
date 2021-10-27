@@ -76,7 +76,8 @@ class Poll(
                 EmbedBuilder()
                     .setTitle("Sondage demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
                     .setDescription(question.asString)
-                    .setFooter("Résultats du sondage dans $timeout minute".pluralize(timeout))
+                    .setFooter("Échéance du sondage")
+                    .setTimestamp(Instant.now().plusSeconds(timeout * 60))
                     .setColor(EmbedColors.VIOLET)
                     .apply {
                         options.forEachIndexed { i, name ->
