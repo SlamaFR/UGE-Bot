@@ -55,10 +55,8 @@ private class Call(
         event.jda.addEventListener(this)
         logger.info("${event.member} initiated a call in ${event.channel} with a timeout of $timeout minutes")
 
-        role?.run {
-            guild.findMembers { role in it.roles }.onSuccess { members ->
-                members.map { it.effectiveName }.forEach { missing.add(it) }
-            }
+        role?.guild?.findMembers { role in it.roles }?.onSuccess { members ->
+            members.map { it.effectiveName }.forEach { missing.add(it) }
         }
 
         event.replyEmbeds(
@@ -114,7 +112,7 @@ private class Call(
                     |
                 """.trimMargin()
                 )
-                role?.let {
+                if (role != null) {
                     printMissing(out)
                 }
                 printPresents(out)
