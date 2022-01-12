@@ -178,11 +178,7 @@ private class Call(
             EmbedBuilder()
                 .setTitle(embedTitle)
                 .setDescription(
-                    "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
-                        "présente".pluralize(
-                            students.size
-                        )
-                    }."
+                    "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}."
                 )
                 .setColor(EmbedColors.ORANGE)
                 .build()
@@ -203,9 +199,9 @@ private class Call(
                 .setDescription(
                     """
                 |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
-                        "présente".pluralize(
-                            students.size
-                        )
+                    "présente".pluralize(
+                        students.size
+                    )
                     }.
                 |
                 |**Une erreur est survenue lors de l'envoi du fichier !**
