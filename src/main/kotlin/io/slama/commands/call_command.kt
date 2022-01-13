@@ -8,12 +8,14 @@ import io.slama.utils.isTeacher
 import io.slama.utils.pluralize
 import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
 import org.slf4j.LoggerFactory
+import java.io.BufferedWriter
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -29,15 +31,21 @@ class CallCommand : ListenerAdapter() {
         if (event.guild == null) return
         if (!event.member!!.isTeacher()) return
 
-        Call(event, event.getOption("timeout")?.asLong ?: DEFAULT_TIMEOUT)
+        Call(
+            event,
+            event.getOption("timeout")?.asLong ?: DEFAULT_TIMEOUT,
+            event.getOption("role")?.asRole
+        )
     }
 }
 
 private class Call(
     private val event: SlashCommandEvent,
-    private val timeout: Long = DEFAULT_TIMEOUT
+    private val timeout: Long = DEFAULT_TIMEOUT,
+    private val role: Role? = null
 ) : ListenerAdapter() {
     private val students = mutableSetOf<String>()
+    private val missing = mutableSetOf<String>()
     private val uniqueId = "${event.user.id}${System.currentTimeMillis()}"
     private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}"
 
@@ -46,6 +54,10 @@ private class Call(
     init {
         event.jda.addEventListener(this)
         logger.info("${event.member} initiated a call in ${event.channel} with a timeout of $timeout minutes")
+
+        role?.guild?.findMembers { role in it.roles }?.onSuccess { members ->
+            members.map { it.effectiveName }.forEach { missing.add(it) }
+        }
 
         event.replyEmbeds(
             EmbedBuilder()
@@ -67,6 +79,7 @@ private class Call(
             if (effectiveName !in students) {
                 event.replySuccess("Votre présence a été enregistrée.").setEphemeral(true).queue()
                 students.add(effectiveName)
+                missing.remove(effectiveName)
             }
         }
     }
@@ -77,7 +90,8 @@ private class Call(
         val calendar = Calendar.getInstance()
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
-        val fileName = "call_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+        val fileName =
+            "call_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
 
         with(File(ConfigFolders.CALLS_DATA_ROOT)) {
             if (!exists() || !isDirectory)
@@ -96,11 +110,13 @@ private class Call(
                     """
                     |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "un certain A. N. Onym"} dans le salon #${event.textChannel.name}
                     |
-                    |${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :
-                    |${students.joinToString("\n") { " - $it" }}
-                    |
                 """.trimMargin()
                 )
+                if (role != null) {
+                    printMissing(out)
+                }
+                printPresents(out)
+                out.flush()
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
@@ -112,12 +128,56 @@ private class Call(
         }
     }
 
+    private fun printPresents(out: BufferedWriter) {
+        if (students.isEmpty()) {
+            out.write(
+                """
+                |
+                |Aucune personne présente !
+                |
+            """.trimMargin()
+            )
+        } else {
+            out.write(
+                """
+                |
+                |${students.size} ${"personne".pluralize(students.size)} ${"présente".pluralize(students.size)} :
+                |${students.joinToString("\n") { " - $it" }}
+                |
+            """.trimMargin()
+            )
+        }
+    }
+
+    private fun printMissing(out: BufferedWriter) {
+        if (missing.isEmpty()) {
+            out.write(
+                """
+                |
+                |Aucune personne absente !
+                |
+            """.trimMargin()
+            )
+        } else {
+            out.write(
+                """
+                |
+                |${missing.size} ${"personne".pluralize(missing.size)} ${"absente".pluralize(missing.size)} :
+                |${missing.joinToString("\n") { " - $it" }}
+                |
+            """.trimMargin()
+            )
+        }
+    }
+
     private fun onResultSuccess() {
         event.channel.editMessageEmbedsById(
             responseId,
             EmbedBuilder()
                 .setTitle(embedTitle)
-                .setDescription("L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.")
+                .setDescription(
+                    "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}."
+                )
                 .setColor(EmbedColors.ORANGE)
                 .build()
         ).queue()
@@ -136,7 +196,11 @@ private class Call(
                 .setTitle("Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
                 .setDescription(
                     """
-                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}.
+                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
+                    "présente".pluralize(
+                        students.size
+                    )
+                    }.
                 |
                 |**Une erreur est survenue lors de l'envoi du fichier !**
             """.trimMargin()
