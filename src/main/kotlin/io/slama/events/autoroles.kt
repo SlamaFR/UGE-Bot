@@ -33,7 +33,7 @@ class AutoRole(
     }
 
     fun send(textChannel: TextChannel) {
-        textChannel.sendMessage(
+        textChannel.sendMessageEmbeds(
             EmbedBuilder()
                 .setTitle(config.title)
                 .setDescription(config.description)
