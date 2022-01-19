@@ -118,9 +118,9 @@ private fun KourrierIMAPMessage.dispatch(jda: JDA) {
 
     val courseName = courseName ?: "Annonce"
 
-    val channel = jda.guilds.mapNotNull {
+    val channel = jda.guilds.firstNotNullOfOrNull {
         it.getCourseChannelByID(courseID)
-    }.firstOrNull()
+    }
 
     if (channel == null) {
         logger.warn("No text channel found, aborting...")

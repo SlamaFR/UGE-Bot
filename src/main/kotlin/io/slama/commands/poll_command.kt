@@ -86,7 +86,7 @@ class Poll(
                     }.build()
             ).addActionRows(
                 ActionRow.of(
-                    options.mapIndexed { i, _ -> Button.secondary("$uniqueId.$i", ('A' + i).toString()) }
+                    List(options.size) { i -> Button.secondary("$uniqueId.$i", ('A' + i).toString()) }
                 )
             ).queue {
                 it.retrieveOriginal().queue { message -> responseId = message.id }
@@ -131,7 +131,7 @@ class Poll(
             event.channel.editMessageComponentsById(
                 responseId,
                 ActionRow.of(
-                    options.mapIndexed { i, _ -> Button.secondary("$uniqueId.$i", ('A' + i).toString()).asDisabled() }
+                    List(options.size) { i -> Button.secondary("$uniqueId.$i", ('A' + i).toString()).asDisabled() }
                 )
             ).queue()
         }

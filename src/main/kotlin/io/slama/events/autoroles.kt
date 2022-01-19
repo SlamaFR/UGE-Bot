@@ -4,6 +4,7 @@ import io.slama.core.AutoRoleDTO
 import io.slama.core.BotConfiguration
 import io.slama.utils.replyError
 import io.slama.utils.replySuccess
+import io.slama.utils.replyWarning
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -32,7 +33,7 @@ class AutoRole(
     }
 
     fun send(textChannel: TextChannel) {
-        textChannel.sendMessage(
+        textChannel.sendMessageEmbeds(
             EmbedBuilder()
                 .setTitle(config.title)
                 .setDescription(config.description)
@@ -64,17 +65,16 @@ class AutoRole(
 
         val role = guild.getRoleById(roles[index])
         if (role == null) {
-            event.replyError("Le rôle demandé est introuvable. Contactez l'administrateur.")
-                .setEphemeral(true)
-                .queue()
+            event.replyError("Le rôle demandé est introuvable. Contactez l'administrateur.").setEphemeral(true).queue()
             return
         }
-        if (role in member.roles) return
+        if (role in member.roles) {
+            event.replyWarning("Vous avez déjà reçu ce rôle !").setEphemeral(true).queue()
+            return
+        }
 
         guild.addRoleToMember(event.user.id, role).queue {
-            event.replySuccess("Le rôle ${role.asMention} vous a été attribué !")
-                .setEphemeral(true)
-                .queue()
+            event.replySuccess("Le rôle ${role.asMention} vous a été attribué !").setEphemeral(true).queue()
         }
     }
 }

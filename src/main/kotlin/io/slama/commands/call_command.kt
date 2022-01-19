@@ -7,6 +7,7 @@ import io.slama.utils.TaskScheduler
 import io.slama.utils.isTeacher
 import io.slama.utils.pluralize
 import io.slama.utils.replySuccess
+import io.slama.utils.replyWarning
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
@@ -80,6 +81,8 @@ private class Call(
                 event.replySuccess("Votre présence a été enregistrée.").setEphemeral(true).queue()
                 students.add(effectiveName)
                 missing.remove(effectiveName)
+            } else {
+                event.replyWarning("Vous avez déjà répondu à cet appel !").setEphemeral(true).queue()
             }
         }
     }
