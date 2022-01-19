@@ -35,20 +35,20 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.21")
 
     // kotlin api
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     // JDA & co.
     implementation("net.dv8tion:JDA:4.3.0_331") {
         exclude("opus-java")
     }
-    implementation("ch.qos.logback:logback-classic:1.2.6")
-    implementation("ch.qos.logback:logback-core:1.2.6")
+    implementation("ch.qos.logback:logback-classic:1.2.10")
+    implementation("ch.qos.logback:logback-core:1.2.10")
     implementation("org.slf4j:slf4j-api:1.7.32")
 
     // Others
     implementation("com.natpryce:konfig:1.6.10.0")
-    implementation("com.notkamui.libs:keval:0.7.5")
+    implementation("com.notkamui.libs:keval:0.8.0")
     implementation("com.notkamui.libs:kourrier:0.2.2")
     implementation("com.sun.mail:javax.mail:1.6.2")
 }
