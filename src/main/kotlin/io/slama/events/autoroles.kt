@@ -58,9 +58,7 @@ class AutoRole(
 
     override fun onButtonClick(event: ButtonClickEvent) {
         val matchResult = buttonIdRegex.find(event.componentId) ?: return
-
-        val name = matchResult.groupValues[1]
-        val index = matchResult.groupValues[2].toInt()
+        val (name, index) = matchResult.destructured.let { (name, index) -> name to index.toInt() }
         if (this.name != name) return
 
         val guild = event.guild ?: return
