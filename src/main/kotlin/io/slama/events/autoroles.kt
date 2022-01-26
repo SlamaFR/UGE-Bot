@@ -15,6 +15,8 @@ import net.dv8tion.jda.api.interactions.components.Button
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+private val buttonIdRegex = """(.*)\.(\d+)""".toRegex()
+
 private val autoRoles = mutableMapOf<Long, MutableMap<String, AutoRole>>()
 private val logger: Logger = LoggerFactory.getLogger("AutoRolesManager")
 
@@ -32,7 +34,7 @@ class AutoRole(
     }
 
     fun send(textChannel: TextChannel) {
-        textChannel.sendMessage(
+        textChannel.sendMessageEmbeds(
             EmbedBuilder()
                 .setTitle(config.title)
                 .setDescription(config.description)
@@ -54,12 +56,16 @@ class AutoRole(
     }
 
     override fun onButtonClick(event: ButtonClickEvent) {
-        if (!event.componentId.startsWith(name)) return
+        val matchResult = buttonIdRegex.find(event.componentId) ?: return
+
+        val name = matchResult.groupValues[1]
+        val index = matchResult.groupValues[2].toInt()
+        if (this.name != name) return
+
         val guild = event.guild ?: return
         if (guild.id != guildId) return
         val member = event.member ?: return
 
-        val index = event.componentId.split(".")[1].toInt()
         if (index >= roles.size) return
 
         val role = guild.getRoleById(roles[index])
