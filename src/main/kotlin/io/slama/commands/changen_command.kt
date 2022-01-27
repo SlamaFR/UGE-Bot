@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.Logger
@@ -64,10 +65,24 @@ class ChanGenCommand : ListenerAdapter() {
     }
 
     override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-        val channelJoined = event.channelJoined
+        checkJoin(event.channelJoined)
+        handleRequest(event)
+    }
+
+    override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+        checkLeave(event.channelLeft)
+    }
+
+    override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
+        checkJoin(event.channelJoined)
+        checkLeave(event.channelLeft)
+        handleRequest(event)
+    }
+
+    private fun handleRequest(event: GuildVoiceUpdateEvent) {
+        val channelJoined = event.channelJoined ?: return
         val member = event.member
 
-        checkJoin(event.channelJoined)
         if (channelJoined.id !in generators) return
 
         temporaryChannels[member.id]?.let {
@@ -86,15 +101,6 @@ class ChanGenCommand : ListenerAdapter() {
             temporaryChannels[member.id] = it.id
             member.guild.moveVoiceMember(member, it).queue()
         }
-    }
-
-    override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
-        checkLeave(event.channelLeft)
-    }
-
-    override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
-        checkJoin(event.channelJoined)
-        checkLeave(event.channelLeft)
     }
 
     private fun checkJoin(channel: VoiceChannel) {
