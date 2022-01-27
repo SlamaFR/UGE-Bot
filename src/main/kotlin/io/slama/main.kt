@@ -17,10 +17,6 @@ import io.slama.events.clearAutoRoles
 import io.slama.events.loadAutoRoles
 import io.slama.managers.MailManager
 import io.slama.utils.TaskScheduler
-import java.io.File
-import java.util.concurrent.TimeUnit
-import javax.security.auth.login.LoginException
-import kotlin.system.exitProcess
 import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -30,6 +26,10 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.util.concurrent.TimeUnit
+import javax.security.auth.login.LoginException
+import kotlin.system.exitProcess
 
 private val logger: Logger = LoggerFactory.getLogger("UGEBot")
 private val token = Key("token", stringType)

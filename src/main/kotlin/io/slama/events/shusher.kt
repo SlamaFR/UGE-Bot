@@ -3,8 +3,6 @@ package io.slama.events
 import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
 import io.slama.utils.isAdmin
-import java.io.File
-import kotlin.random.Random
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Role
@@ -12,6 +10,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
+import kotlin.random.Random
 
 private const val SHUSHER_TRIGGER_THRESHOLD = .009
 private const val SHUSHER_FILE = "shusherRolesIds"
