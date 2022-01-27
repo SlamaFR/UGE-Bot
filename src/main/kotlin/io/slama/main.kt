@@ -111,8 +111,8 @@ class UGEBot(token: String) : ListenerAdapter() {
         logger.info("Registered commands")
         presenceJob?.cancel()
         presenceJob = TaskScheduler.repeat(10, TimeUnit.MINUTES) {
-            val (message, type) = BotConfiguration.presence?.messages?.entries?.random()
-                .let { "Nothing" to Activity.ActivityType.DEFAULT }
+            val (message, type) = BotConfiguration.presence?.messages?.entries?.random()?.toPair()
+                ?: ("nothing" to Activity.ActivityType.DEFAULT)
             jda.presence.setPresence(Activity.of(type, message), false)
             true
         }
