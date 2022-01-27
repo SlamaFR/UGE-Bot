@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.slama"
-version = "2.1.1"
+version = "2.1.2"
 
 ktlint {
     debug.set(true)
@@ -44,7 +44,7 @@ dependencies {
     }
     implementation("ch.qos.logback:logback-classic:1.2.10")
     implementation("ch.qos.logback:logback-core:1.2.10")
-    implementation("org.slf4j:slf4j-api:1.7.32")
+    implementation("org.slf4j:slf4j-api:1.7.33")
 
     // Others
     implementation("com.natpryce:konfig:1.6.10.0")
