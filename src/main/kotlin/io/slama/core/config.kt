@@ -8,6 +8,7 @@ import io.slama.core.ConfigFolders.GUILD_CONFIG_ROOT
 import io.slama.core.ConfigFolders.POLLS_DATA_ROOT
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Activity
@@ -36,19 +37,19 @@ class BotConfiguration private constructor() {
             because it can only happen if the JVM is literally dying
             */
 
-        val shusher: ShusherConfig
+        val shusher: ShusherConfig?
             get() = innerConfig!!.shusherConfig /*
             Explicitly want an NPE if it's null here,
             because it can only happen if the JVM is literally dying
             */
 
-        val presence: PresenceConfig
+        val presence: PresenceConfig?
             get() = innerConfig!!.presenceConfig /*
             Explicitly want an NPE if it's null here,
             because it can only happen if the JVM is literally dying
             */
 
-        val mail: MailConfig
+        val mail: MailConfig?
             get() = innerConfig!!.mailConfig /*
             Explicitly want an NPE if it's null here,
             because it can only happen if the JVM is literally dying
@@ -61,7 +62,16 @@ class BotConfiguration private constructor() {
                 return field
             }
 
+        private var backupGuilds: GuildConfigManager? = null
+        private var backupShusher: ShusherConfig? = null
+        private var backupPresence: PresenceConfig? = null
+        private var backupMail: MailConfig? = null
+
         fun resetConfig() {
+            backupGuilds = guilds
+            backupShusher = shusher
+            backupPresence = presence
+            backupMail = mail
             setup()
             innerConfig = null
         }
@@ -178,7 +188,20 @@ class BotConfiguration private constructor() {
         private val guildConfigsMap: MutableMap<Long, GuildConfig> = mutableMapOf()
 
         operator fun get(guildId: Long): GuildConfig? {
-            if (guildId !in guildConfigsMap.keys) loadConfig(guildId)
+            if (guildId !in guildConfigsMap.keys) {
+                val old = backupGuilds?.guildConfigsMap?.get(guildId)
+                try {
+                    loadConfig(guildId)
+                } catch (e: SerializationException) {
+                    logger.warn("Failed to load guild config for guild $guildId. Using backup")
+                    if (old != null) {
+                        guildConfigsMap[guildId] = old
+                    } else {
+                        logger.error("No backup for guild $guildId. Guild will be ignored")
+                        return null
+                    }
+                }
+            }
             return guildConfigsMap[guildId]
         }
 
@@ -209,12 +232,12 @@ class BotConfiguration private constructor() {
                 createAutorolesFile(autorolesF)
             }
 
-            logger.info("Loaded config of guild $guildId")
             guildConfigsMap[guildId] = GuildConfig(
                 Json.decodeFromString(rolesF.readText()),
                 Json.decodeFromString(channelsF.readText()),
                 Json.decodeFromString(autorolesF.readText()),
             )
+            logger.info("Loaded config of guild $guildId")
         }
     }
 
@@ -223,7 +246,7 @@ class BotConfiguration private constructor() {
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private val shusherConfig: ShusherConfig by lazy {
+    private val shusherConfig: ShusherConfig? by lazy {
         with(File(CONFIG_ROOT)) {
             if (!exists() || !isDirectory)
                 resetConfig()
@@ -232,12 +255,25 @@ class BotConfiguration private constructor() {
         if (!shusherF.exists()) {
             createShusherFile(shusherF)
         }
-        logger.info("Loaded shusher config")
-        Json.decodeFromString(shusherF.readText())
+
+        var config: ShusherConfig?
+        try {
+            config = Json.decodeFromString(shusherF.readText())
+            logger.info("Loaded shusher config")
+        } catch (e: SerializationException) {
+            logger.warn("Failed to load shusher config. Using backup")
+            config = if (backupShusher != null) {
+                backupShusher
+            } else {
+                logger.warn("No backup for shusher config. Using default")
+                null
+            }
+        }
+        config
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private val presenceConfig: PresenceConfig by lazy {
+    private val presenceConfig: PresenceConfig? by lazy {
         with(File(CONFIG_ROOT)) {
             if (!exists() || !isDirectory)
                 resetConfig()
@@ -246,12 +282,24 @@ class BotConfiguration private constructor() {
         if (!presenceF.exists()) {
             createPresenceFile(presenceF)
         }
-        logger.info("Loaded presence config")
-        Json.decodeFromString(presenceF.readText())
+        var config: PresenceConfig?
+        try {
+            config = Json.decodeFromString(presenceF.readText())
+            logger.info("Loaded presence config")
+        } catch (e: SerializationException) {
+            logger.warn("Failed to load presence config. Using backup")
+            config = if (backupPresence != null) {
+                backupPresence
+            } else {
+                logger.warn("No backup for presence config. Using default")
+                null
+            }
+        }
+        config
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private val mailConfig: MailConfig by lazy {
+    private val mailConfig: MailConfig? by lazy {
         with(File(CONFIG_ROOT)) {
             if (!exists() || !isDirectory)
                 resetConfig()
@@ -260,8 +308,20 @@ class BotConfiguration private constructor() {
         if (!mailF.exists()) {
             createMailFile(mailF)
         }
-        logger.info("Loaded mail config")
-        Json.decodeFromString(mailF.readText())
+        var config: MailConfig?
+        try {
+            config = Json.decodeFromString(mailF.readText())
+            logger.info("Loaded mail config")
+        } catch (e: SerializationException) {
+            logger.warn("Failed to load mail config. Using backup.")
+            config = if (backupMail != null) {
+                backupMail
+            } else {
+                logger.error("No backup for mail config. Mail functionality will be disabled.")
+                null
+            }
+        }
+        config
     }
 }
 

@@ -17,6 +17,7 @@ import io.slama.events.clearAutoRoles
 import io.slama.events.loadAutoRoles
 import io.slama.managers.MailManager
 import io.slama.utils.TaskScheduler
+import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.ReadyEvent
@@ -47,25 +48,27 @@ class UGEBot(token: String) : ListenerAdapter() {
         exitProcess(1)
     }
 
-    private lateinit var mailManager: MailManager
+    private var mailManager: MailManager? = null
+
+    private var presenceJob: Job? = null
 
     init {
         while (true) {
             val command = readLine()?.split(" ") ?: listOf("default")
             when (command[0]) {
                 "die" -> {
-                    mailManager.close()
+                    mailManager?.close()
                     jda.shutdown()
                     exitProcess(0)
                 }
                 "reload", "reset" -> {
                     logger.warn("Reload is not reliable, consider restarting the bot if you encounter issues")
-                    mailManager.close()
+                    mailManager?.close()
                     load()
                     logger.info("Reload complete!")
                 }
-                "mail-close" -> mailManager.close()
-                "mail-open" -> mailManager.reOpen()
+                "mail-close" -> mailManager?.close()
+                "mail-open" -> mailManager?.reOpen()
                 "delete-commands" -> {
                     if (command.size < 2) continue
                     command.drop(1).forEach { name ->
@@ -93,16 +96,12 @@ class UGEBot(token: String) : ListenerAdapter() {
         )
         Shusher(jda)
         load()
-        TaskScheduler.repeat(10, TimeUnit.MINUTES) {
-            val (message, type) = BotConfiguration.presence.messages.entries.random()
-            jda.presence.setPresence(Activity.of(type, message), false)
-            true
-        }
     }
 
     private fun load() {
         BotConfiguration.resetConfig()
-        mailManager = MailManager(BotConfiguration.mail, jda)
+        val mailConfig = BotConfiguration.mail
+        if (mailConfig != null) mailManager = MailManager(mailConfig, jda)
         clearAutoRoles()
         jda.registerGlobalCommands()
         jda.guilds.forEach {
@@ -110,6 +109,13 @@ class UGEBot(token: String) : ListenerAdapter() {
             it.registerGuildCommands()
         }
         logger.info("Registered commands")
+        presenceJob?.cancel()
+        presenceJob = TaskScheduler.repeat(10, TimeUnit.MINUTES) {
+            val (message, type) = BotConfiguration.presence?.messages?.entries?.random()
+                .let { "Nothing" to Activity.ActivityType.DEFAULT }
+            jda.presence.setPresence(Activity.of(type, message), false)
+            true
+        }
     }
 
     private fun deleteCommandByName(name: String) {
