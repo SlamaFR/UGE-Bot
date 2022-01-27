@@ -44,7 +44,7 @@ fun ButtonClickEvent.replySuccess(message: String): ReplyAction =
     this.replyEmbeds(successEmbed(message))
 
 fun MessageChannel.sendSuccess(message: String): MessageAction =
-    this.sendMessage(successEmbed(message))
+    this.sendMessageEmbeds(successEmbed(message))
 
 fun SlashCommandEvent.replyWarning(message: String): ReplyAction =
     this.replyEmbeds(warningEmbed(message))
@@ -53,7 +53,7 @@ fun ButtonClickEvent.replyWarning(message: String): ReplyAction =
     this.replyEmbeds(warningEmbed(message))
 
 fun MessageChannel.sendWarning(message: String): MessageAction =
-    this.sendMessage(warningEmbed(message))
+    this.sendMessageEmbeds(warningEmbed(message))
 
 fun SlashCommandEvent.replyError(message: String): ReplyAction =
     this.replyEmbeds(errorEmbed(message))
@@ -62,4 +62,4 @@ fun ButtonClickEvent.replyError(message: String): ReplyAction =
     this.replyEmbeds(errorEmbed(message))
 
 fun MessageChannel.sendError(message: String): MessageAction =
-    this.sendMessage(errorEmbed(message))
+    this.sendMessageEmbeds(errorEmbed(message))

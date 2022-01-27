@@ -15,7 +15,7 @@ fun JDA.registerGlobalCommands() {
         }
         command("call", "Lancer un appel dans le salon courant.") {
             option(OptionType.INTEGER, name = "timeout", "Temps imparti pour répondre à l'appel en minutes.")
-            // option(OptionType.ROLE, name = "role", "Groupe d'étudiants visé.")
+            option(OptionType.ROLE, name = "role", "Groupe d'étudiants visé.")
         }
         command("poll", "Lancer un sondage dans le salon courant.") {
             option(OptionType.STRING, name = "question", "Question sur laquelle porte le sondage.", required = true)

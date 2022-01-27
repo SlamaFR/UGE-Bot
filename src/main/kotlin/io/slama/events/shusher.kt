@@ -49,7 +49,8 @@ class Shusher(
 
             if (member.roles.map { it.id }.any { roles[event.guild.id] == it }) {
                 if (random.nextFloat() <= SHUSHER_TRIGGER_THRESHOLD) {
-                    event.channel.sendMessage(BotConfiguration.shusher.sentences.random()).queue()
+                    val sentence = BotConfiguration.shusher?.sentences?.random() ?: "Please stop talking..."
+                    event.channel.sendMessage(sentence).queue()
                 }
             }
         }

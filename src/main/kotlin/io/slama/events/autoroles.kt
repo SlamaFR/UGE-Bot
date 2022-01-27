@@ -4,6 +4,7 @@ import io.slama.core.AutoRoleDTO
 import io.slama.core.BotConfiguration
 import io.slama.utils.replyError
 import io.slama.utils.replySuccess
+import io.slama.utils.replyWarning
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -14,6 +15,8 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+private val buttonIdRegex = """(.*)\.(\d+)""".toRegex()
 
 private val autoRoles = mutableMapOf<Long, MutableMap<String, AutoRole>>()
 private val logger: Logger = LoggerFactory.getLogger("AutoRolesManager")
@@ -32,7 +35,7 @@ class AutoRole(
     }
 
     fun send(textChannel: TextChannel) {
-        textChannel.sendMessage(
+        textChannel.sendMessageEmbeds(
             EmbedBuilder()
                 .setTitle(config.title)
                 .setDescription(config.description)
@@ -54,27 +57,28 @@ class AutoRole(
     }
 
     override fun onButtonClick(event: ButtonClickEvent) {
-        if (!event.componentId.startsWith(name)) return
+        val matchResult = buttonIdRegex.find(event.componentId) ?: return
+        val (name, index) = matchResult.destructured.let { (name, index) -> name to index.toInt() }
+        if (this.name != name) return
+
         val guild = event.guild ?: return
         if (guild.id != guildId) return
         val member = event.member ?: return
 
-        val index = event.componentId.split(".")[1].toInt()
         if (index >= roles.size) return
 
         val role = guild.getRoleById(roles[index])
         if (role == null) {
-            event.replyError("Le rôle demandé est introuvable. Contactez l'administrateur.")
-                .setEphemeral(true)
-                .queue()
+            event.replyError("Le rôle demandé est introuvable. Contactez l'administrateur.").setEphemeral(true).queue()
             return
         }
-        if (role in member.roles) return
+        if (role in member.roles) {
+            event.replyWarning("Vous avez déjà reçu ce rôle !").setEphemeral(true).queue()
+            return
+        }
 
         guild.addRoleToMember(event.user.id, role).queue {
-            event.replySuccess("Le rôle ${role.asMention} vous a été attribué !")
-                .setEphemeral(true)
-                .queue()
+            event.replySuccess("Le rôle ${role.asMention} vous a été attribué !").setEphemeral(true).queue()
         }
     }
 }
