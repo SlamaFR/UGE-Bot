@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
-    kotlin("jvm") version "1.5.30"
-    kotlin("plugin.serialization") version "1.5.20"
+    kotlin("jvm") version "1.6.20"
+    kotlin("plugin.serialization") version "1.6.20"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
     java
     application
@@ -32,19 +32,19 @@ repositories {
 
 dependencies {
     // test api
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.21")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.20")
 
     // kotlin api
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     // JDA & co.
     implementation("net.dv8tion:JDA:4.3.0_331") {
         exclude("opus-java")
     }
-    implementation("ch.qos.logback:logback-classic:1.2.10")
-    implementation("ch.qos.logback:logback-core:1.2.10")
-    implementation("org.slf4j:slf4j-api:1.7.33")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("ch.qos.logback:logback-core:1.2.11")
+    implementation("org.slf4j:slf4j-api:1.7.36")
 
     // Others
     implementation("com.natpryce:konfig:1.6.10.0")
