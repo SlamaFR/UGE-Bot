@@ -6,7 +6,6 @@ import io.slama.core.ConfigFolders.CONFIG_ROOT
 import io.slama.core.ConfigFolders.DATA_ROOT
 import io.slama.core.ConfigFolders.GUILD_CONFIG_ROOT
 import io.slama.core.ConfigFolders.POLLS_DATA_ROOT
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
@@ -68,11 +67,11 @@ class BotConfiguration private constructor() {
         private var backupMail: MailConfig? = null
 
         fun resetConfig() {
+            setup()
             backupGuilds = guilds
             backupShusher = shusher
             backupPresence = presence
             backupMail = mail
-            setup()
             innerConfig = null
         }
 
@@ -94,15 +93,15 @@ class BotConfiguration private constructor() {
             }
             with(File(DATA_ROOT)) {
                 mkdir()
-                if (!this.isDirectory) throw IOException("Couldn't create the $DATA_ROOT directory.")
+                if (!isDirectory) throw IOException("Couldn't create the $DATA_ROOT directory.")
                 else {
                     with(File(CALLS_DATA_ROOT)) {
                         mkdir()
-                        if (!this.isDirectory) throw IOException("Couldn't create the $CALLS_DATA_ROOT directory.")
+                        if (!isDirectory) throw IOException("Couldn't create the $CALLS_DATA_ROOT directory.")
                     }
                     with(File(POLLS_DATA_ROOT)) {
                         mkdir()
-                        if (!this.isDirectory) throw IOException("Couldn't create the $POLLS_DATA_ROOT directory.")
+                        if (!isDirectory) throw IOException("Couldn't create the $POLLS_DATA_ROOT directory.")
                     }
                 }
             }
@@ -205,7 +204,6 @@ class BotConfiguration private constructor() {
             return guildConfigsMap[guildId]
         }
 
-        @OptIn(ExperimentalSerializationApi::class)
         private fun loadConfig(guildId: Long) {
             with(File(GUILD_CONFIG_ROOT)) {
                 if (!exists() || !isDirectory)
@@ -245,7 +243,6 @@ class BotConfiguration private constructor() {
         GuildConfigManager()
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private val shusherConfig: ShusherConfig? by lazy {
         with(File(CONFIG_ROOT)) {
             if (!exists() || !isDirectory)
@@ -272,7 +269,6 @@ class BotConfiguration private constructor() {
         config
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private val presenceConfig: PresenceConfig? by lazy {
         with(File(CONFIG_ROOT)) {
             if (!exists() || !isDirectory)
@@ -298,7 +294,6 @@ class BotConfiguration private constructor() {
         config
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private val mailConfig: MailConfig? by lazy {
         with(File(CONFIG_ROOT)) {
             if (!exists() || !isDirectory)

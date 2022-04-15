@@ -51,6 +51,7 @@ private class Call(
     private val embedTitle = "Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}"
 
     private lateinit var responseId: String
+    private var totalTargeted: Int = 0
 
     init {
         event.jda.addEventListener(this)
@@ -58,6 +59,7 @@ private class Call(
 
         role?.guild?.findMembers { role in it.roles }?.onSuccess { members ->
             members.map { it.effectiveName }.forEach { missing.add(it) }
+            totalTargeted = members.size
         }
 
         event.replyEmbeds(
@@ -77,6 +79,12 @@ private class Call(
     override fun onButtonClick(event: ButtonClickEvent) {
         if (event.componentId != "$uniqueId.respond") return
         event.member?.run {
+            if (role != null) {
+                if (role !in roles) {
+                    event.replyWarning("Vous n'avez pas le rôle requis pour répondre à l'appel.").setEphemeral(true).queue()
+                    return
+                }
+            }
             if (effectiveName !in students) {
                 event.replySuccess("Votre présence a été enregistrée.").setEphemeral(true).queue()
                 students.add(effectiveName)
@@ -178,9 +186,7 @@ private class Call(
             responseId,
             EmbedBuilder()
                 .setTitle(embedTitle)
-                .setDescription(
-                    "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}."
-                )
+                .setDescription(resultString())
                 .setColor(EmbedColors.ORANGE)
                 .build()
         ).queue()
@@ -199,14 +205,10 @@ private class Call(
                 .setTitle("Appel demandé par ${event.member?.effectiveName ?: "un certain A. N. Onym"}")
                 .setDescription(
                     """
-                |L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
-                    "présente".pluralize(
-                        students.size
-                    )
-                    }.
-                |
-                |**Une erreur est survenue lors de l'envoi du fichier !**
-            """.trimMargin()
+                        |${resultString()}
+                        |
+                        |**Une erreur est survenue lors de l'envoi du fichier !**
+                    """.trimMargin()
                 )
                 .setColor(EmbedColors.RED)
                 .build()
@@ -217,5 +219,13 @@ private class Call(
                 Button.danger("0", "Appel terminé").withDisabled(true)
             )
         ).queue()
+    }
+
+    private fun resultString(): String {
+        return if (role == null) {
+            "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}."
+        } else {
+            "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} sur $totalTargeted étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}."
+        }
     }
 }
