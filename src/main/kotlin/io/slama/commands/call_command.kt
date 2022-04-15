@@ -80,7 +80,7 @@ private class Call(
         if (event.componentId != "$uniqueId.respond") return
         event.member?.run {
             if (role != null) {
-                if (!roles.contains(role)) {
+                if (role !in roles) {
                     event.replyWarning("Vous n'avez pas le rôle requis pour répondre à l'appel.").setEphemeral(true).queue()
                     return
                 }
