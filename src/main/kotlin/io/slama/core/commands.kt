@@ -1,6 +1,7 @@
 package io.slama.core
 
 import io.slama.utils.command
+import io.slama.utils.integer
 import io.slama.utils.invoke
 import io.slama.utils.option
 import net.dv8tion.jda.api.JDA
@@ -53,6 +54,10 @@ fun Guild.registerGuildCommands() {
                     }
                 } ?: listOf()
             }
+        }
+        command("pfc", "Lancer une partie de Pierre, Feuille, Ciseaux.") {
+            option(OptionType.USER, name = "opponent", "Joueur contre lequel jouer.", required = true)
+            integer(name = "rounds", "Nombre de manches à jouer. (Défaut = 1)", minValue = 1, maxValue = 5)
         }
     }
 }

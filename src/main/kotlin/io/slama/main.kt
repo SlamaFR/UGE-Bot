@@ -3,12 +3,7 @@ package io.slama
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.stringType
-import io.slama.commands.AutoRoleCommand
-import io.slama.commands.CallCommand
-import io.slama.commands.ChanGenCommand
-import io.slama.commands.KevalCommand
-import io.slama.commands.PollCommand
-import io.slama.commands.TableCommand
+import io.slama.commands.*
 import io.slama.core.BotConfiguration
 import io.slama.core.registerGlobalCommands
 import io.slama.core.registerGuildCommands
@@ -92,7 +87,8 @@ class UGEBot(token: String) : ListenerAdapter() {
             AutoRoleCommand(),
             PollCommand(),
             ChanGenCommand(),
-            TableCommand()
+            TableCommand(),
+            RockPaperScissorsCommand(),
         )
         Shusher(jda)
         load()
