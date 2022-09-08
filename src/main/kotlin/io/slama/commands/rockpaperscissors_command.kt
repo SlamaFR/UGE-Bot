@@ -112,7 +112,7 @@ class RockPaperScissors(
     }
 
     private fun nextRound(winner: RPSPlayer?) {
-        val previousRoundSummary = RPSRoundSummary(player1, player2, player1.move!!, player2.move!!, winner)
+        val previousRoundSummary = RPSRoundSummary(player1, player2, player1.move!!, player2.move!!)
         roundSummaries.add(previousRoundSummary)
 
         if (winner != null && winner.score > rounds / 2) {
@@ -193,7 +193,6 @@ data class RPSRoundSummary(
     val player2: RPSPlayer,
     val player1Move: RPSMove,
     val player2Move: RPSMove,
-    val winner: RPSPlayer?
 ) {
     override fun toString(): String {
         return "$player1 $player1Move - $player2Move $player2"
