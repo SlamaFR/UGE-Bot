@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.interactions.components.Button
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import org.slf4j.LoggerFactory
 import java.util.*
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 
 private val logger = LoggerFactory.getLogger("RockPaperScissors")
 
@@ -49,8 +51,6 @@ class RockPaperScissors(
     private val gameId = System.currentTimeMillis()
     private val roundSummaries = mutableListOf<RPSRoundSummary>()
 
-    private var currentRound = 1
-
     private val rockButton = Button.of(
         ButtonStyle.SECONDARY, "rps.$gameId-rock", "Pierre", RPSMove.ROCK.emoji
     )
@@ -61,22 +61,26 @@ class RockPaperScissors(
         ButtonStyle.SECONDARY, "rps.$gameId-scissors", "Ciseaux", RPSMove.SCISSORS.emoji
     )
 
+    private var currentRound = 1
+    private var cancellationTask: ScheduledFuture<*>? = null
+
     init {
         event.jda.addEventListener(this)
     }
 
     fun init() {
-        logger.info("[GAME-$gameId] (Round $currentRound/$rounds) Game started between ${player1.id} and ${player2.id}")
+        logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game started between ${player1.id} and ${player2.id}")
         event.replyEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)
-                .setDescription("$player1 a défié $player2 ! Chaque joueur doit jouer son coup.")
-                .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds")
+                .setDescription("$player1 a défié $player2 !\n\n" +
+                        "**Chaque joueur doit jouer son coup.**")
+                .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • En cours")
                 .setColor(EmbedColors.VIOLET)
                 .build()
         ).addActionRow(
             rockButton, paperButton, scissorsButton
-        ).queue()
+        ).queue { scheduleTimeout() }
     }
 
     private fun play(event: ButtonClickEvent, move: RPSMove) {
@@ -91,8 +95,13 @@ class RockPaperScissors(
         }
 
         player.move = move
-        logger.info("[GAME-$gameId] (Round $currentRound/$rounds) Player ${player.id} played $move")
-        event.replySuccess("Vous avez joué $move !").setEphemeral(true).queue()
+        logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Player ${player.id} played $move")
+
+        event.replySuccess("Vous avez joué $move !")
+            .setEphemeral(true)
+            .queue()
+
+        scheduleTimeout()
         check()
     }
 
@@ -143,15 +152,17 @@ class RockPaperScissors(
                             "$previousRoundSummary\n\n" +
                             "**Vous pouvez rejouer !**"
                 )
-                .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds")
-                .setColor(EmbedColors.ORANGE)
+                .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • En cours")
+                .setColor(EmbedColors.VIOLET)
                 .build()
         ).queue()
     }
 
     private fun end(winner: RPSPlayer?) {
-        logger.info("[GAME-$gameId] (Round $currentRound/$rounds) Game ended, winner: ${winner?.id}")
-        event.jda.addEventListener(this)
+        logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game ended, winner: ${winner?.id}")
+
+        cancellationTask?.cancel(true)
+        event.jda.removeEventListener(this)
         event.hook.editOriginalEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)
@@ -166,17 +177,27 @@ class RockPaperScissors(
                     "$player1 ${player1.score} - ${player2.score} $player2",
                     false
                 )
-                .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds")
-                .setColor(if (winner != null) EmbedColors.GREEN else EmbedColors.RED)
+                .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • Terminée")
+                .setColor(if (winner != null) EmbedColors.GREEN else EmbedColors.ORANGE)
                 .build()
         ).setActionRows().queue()
     }
 
     override fun onButtonClick(event: ButtonClickEvent) {
+        println(player1.id)
+        println(player2.id)
+        println(event.user.idLong)
+
+
         if (event.user.idLong != player1.id && event.user.idLong != player2.id) {
-            event.replyError("Vous n'êtes pas un joueur de cette partie !").queue()
+            println("NOOOOOOOO")
+            event.replyError("Vous n'êtes pas un joueur de cette partie !")
+                .setEphemeral(true)
+                .queue()
             return
         }
+
+        println("yes")
 
         when (event.componentId) {
             "rps.$gameId-rock" -> play(event, RPSMove.ROCK)
@@ -186,6 +207,20 @@ class RockPaperScissors(
     }
 
     private fun gameHash() = Integer.toHexString(Objects.hash(gameId, player1, player2))
+
+    private fun scheduleTimeout() {
+        cancellationTask?.cancel(true)
+        cancellationTask = event.hook.editOriginalEmbeds(
+            EmbedBuilder()
+                .setTitle(GAME_NAME)
+                .setDescription("La partie a été annulée car un des joueurs n'a pas répondu à temps.")
+                .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • Annulée")
+                .setColor(EmbedColors.RED)
+                .build()
+        ).setActionRows().queueAfter(2, TimeUnit.MINUTES) {
+            event.jda.removeEventListener(this)
+        }
+    }
 }
 
 data class RPSRoundSummary(
