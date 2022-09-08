@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.Button
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.Objects
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
@@ -80,7 +80,7 @@ class RockPaperScissors(
                 .setTitle(GAME_NAME)
                 .setDescription(
                     "$player1 a défié $player2 !\n\n" +
-                            "**Chaque joueur doit jouer son coup.**"
+                        "**Chaque joueur doit jouer son coup.**"
                 )
                 .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • En cours")
                 .setColor(EmbedColors.VIOLET)
@@ -157,8 +157,8 @@ class RockPaperScissors(
                 .setTitle(GAME_NAME)
                 .setDescription(
                     "${if (winner != null) "$winner" else "Personne ne"} remporte le tour !\n\n" +
-                            "$previousRoundSummary\n\n" +
-                            "**Vous pouvez rejouer !**"
+                        "$previousRoundSummary\n\n" +
+                        "**Vous pouvez rejouer !**"
                 )
                 .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • En cours")
                 .setColor(EmbedColors.VIOLET)
