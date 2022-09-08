@@ -37,7 +37,12 @@ class RockPaperScissorsCommand : ListenerAdapter() {
             return
         }
 
-        RockPaperScissors(event, RPSPlayer(player1ID), RPSPlayer(player2ID), rounds).init()
+        RockPaperScissors(
+            event,
+            RPSPlayer(player1ID),
+            RPSPlayer(player2ID),
+            if (rounds % 2 == 0) rounds + 1 else rounds
+        ).init()
     }
 }
 
@@ -73,8 +78,10 @@ class RockPaperScissors(
         event.replyEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)
-                .setDescription("$player1 a défié $player2 !\n\n" +
-                        "**Chaque joueur doit jouer son coup.**")
+                .setDescription(
+                    "$player1 a défié $player2 !\n\n" +
+                            "**Chaque joueur doit jouer son coup.**"
+                )
                 .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • En cours")
                 .setColor(EmbedColors.VIOLET)
                 .build()
@@ -122,7 +129,7 @@ class RockPaperScissors(
 
     private fun nextRound(winner: RPSPlayer?) {
         val previousRoundSummary = RPSRoundSummary(player1, player2, player1.move!!, player2.move!!)
-        roundSummaries.add(previousRoundSummary)
+        if (winner != null) roundSummaries.add(previousRoundSummary)
 
         if (winner != null && winner.score > rounds / 2) {
             end(winner)
@@ -140,7 +147,8 @@ class RockPaperScissors(
             return
         }
 
-        currentRound++
+        if (winner != null) currentRound++
+
         player1.move = null
         player2.move = null
 
@@ -184,20 +192,12 @@ class RockPaperScissors(
     }
 
     override fun onButtonClick(event: ButtonClickEvent) {
-        println(player1.id)
-        println(player2.id)
-        println(event.user.idLong)
-
-
         if (event.user.idLong != player1.id && event.user.idLong != player2.id) {
-            println("NOOOOOOOO")
             event.replyError("Vous n'êtes pas un joueur de cette partie !")
                 .setEphemeral(true)
                 .queue()
             return
         }
-
-        println("yes")
 
         when (event.componentId) {
             "rps.$gameId-rock" -> play(event, RPSMove.ROCK)

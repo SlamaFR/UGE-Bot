@@ -57,7 +57,7 @@ fun Guild.registerGuildCommands() {
         }
         command("pfc", "Lancer une partie de Pierre, Feuille, Ciseaux.") {
             option(OptionType.USER, name = "opponent", "Joueur contre lequel jouer.", required = true)
-            integer(name = "rounds", "Nombre de manches à jouer. (Défaut = 1)", minValue = 1, maxValue = 5)
+            integer(name = "rounds", "Nombre de manches à jouer. Les nombres pairs seront arrondis à l'impair supérieur. (Défaut = 1)", minValue = 1, maxValue = 5)
         }
     }
 }
