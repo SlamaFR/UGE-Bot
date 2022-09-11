@@ -8,6 +8,7 @@ import io.slama.commands.CallCommand
 import io.slama.commands.ChanGenCommand
 import io.slama.commands.KevalCommand
 import io.slama.commands.PollCommand
+import io.slama.commands.RockPaperScissorsCommand
 import io.slama.commands.TableCommand
 import io.slama.core.BotConfiguration
 import io.slama.core.registerGlobalCommands
@@ -92,7 +93,8 @@ class UGEBot(token: String) : ListenerAdapter() {
             AutoRoleCommand(),
             PollCommand(),
             ChanGenCommand(),
-            TableCommand()
+            TableCommand(),
+            RockPaperScissorsCommand(),
         )
         Shusher(jda)
         load()
