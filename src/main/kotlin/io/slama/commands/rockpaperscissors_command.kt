@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit
 private val logger = LoggerFactory.getLogger("RockPaperScissors")
 
 const val GAME_NAME = "Pierre Feuille Ciseaux"
+const val GAME_TIMEOUT = 120L
 
 class RockPaperScissorsCommand : ListenerAdapter() {
 
@@ -217,7 +218,7 @@ class RockPaperScissors(
                 .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • Annulée")
                 .setColor(EmbedColors.RED)
                 .build()
-        ).setActionRows().queueAfter(2, TimeUnit.MINUTES) {
+        ).setActionRows().queueAfter(GAME_TIMEOUT, TimeUnit.SECONDS) {
             event.jda.removeEventListener(this)
         }
     }
