@@ -41,6 +41,10 @@ fun JDA.registerGlobalCommands() {
         command("table", "Générer un tableau en caractères ASCII.") {
             option(OptionType.STRING, name = "content", "Contenu du tableau. Laisser vide pour obtenir un example.")
         }
+        command("pfc", "Lancer une partie de Pierre, Feuille, Ciseaux.") {
+            option(OptionType.USER, name = "opponent", "Joueur contre lequel jouer.", required = true)
+            integer(name = "rounds", "Nombre de manches à jouer. Les nombres pairs seront arrondis à l'impair supérieur. (Défaut = 1)", minValue = 1, maxValue = 5)
+        }
     }
 }
 
@@ -54,10 +58,6 @@ fun Guild.registerGuildCommands() {
                     }
                 } ?: listOf()
             }
-        }
-        command("pfc", "Lancer une partie de Pierre, Feuille, Ciseaux.") {
-            option(OptionType.USER, name = "opponent", "Joueur contre lequel jouer.", required = true)
-            integer(name = "rounds", "Nombre de manches à jouer. Les nombres pairs seront arrondis à l'impair supérieur. (Défaut = 1)", minValue = 1, maxValue = 5)
         }
     }
 }
