@@ -4,7 +4,6 @@ import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
 import io.slama.utils.EmbedColors
 import io.slama.utils.TaskScheduler
-import io.slama.utils.isTeacher
 import io.slama.utils.pluralize
 import io.slama.utils.replySuccess
 import io.slama.utils.replyWarning
@@ -30,7 +29,6 @@ class CallCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "call") return
         if (event.guild == null) return
-        if (!event.member!!.isTeacher()) return
 
         Call(
             event,

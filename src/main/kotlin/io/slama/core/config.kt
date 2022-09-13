@@ -107,20 +107,6 @@ class BotConfiguration private constructor() {
             }
         }
 
-        private fun createRolesFile(file: File) {
-            file.createNewFile()
-            file.writeText(
-                """
-                {
-                  "adminRoleID": 0,
-                  "managerRoleID": 1,
-                  "teacherRoleID": 2,
-                  "studentRoleID": 3
-                }
-                """.trimIndent()
-            )
-        }
-
         private fun createChannelsFile(file: File) {
             file.createNewFile()
             file.writeText(
@@ -215,11 +201,6 @@ class BotConfiguration private constructor() {
                     throw IOException("Couldn't create the $name directory as there is already a file named like that.")
             }
 
-            val rolesF = File("$GUILD_CONFIG_ROOT$guildId/roles.json")
-            if (!rolesF.exists()) {
-                createRolesFile(rolesF)
-            }
-
             val channelsF = File("$GUILD_CONFIG_ROOT$guildId/channels.json")
             if (!channelsF.exists()) {
                 createChannelsFile(channelsF)
@@ -231,7 +212,6 @@ class BotConfiguration private constructor() {
             }
 
             guildConfigsMap[guildId] = GuildConfig(
-                Json.decodeFromString(rolesF.readText()),
                 Json.decodeFromString(channelsF.readText()),
                 Json.decodeFromString(autorolesF.readText()),
             )
@@ -321,14 +301,6 @@ class BotConfiguration private constructor() {
 }
 
 @Serializable
-data class RolesDTO(
-    val adminRoleID: Long,
-    val managerRoleID: Long,
-    val teacherRoleID: Long,
-    val studentRoleID: Long,
-)
-
-@Serializable
 data class ChannelsDTO(
     val announcementsChannelID: Long,
     val moodleAnnouncementsChannelsIDs: Map<String, Long>,
@@ -372,7 +344,6 @@ data class MailConfig(
 )
 
 data class GuildConfig(
-    val roles: RolesDTO,
     val channels: ChannelsDTO,
     val autoRoles: Map<String, AutoRoleDTO>,
 )
