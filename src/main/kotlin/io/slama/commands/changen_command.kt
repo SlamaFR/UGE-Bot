@@ -1,7 +1,6 @@
 package io.slama.commands
 
 import io.slama.core.ConfigFolders
-import io.slama.utils.isAdmin
 import io.slama.utils.replySuccess
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
@@ -46,7 +45,6 @@ class ChanGenCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "changen") return
         if (event.guild == null) return
-        if (!event.member!!.isAdmin()) return
 
         event.getOption("channel")?.asGuildChannel?.let { channel ->
             if (channel.id in generators) {
