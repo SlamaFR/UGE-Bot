@@ -2,7 +2,6 @@ package io.slama.events
 
 import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
-import io.slama.utils.isAdmin
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Role
@@ -42,7 +41,7 @@ class Shusher(
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         event.member?.let { member ->
-            if (event.message.contentRaw.startsWith("!tg") && member.isAdmin()) {
+            if (event.message.contentRaw.startsWith("!tg") && member.isOwner) {
                 command(event)
                 return
             }

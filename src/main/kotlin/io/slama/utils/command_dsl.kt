@@ -40,3 +40,16 @@ fun CommandData.option(
     if (type.canSupportChoices()) option.addChoices(choices())
     this.addOptions(option)
 }
+
+fun CommandData.integer(
+    name: String,
+    desc: String,
+    required: Boolean = false,
+    minValue: Int? = null,
+    maxValue: Int? = null
+) {
+    val option = OptionData(OptionType.INTEGER, name, desc).setRequired(required)
+    if (minValue != null) option.setMinValue(minValue.toLong())
+    if (maxValue != null) option.setMaxValue(maxValue.toLong())
+    this.addOptions(option)
+}

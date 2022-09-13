@@ -4,7 +4,6 @@ import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
 import io.slama.utils.EmbedColors
 import io.slama.utils.TaskScheduler
-import io.slama.utils.isTeacher
 import io.slama.utils.pluralize
 import io.slama.utils.replySuccess
 import io.slama.utils.sendWarning
@@ -31,7 +30,6 @@ class PollCommand : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "poll") return
         if (event.guild == null) return
-        if (!event.member!!.isTeacher()) return
 
         Poll(
             event,
@@ -86,7 +84,7 @@ class Poll(
                     }.build()
             ).addActionRows(
                 ActionRow.of(
-                    List(options.size) { i -> Button.secondary("$uniqueId.$i", ('A' + i).toString()) }
+                    List(options.size) { i -> Button.secondary("poll.$uniqueId.$i", ('A' + i).toString()) }
                 )
             ).queue {
                 it.retrieveOriginal().queue { message -> responseId = message.id }
@@ -140,8 +138,8 @@ class Poll(
     }
 
     override fun onButtonClick(event: ButtonClickEvent) {
-        if (!event.componentId.startsWith(uniqueId)) return
-        vote(event.componentId.split(".")[1].toInt(), event.user.idLong, event.member?.effectiveName ?: "")
+        if (!event.componentId.startsWith("poll.$uniqueId")) return
+        vote(event.componentId.split(".")[2].toInt(), event.user.idLong, event.member?.effectiveName ?: "")
         event.replySuccess("Votre vote a été pris en compte.").setEphemeral(true).queue()
     }
 

@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.Button
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-private val buttonIdRegex = """(.*)\.(\d+)""".toRegex()
+private val buttonIdRegex = """atr.(.*)\.(\d+)""".toRegex()
 
 private val autoRoles = mutableMapOf<Long, MutableMap<String, AutoRole>>()
 private val logger: Logger = LoggerFactory.getLogger("AutoRolesManager")
@@ -48,7 +48,7 @@ class AutoRole(
                         i.associateWith {
                             config.roles[it]
                         }.map {
-                            Button.of(it.value.color, "$name.${it.key}", it.value.title)
+                            Button.of(it.value.color, "atr.$name.${it.key}", it.value.title)
                         }
                     )
                 )

@@ -7,11 +7,11 @@ on:
   push:
     branches:
       - master
-      - version/**
+      - develop
   pull_request:
     branches:
       - master
-      - version/**
+      - develop
 
 jobs:
   build:
