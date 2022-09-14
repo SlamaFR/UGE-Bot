@@ -93,6 +93,10 @@ class BotConfiguration private constructor() {
                         throw IOException("Couldn't create the $GUILD_CONFIG_ROOT directory.")
                 }
             }
+            setupDataFolder()
+        }
+
+        private fun setupDataFolder() {
             with(File(DATA_ROOT)) {
                 mkdir()
                 if (!isDirectory) throw IOException("Couldn't create the $DATA_ROOT directory.")
