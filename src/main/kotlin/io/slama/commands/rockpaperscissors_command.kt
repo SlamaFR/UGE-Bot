@@ -76,7 +76,7 @@ class RockPaperScissors(
 
     fun init() {
         logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game started between ${player1.id} and ${player2.id}")
-        event.replyEmbeds(
+        event.reply("$player1 VS $player2").addEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)
                 .setDescription(
@@ -140,12 +140,11 @@ class RockPaperScissors(
         if (currentRound == rounds) {
             if (player1.score > player2.score) {
                 end(player1)
+                return
             } else if (player2.score > player1.score) {
                 end(player2)
-            } else {
-                end(null)
+                return
             }
-            return
         }
 
         if (winner != null) currentRound++
@@ -167,15 +166,15 @@ class RockPaperScissors(
         ).queue()
     }
 
-    private fun end(winner: RPSPlayer?) {
-        logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game ended, winner: ${winner?.id}")
+    private fun end(winner: RPSPlayer) {
+        logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game ended, winner: ${winner.id}")
 
         cancellationTask?.cancel(true)
         event.jda.removeEventListener(this)
         event.hook.editOriginalEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)
-                .setDescription("${if (winner != null) "$winner" else "Personne ne"} remporte la partie !\n\n")
+                .setDescription("$winner remporte la partie !\n\n")
                 .addField(
                     "Résumé des tours",
                     roundSummaries.joinToString("\n") { it.toString() },
@@ -187,7 +186,7 @@ class RockPaperScissors(
                     false
                 )
                 .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • Terminée")
-                .setColor(if (winner != null) EmbedColors.GREEN else EmbedColors.ORANGE)
+                .setColor(EmbedColors.GREEN)
                 .build()
         ).setActionRows().queue()
     }
