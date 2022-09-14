@@ -76,7 +76,7 @@ class RockPaperScissors(
 
     fun init() {
         logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game started between ${player1.id} and ${player2.id}")
-        event.replyEmbeds(
+        event.reply("$player1 VS $player2").addEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)
                 .setDescription(
