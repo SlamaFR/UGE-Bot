@@ -86,7 +86,7 @@ class RockPaperScissors(
     }
 
     private fun getStatistics(player: RPSPlayer): StatisticsTracker {
-        return when(player.id) {
+        return when (player.id) {
             player1.id -> player1Statistics
             player2.id -> player2Statistics
             else -> throw IllegalArgumentException("Player $player is not part of this game")
@@ -101,7 +101,7 @@ class RockPaperScissors(
                 .setTitle(GAME_NAME)
                 .setDescription(
                     "$player1 a défié $player2 !\n\n" +
-                        "**Chaque joueur doit jouer son coup.**"
+                            "**Chaque joueur doit jouer son coup.**"
                 )
                 .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • En cours")
                 .setColor(EmbedColors.VIOLET)
@@ -186,8 +186,8 @@ class RockPaperScissors(
                 .setTitle(GAME_NAME)
                 .setDescription(
                     "${if (winner != null) "$winner" else "Personne ne"} remporte le tour !\n\n" +
-                        "$previousRoundSummary\n\n" +
-                        "**Vous pouvez rejouer !**"
+                            "$previousRoundSummary\n\n" +
+                            "**Vous pouvez rejouer !**"
                 )
                 .setFooter("Partie #${gameHash()} • Round $currentRound/$rounds • En cours")
                 .setColor(EmbedColors.VIOLET)
