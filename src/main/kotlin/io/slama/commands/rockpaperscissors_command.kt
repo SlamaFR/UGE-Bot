@@ -78,17 +78,19 @@ class RockPaperScissors(
     private var currentRound = 1
     private var cancellationTask: ScheduledFuture<*>? = null
 
-    private val player1Statistics: StatisticsTracker
-    private val player2Statistics: StatisticsTracker
+    private val player1Statistics: StatisticsTracker = RPSStatisticsTracker(player1.id)
+    private val player2Statistics: StatisticsTracker = RPSStatisticsTracker(player2.id)
 
     init {
         event.jda.addEventListener(this)
-        player1Statistics = RPSStatisticsTracker(player1.id)
-        player2Statistics = RPSStatisticsTracker(player2.id)
     }
 
     private fun getStatistics(player: RPSPlayer): StatisticsTracker {
-        return if (player.id == player1.id) player1Statistics else player2Statistics
+        return when(player.id) {
+            player1.id -> player1Statistics
+            player2.id -> player2Statistics
+            else -> throw IllegalArgumentException("Player $player is not part of this game")
+        }
     }
 
     fun init() {
