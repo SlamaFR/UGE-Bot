@@ -1,5 +1,8 @@
 package io.slama.commands
 
+import io.slama.core.ConfigFolders
+import io.slama.games.AbstractStatisticsTracker
+import io.slama.games.StatisticsTracker
 import io.slama.utils.EmbedColors
 import io.slama.utils.replyError
 import io.slama.utils.replySuccess
@@ -12,6 +15,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.Button
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import org.slf4j.LoggerFactory
+import java.nio.file.Path
 import java.util.Objects
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -20,6 +24,8 @@ private val logger = LoggerFactory.getLogger("RockPaperScissors")
 
 const val GAME_NAME = "Pierre Feuille Ciseaux"
 const val GAME_TIMEOUT = 120L
+
+val GAME_STATISTICS_FOLDER: Path = Path.of(ConfigFolders.GAMES_DATA_ROOT).resolve("rps")
 
 class RockPaperScissorsCommand : ListenerAdapter() {
 
@@ -47,6 +53,8 @@ class RockPaperScissorsCommand : ListenerAdapter() {
     }
 }
 
+class RPSStatisticsTracker(userId: Long) : AbstractStatisticsTracker(GAME_STATISTICS_FOLDER, userId)
+
 class RockPaperScissors(
     private val event: GenericInteractionCreateEvent,
     private val player1: RPSPlayer,
@@ -70,12 +78,24 @@ class RockPaperScissors(
     private var currentRound = 1
     private var cancellationTask: ScheduledFuture<*>? = null
 
+    private val player1Statistics: StatisticsTracker = RPSStatisticsTracker(player1.id)
+    private val player2Statistics: StatisticsTracker = RPSStatisticsTracker(player2.id)
+
     init {
         event.jda.addEventListener(this)
     }
 
+    private fun getStatistics(player: RPSPlayer): StatisticsTracker {
+        return when (player.id) {
+            player1.id -> player1Statistics
+            player2.id -> player2Statistics
+            else -> throw IllegalArgumentException("Player $player is not part of this game")
+        }
+    }
+
     fun init() {
         logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game started between ${player1.id} and ${player2.id}")
+        player1Statistics.registerStartedGame()
         event.reply("$player1 VS $player2").addEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)
@@ -130,7 +150,16 @@ class RockPaperScissors(
 
     private fun nextRound(winner: RPSPlayer?) {
         val previousRoundSummary = RPSRoundSummary(player1, player2, player1.move!!, player2.move!!)
-        if (winner != null) roundSummaries.add(previousRoundSummary)
+
+        player1Statistics.registerPlayedRound()
+        player2Statistics.registerPlayedRound()
+        if (winner != null) {
+            getStatistics(winner).registerWonRound()
+            roundSummaries.add(previousRoundSummary)
+        } else {
+            player1Statistics.registerTiedRound()
+            player2Statistics.registerTiedRound()
+        }
 
         if (winner != null && winner.score > rounds / 2) {
             end(winner)
@@ -168,9 +197,15 @@ class RockPaperScissors(
 
     private fun end(winner: RPSPlayer) {
         logger.info("[GAME-${gameHash()}] (Round $currentRound/$rounds) Game ended, winner: ${winner.id}")
-
-        cancellationTask?.cancel(true)
         event.jda.removeEventListener(this)
+        cancellationTask?.cancel(true)
+
+        player1Statistics.registerPlayedGame()
+        player2Statistics.registerPlayedGame()
+        getStatistics(winner).registerWonGame()
+        player1Statistics.save()
+        player2Statistics.save()
+
         event.hook.editOriginalEmbeds(
             EmbedBuilder()
                 .setTitle(GAME_NAME)

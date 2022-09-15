@@ -4,6 +4,7 @@ import io.slama.core.ConfigFolders.BOT_PROPERTIES
 import io.slama.core.ConfigFolders.CALLS_DATA_ROOT
 import io.slama.core.ConfigFolders.CONFIG_ROOT
 import io.slama.core.ConfigFolders.DATA_ROOT
+import io.slama.core.ConfigFolders.GAMES_DATA_ROOT
 import io.slama.core.ConfigFolders.GUILD_CONFIG_ROOT
 import io.slama.core.ConfigFolders.POLLS_DATA_ROOT
 import kotlinx.serialization.Serializable
@@ -24,6 +25,7 @@ object ConfigFolders {
     const val DATA_ROOT = "data/"
     const val CALLS_DATA_ROOT = "${DATA_ROOT}calls/"
     const val POLLS_DATA_ROOT = "${DATA_ROOT}polls/"
+    const val GAMES_DATA_ROOT = "${DATA_ROOT}games/"
     const val GUILD_CONFIG_ROOT = "${CONFIG_ROOT}guilds/"
 }
 
@@ -91,6 +93,10 @@ class BotConfiguration private constructor() {
                         throw IOException("Couldn't create the $GUILD_CONFIG_ROOT directory.")
                 }
             }
+            setupDataFolder()
+        }
+
+        private fun setupDataFolder() {
             with(File(DATA_ROOT)) {
                 mkdir()
                 if (!isDirectory) throw IOException("Couldn't create the $DATA_ROOT directory.")
@@ -102,6 +108,10 @@ class BotConfiguration private constructor() {
                     with(File(POLLS_DATA_ROOT)) {
                         mkdir()
                         if (!isDirectory) throw IOException("Couldn't create the $POLLS_DATA_ROOT directory.")
+                    }
+                    with(File(GAMES_DATA_ROOT)) {
+                        mkdir()
+                        if (!isDirectory) throw IOException("Couldn't create the $GAMES_DATA_ROOT directory.")
                     }
                 }
             }
