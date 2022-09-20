@@ -59,5 +59,8 @@ fun Guild.registerGuildCommands() {
                 } ?: listOf()
             }
         }
+        command("stats", "Afficher vos statistiques ou celles d'un autre utilisateurs au Pierre Feuille Ciseaux.") {
+            option(OptionType.USER, name = "player", "Utilisateur dont afficher les statistiques.")
+        }
     }
 }
