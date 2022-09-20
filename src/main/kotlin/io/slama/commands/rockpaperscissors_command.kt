@@ -25,7 +25,7 @@ private val logger = LoggerFactory.getLogger("RockPaperScissors")
 const val GAME_NAME = "Pierre Feuille Ciseaux"
 const val GAME_TIMEOUT = 120L
 
-val GAME_STATISTICS_FOLDER: Path = Path.of(ConfigFolders.GAMES_DATA_ROOT).resolve("rps")
+val RPS_GAME_STATISTICS_FOLDER: Path = Path.of(ConfigFolders.GAMES_DATA_ROOT).resolve("rps")
 
 class RockPaperScissorsCommand : ListenerAdapter() {
 
@@ -53,7 +53,7 @@ class RockPaperScissorsCommand : ListenerAdapter() {
     }
 }
 
-class RPSStatisticsTracker(userId: Long) : AbstractStatisticsTracker(GAME_STATISTICS_FOLDER, userId)
+class RPSStatisticsTracker(userId: Long) : AbstractStatisticsTracker(RPS_GAME_STATISTICS_FOLDER, userId)
 
 class RockPaperScissors(
     private val event: GenericInteractionCreateEvent,
