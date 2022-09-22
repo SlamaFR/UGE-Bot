@@ -227,6 +227,8 @@ class RockPaperScissors(
     }
 
     override fun onButtonClick(event: ButtonClickEvent) {
+        if (!event.componentId.startsWith("rps.$gameId")) return
+
         if (event.user.idLong != player1.id && event.user.idLong != player2.id) {
             event.replyError("Vous n'êtes pas un joueur de cette partie !")
                 .setEphemeral(true)
