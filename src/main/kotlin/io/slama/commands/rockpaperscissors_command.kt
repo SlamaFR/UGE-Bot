@@ -1,5 +1,6 @@
 package io.slama.commands
 
+import io.slama.core.BotConfiguration
 import io.slama.core.ConfigFolders
 import io.slama.games.AbstractStatisticsTracker
 import io.slama.games.StatisticsTracker
@@ -265,9 +266,22 @@ data class RPSRoundSummary(
     val player2: RPSPlayer,
     val player1Move: RPSMove,
     val player2Move: RPSMove,
+    val winner: RPSPlayer?
 ) {
+    private val emoteConfig = BotConfiguration.emotes
+    private val player1Dot = when(winner) {
+        player1 -> emoteConfig.greenDot
+        player2 -> emoteConfig.redDot
+        else -> emoteConfig.orangeDot
+    }
+    private val player2Dot = when(winner) {
+        player2 -> emoteConfig.greenDot
+        player1 -> emoteConfig.redDot
+        else -> emoteConfig.orangeDot
+    }
+
     override fun toString(): String {
-        return "$player1 $player1Move - $player2Move $player2"
+        return "$player1 $player1Dot $player1Move - $player2Move $player2Dot $player2"
     }
 }
 

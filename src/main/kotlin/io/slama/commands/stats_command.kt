@@ -1,19 +1,25 @@
 package io.slama.commands
 
+import io.slama.core.BotConfiguration
 import io.slama.games.GameStatistics
 import io.slama.utils.pluralize
 import io.slama.utils.replyError
-import java.util.Locale
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import java.util.Locale
 
 class StatsCommand : ListenerAdapter() {
 
     override fun onSlashCommand(event: SlashCommandEvent) {
         if (event.name != "stats") return
         val guild = event.guild ?: return
+
+        val emoteConfig = BotConfiguration.emotes
+        val V = emoteConfig.victory
+        val N = emoteConfig.draw
+        val D = emoteConfig.defeat
 
         val player = event.getOption("player")?.asUser ?: event.user
         val playerName = guild.getMemberById(player.idLong)?.effectiveName ?: player.name
@@ -38,7 +44,7 @@ class StatsCommand : ListenerAdapter() {
                 )
                 .addField(
                     "Détails des parties",
-                    "V: ${statistics.wonGames} / D: $lostGames",
+                    "$V${statistics.wonGames} $D$lostGames",
                     true
                 )
                 .addField(
@@ -53,7 +59,7 @@ class StatsCommand : ListenerAdapter() {
                 )
                 .addField(
                     "Détails des tours",
-                    "V: ${statistics.wonRounds} / D: $lostRounds / N: ${statistics.tiedRounds}",
+                    "$V${statistics.wonRounds} $D$lostRounds $N${statistics.tiedRounds}",
                     true
                 )
                 .addField(
