@@ -44,6 +44,12 @@ class BotConfiguration private constructor() {
             because it can only happen if the JVM is literally dying
             */
 
+        val emotes: EmotesConfig
+            get() = innerConfig!!.emotesConfig /*
+            Explicitly want an NPE if it's null here,
+            because it can only happen if the JVM is literally dying
+            */
+
         val presence: PresenceConfig?
             get() = innerConfig!!.presenceConfig /*
             Explicitly want an NPE if it's null here,
@@ -65,6 +71,7 @@ class BotConfiguration private constructor() {
 
         private var backupGuilds: GuildConfigManager? = null
         private var backupShusher: ShusherConfig? = null
+        private var backupEmotes: EmotesConfig? = null
         private var backupPresence: PresenceConfig? = null
         private var backupMail: MailConfig? = null
 
@@ -72,6 +79,7 @@ class BotConfiguration private constructor() {
             setup()
             backupGuilds = guilds
             backupShusher = shusher
+            backupEmotes = emotes
             backupPresence = presence
             backupMail = mail
             innerConfig = null
@@ -146,6 +154,11 @@ class BotConfiguration private constructor() {
                 }
                 """.trimIndent()
             )
+        }
+
+        private fun createEmotesFile(file: File) {
+            file.createNewFile()
+            file.writeText("{}\n")
         }
 
         private fun createPresenceFile(file: File) {
@@ -259,6 +272,30 @@ class BotConfiguration private constructor() {
         config
     }
 
+    private val emotesConfig: EmotesConfig by lazy {
+        with(File(CONFIG_ROOT)) {
+            if (!exists() || !isDirectory)
+                resetConfig()
+        }
+        val emotesF = File("${CONFIG_ROOT}emotes.json")
+        if (!emotesF.exists()) {
+            createEmotesFile(emotesF)
+        }
+
+        var config: EmotesConfig
+        try {
+            config = Json.decodeFromString(emotesF.readText())
+            logger.info("Loaded emotes config")
+        } catch (e: SerializationException) {
+            logger.warn("Failed to load emotes config. Using backup")
+            config = backupEmotes ?: run {
+                logger.warn("No backup for emotes config. Using default")
+                EmotesConfig()
+            }
+        }
+        config
+    }
+
     private val presenceConfig: PresenceConfig? by lazy {
         with(File(CONFIG_ROOT)) {
             if (!exists() || !isDirectory)
@@ -336,6 +373,16 @@ data class AutoRoleDTO(
 @Serializable
 data class ShusherConfig(
     val sentences: List<String>,
+)
+
+@Serializable
+data class EmotesConfig(
+    val victory: String? = ":green_square: ",
+    val draw: String? = ":orange_square: ",
+    val defeat: String? = ":red_square: ",
+    val greenDot: String? = ":green_circle:",
+    val orangeDot: String? = ":orange_circle:",
+    val redDot: String? = ":red_circle:",
 )
 
 @Serializable
