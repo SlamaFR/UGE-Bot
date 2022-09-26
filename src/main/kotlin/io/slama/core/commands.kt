@@ -45,6 +45,9 @@ fun JDA.registerGlobalCommands() {
             option(OptionType.USER, name = "opponent", "Joueur contre lequel jouer.", required = true)
             integer(name = "rounds", "Nombre de manches à jouer. Les nombres pairs seront arrondis à l'impair supérieur. (Défaut = 1)", minValue = 1, maxValue = 5)
         }
+        command("stats", "Afficher vos statistiques ou celles d'un autre utilisateur au Pierre Feuille Ciseaux.") {
+            option(OptionType.USER, name = "player", "Utilisateur duquel afficher les statistiques.")
+        }
     }
 }
 
