@@ -274,12 +274,12 @@ data class RPSRoundSummary(
     val winner: RPSPlayer?
 ) {
     private val emoteConfig = BotConfiguration.emotes
-    private val player1Dot = when(winner) {
+    private val player1Dot = when (winner) {
         player1 -> emoteConfig.greenDot
         player2 -> emoteConfig.redDot
         else -> emoteConfig.orangeDot
     }
-    private val player2Dot = when(winner) {
+    private val player2Dot = when (winner) {
         player2 -> emoteConfig.greenDot
         player1 -> emoteConfig.redDot
         else -> emoteConfig.orangeDot
