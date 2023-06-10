@@ -58,18 +58,28 @@ class ChanGenCommand : ListenerAdapter() {
         }
     }
 
-    override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-        checkJoin(event.channelJoined)
+    override fun onGuildVoiceUpdate(event: GuildVoiceUpdateEvent) {
+        if (event.channelJoined == null) {
+            onGuildVoiceLeave(event)
+        } else if (event.channelLeft == null) {
+            onGuildVoiceJoin(event)
+        } else {
+            onGuildVoiceMove(event)
+        }
+    }
+
+    private fun onGuildVoiceJoin(event: GuildVoiceUpdateEvent) {
+        event.channelJoined?.asVoiceChannel()?.let(::checkJoin)
         handleRequest(event)
     }
 
-    override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
-        checkLeave(event.channelLeft)
+    private fun onGuildVoiceLeave(event: GuildVoiceUpdateEvent) {
+        event.channelLeft?.asVoiceChannel()?.let(::checkLeave)
     }
 
-    override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
-        checkJoin(event.channelJoined)
-        checkLeave(event.channelLeft)
+    private fun onGuildVoiceMove(event: GuildVoiceUpdateEvent) {
+        event.channelJoined?.asVoiceChannel()?.let(::checkJoin)
+        event.channelLeft?.asVoiceChannel()?.let(::checkLeave)
         handleRequest(event)
     }
 
