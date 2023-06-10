@@ -80,7 +80,8 @@ private class Call(
         event.member?.run {
             if (role != null) {
                 if (role !in roles) {
-                    event.replyWarning("Vous n'avez pas le rôle requis pour répondre à l'appel.").setEphemeral(true).queue()
+                    event.replyWarning("Vous n'avez pas le rôle requis pour répondre à l'appel.").setEphemeral(true)
+                        .queue()
                     return
                 }
             }
@@ -222,9 +223,17 @@ private class Call(
 
     private fun resultString(): String {
         return if (role == null) {
-            "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}."
+            "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} étai${if (students.size > 1) "ent" else "t"} ${
+                "présente".pluralize(
+                    students.size
+                )
+            }."
         } else {
-            "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} sur $totalTargeted étai${if (students.size > 1) "ent" else "t"} ${"présente".pluralize(students.size)}."
+            "L'appel est terminé. ${students.size} ${"personne".pluralize(students.size)} sur $totalTargeted étai${if (students.size > 1) "ent" else "t"} ${
+                "présente".pluralize(
+                    students.size
+                )
+            }."
         }
     }
 }
