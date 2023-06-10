@@ -8,11 +8,11 @@ import io.slama.utils.replyWarning
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
+import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Button
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -34,8 +34,8 @@ class AutoRole(
         jda.addEventListener(this)
     }
 
-    fun send(textChannel: TextChannel) {
-        textChannel.sendMessageEmbeds(
+    fun send(messageChannel: MessageChannel) {
+        messageChannel.sendMessageEmbeds(
             EmbedBuilder()
                 .setTitle(config.title)
                 .setDescription(config.description)
@@ -43,20 +43,18 @@ class AutoRole(
                 .build()
         ).apply {
             for (i in roles.indices.chunked(5)) {
-                this.setActionRows(
-                    ActionRow.of(
-                        i.associateWith {
-                            config.roles[it]
-                        }.map {
-                            Button.of(it.value.color, "atr.$name.${it.key}", it.value.title)
-                        }
-                    )
+                this.setActionRow(
+                    i.associateWith {
+                        config.roles[it]
+                    }.map {
+                        Button.of(it.value.color, "atr.$name.${it.key}", it.value.title)
+                    }
                 )
             }
         }.queue()
     }
 
-    override fun onButtonClick(event: ButtonClickEvent) {
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
         val matchResult = buttonIdRegex.find(event.componentId) ?: return
         val (name, index) = matchResult.destructured.let { (name, index) -> name to index.toInt() }
         if (this.name != name) return
@@ -77,7 +75,7 @@ class AutoRole(
             return
         }
 
-        guild.addRoleToMember(event.user.id, role).queue {
+        guild.addRoleToMember(UserSnowflake.fromId(event.user.id), role).queue {
             event.replySuccess("Le rôle ${role.asMention} vous a été attribué !").setEphemeral(true).queue()
         }
     }

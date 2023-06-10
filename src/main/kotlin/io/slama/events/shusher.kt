@@ -5,7 +5,7 @@ import io.slama.core.ConfigFolders
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -39,7 +39,7 @@ class Shusher(
         }
     }
 
-    override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+    override fun onMessageReceived(event: MessageReceivedEvent) {
         event.member?.let { member ->
             if (event.message.contentRaw.startsWith("!tg") && member.isOwner) {
                 command(event)
@@ -55,13 +55,13 @@ class Shusher(
         }
     }
 
-    private fun command(event: GuildMessageReceivedEvent) {
+    private fun command(event: MessageReceivedEvent) {
         getOrCreateRole(event.guild).let { role ->
-            if (event.message.mentionedMembers.isEmpty()) {
+            if (event.message.mentions.members.isEmpty()) {
                 event.channel.sendMessage("Qui est la cible chef ?").queue()
                 return
             }
-            event.message.mentionedMembers.forEach { member ->
+            event.message.mentions.members.forEach { member ->
                 if (member.roles.contains(role)) {
                     event.guild.removeRoleFromMember(member, role).queue()
                     event.channel.sendMessage("C'est bon ${member.asMention}, je te laisse tranquille...").queue()

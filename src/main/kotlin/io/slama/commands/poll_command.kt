@@ -8,16 +8,17 @@ import io.slama.utils.pluralize
 import io.slama.utils.replySuccess
 import io.slama.utils.sendWarning
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Button
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.utils.FileUpload
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.util.Calendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_POLL_TIMEOUT = 2L
@@ -27,7 +28,7 @@ private val logger = LoggerFactory.getLogger("PollCommand")
 
 class PollCommand : ListenerAdapter() {
 
-    override fun onSlashCommand(event: SlashCommandEvent) {
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != "poll") return
         if (event.guild == null) return
 
@@ -40,7 +41,7 @@ class PollCommand : ListenerAdapter() {
 }
 
 class Poll(
-    private val event: SlashCommandEvent,
+    private val event: SlashCommandInteractionEvent,
     private val timeout: Long,
     private val toBeLogged: Boolean,
 ) : ListenerAdapter() {
@@ -82,10 +83,8 @@ class Poll(
                             addField("Réponse ${'A' + i}", name, true)
                         }
                     }.build()
-            ).addActionRows(
-                ActionRow.of(
-                    List(options.size) { i -> Button.secondary("poll.$uniqueId.$i", ('A' + i).toString()) }
-                )
+            ).addActionRow(
+                List(options.size) { i -> Button.secondary("poll.$uniqueId.$i", ('A' + i).toString()) }
             ).queue {
                 it.retrieveOriginal().queue { message -> responseId = message.id }
                 TaskScheduler.later(timeout, TimeUnit.MINUTES, ::sendResults)
@@ -137,7 +136,7 @@ class Poll(
         if (toBeLogged) sendLog()
     }
 
-    override fun onButtonClick(event: ButtonClickEvent) {
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
         if (!event.componentId.startsWith("poll.$uniqueId")) return
         vote(event.componentId.split(".")[2].toInt(), event.user.idLong, event.member?.effectiveName ?: "")
         event.replySuccess("Votre vote a été pris en compte.").setEphemeral(true).queue()
@@ -153,7 +152,8 @@ class Poll(
         val calendar = Calendar.getInstance()
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
-        val fileName = "poll_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+        val fileName =
+            "poll_${event.member?.effectiveName ?: "anonymous"}_#${event.messageChannel.name}_${df.format(calendar.time)}.txt"
 
         with(File(ConfigFolders.POLLS_DATA_ROOT)) {
             if (!exists() || !isDirectory)
@@ -171,7 +171,7 @@ class Poll(
             bufferedWriter().use { out ->
                 out.write(
                     """
-                    |Sondage effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.textChannel.name}
+                    |Sondage effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "anonymous"} dans le salon #${event.messageChannel.name}
                     |
                     |$totalVoteCount ${"personne".pluralize(totalVoteCount)} ${if (totalVoteCount > 1) "ont" else "à"} voté :
                     |Question : ${question?.asString ?: "Pas de question"}
@@ -191,7 +191,7 @@ class Poll(
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
-                it.sendFile(this).queue({}, { onFailSendLog() })
+                it.sendFiles(FileUpload.fromData(this)).queue({}, { onFailSendLog() })
             } ?: onFailSendLog()
         }
     }

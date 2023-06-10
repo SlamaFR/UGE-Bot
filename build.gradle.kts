@@ -39,7 +39,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     // JDA & co.
-    implementation("net.dv8tion:JDA:4.4.0_352") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.10") {
         exclude("opus-java")
     }
     implementation("ch.qos.logback:logback-classic:1.2.11")

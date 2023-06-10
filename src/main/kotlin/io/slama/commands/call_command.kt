@@ -9,16 +9,17 @@ import io.slama.utils.replySuccess
 import io.slama.utils.replyWarning
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Button
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.utils.FileUpload
 import org.slf4j.LoggerFactory
 import java.io.BufferedWriter
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_TIMEOUT = 5L
@@ -26,7 +27,7 @@ private val logger = LoggerFactory.getLogger("CallCommand")
 
 class CallCommand : ListenerAdapter() {
 
-    override fun onSlashCommand(event: SlashCommandEvent) {
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != "call") return
         if (event.guild == null) return
 
@@ -39,7 +40,7 @@ class CallCommand : ListenerAdapter() {
 }
 
 private class Call(
-    private val event: SlashCommandEvent,
+    private val event: SlashCommandInteractionEvent,
     private val timeout: Long = DEFAULT_TIMEOUT,
     private val role: Role? = null
 ) : ListenerAdapter() {
@@ -74,7 +75,7 @@ private class Call(
             }
     }
 
-    override fun onButtonClick(event: ButtonClickEvent) {
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
         if (event.componentId != "$uniqueId.respond") return
         event.member?.run {
             if (role != null) {
@@ -100,7 +101,7 @@ private class Call(
         val df = SimpleDateFormat("yyyy.MM.dd-HH.mm.ss")
         val hdf = SimpleDateFormat("dd/MM/yyyy à HH:mm")
         val fileName =
-            "call_${event.member?.effectiveName ?: "anonymous"}_#${event.textChannel.name}_${df.format(calendar.time)}.txt"
+            "call_${event.member?.effectiveName ?: "anonymous"}_#${event.messageChannel.name}_${df.format(calendar.time)}.txt"
 
         with(File(ConfigFolders.CALLS_DATA_ROOT)) {
             if (!exists() || !isDirectory)
@@ -117,7 +118,7 @@ private class Call(
             bufferedWriter().use { out ->
                 out.write(
                     """
-                    |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "un certain A. N. Onym"} dans le salon #${event.textChannel.name}
+                    |Appel effectué le ${hdf.format(calendar.time)} par ${event.member?.effectiveName ?: "un certain A. N. Onym"} dans le salon #${event.messageChannel.name}
                     |
                 """.trimMargin()
                 )
@@ -129,7 +130,7 @@ private class Call(
             }
 
             event.member?.user?.openPrivateChannel()?.queue {
-                it.sendFile(this).queue({ onResultSuccess() }, { onResultFailed() })
+                it.sendFiles(FileUpload.fromData(this)).queue({ onResultSuccess() }, { onResultFailed() })
             } ?: run {
                 logger.error("Couldn't created call file '$fileName'")
                 onResultFailed()

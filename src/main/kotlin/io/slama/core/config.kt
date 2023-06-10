@@ -12,7 +12,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.interactions.components.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException

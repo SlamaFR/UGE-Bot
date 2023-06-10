@@ -6,7 +6,7 @@ import com.notkamui.keval.KevalInvalidSymbolException
 import com.notkamui.keval.KevalZeroDivisionException
 import io.slama.utils.EmbedColors
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import kotlin.math.acos
 import kotlin.math.asin
@@ -24,7 +24,7 @@ import kotlin.math.tan
 
 class KevalCommand : ListenerAdapter() {
 
-    override fun onSlashCommand(event: SlashCommandEvent) {
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != "eval") return
         if (event.guild == null) return
 

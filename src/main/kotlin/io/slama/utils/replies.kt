@@ -1,12 +1,12 @@
 package io.slama.utils
 
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
-import net.dv8tion.jda.api.requests.restaction.MessageAction
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import java.awt.Color
 
 object EmbedColors {
@@ -37,29 +37,29 @@ private fun errorEmbed(message: String): MessageEmbed = EmbedBuilder()
     .setColor(EmbedColors.RED)
     .build()
 
-fun SlashCommandEvent.replySuccess(message: String): ReplyAction =
+fun SlashCommandInteractionEvent.replySuccess(message: String): ReplyCallbackAction =
     this.replyEmbeds(successEmbed(message))
 
-fun ButtonClickEvent.replySuccess(message: String): ReplyAction =
+fun ButtonInteractionEvent.replySuccess(message: String): ReplyCallbackAction =
     this.replyEmbeds(successEmbed(message))
 
-fun MessageChannel.sendSuccess(message: String): MessageAction =
+fun MessageChannel.sendSuccess(message: String): MessageCreateAction =
     this.sendMessageEmbeds(successEmbed(message))
 
-fun SlashCommandEvent.replyWarning(message: String): ReplyAction =
+fun SlashCommandInteractionEvent.replyWarning(message: String): ReplyCallbackAction =
     this.replyEmbeds(warningEmbed(message))
 
-fun ButtonClickEvent.replyWarning(message: String): ReplyAction =
+fun ButtonInteractionEvent.replyWarning(message: String): ReplyCallbackAction =
     this.replyEmbeds(warningEmbed(message))
 
-fun MessageChannel.sendWarning(message: String): MessageAction =
+fun MessageChannel.sendWarning(message: String): MessageCreateAction =
     this.sendMessageEmbeds(warningEmbed(message))
 
-fun SlashCommandEvent.replyError(message: String): ReplyAction =
+fun SlashCommandInteractionEvent.replyError(message: String): ReplyCallbackAction =
     this.replyEmbeds(errorEmbed(message))
 
-fun ButtonClickEvent.replyError(message: String): ReplyAction =
+fun ButtonInteractionEvent.replyError(message: String): ReplyCallbackAction =
     this.replyEmbeds(errorEmbed(message))
 
-fun MessageChannel.sendError(message: String): MessageAction =
+fun MessageChannel.sendError(message: String): MessageCreateAction =
     this.sendMessageEmbeds(errorEmbed(message))

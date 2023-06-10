@@ -6,13 +6,13 @@ import io.slama.utils.pluralize
 import io.slama.utils.replyError
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.Locale
 
 class StatsCommand : ListenerAdapter() {
 
-    override fun onSlashCommand(event: SlashCommandEvent) {
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != "stats") return
         val guild = event.guild ?: return
 
