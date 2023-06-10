@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.util.Locale
+import java.util.*
 
 class StatsCommand : ListenerAdapter() {
 
