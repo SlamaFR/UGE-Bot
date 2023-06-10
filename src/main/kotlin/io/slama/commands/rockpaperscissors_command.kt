@@ -15,6 +15,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.slf4j.LoggerFactory
@@ -228,7 +230,7 @@ class RockPaperScissors(
                 )
                 .setColor(EmbedColors.GREEN)
                 .build()
-        ).setActionRow().queue()
+        ).setComponents().queue()
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -259,7 +261,7 @@ class RockPaperScissors(
                     .setDescription("La partie a été annulée car un des joueurs n'a pas répondu à temps.")
                     .setColor(EmbedColors.RED)
                     .build()
-            ).setActionRow().queue {
+            ).setComponents().queue {
                 event.jda.removeEventListener(this)
             }
         }
