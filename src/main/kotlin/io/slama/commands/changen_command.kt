@@ -2,18 +2,14 @@ package io.slama.commands
 
 import io.slama.core.ConfigFolders
 import io.slama.utils.replySuccess
-import net.dv8tion.jda.api.entities.VoiceChannel
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
 import kotlin.concurrent.schedule
 
 const val INITIAL_DELETION_TIMEOUT = 150 * 1000L
@@ -42,11 +38,11 @@ class ChanGenCommand : ListenerAdapter() {
         }
     }
 
-    override fun onSlashCommand(event: SlashCommandEvent) {
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != "changen") return
         if (event.guild == null) return
 
-        event.getOption("channel")?.asGuildChannel?.let { channel ->
+        event.getOption("channel")?.asChannel?.let { channel ->
             if (channel.id in generators) {
                 generators.remove(channel.id)
                 event.replySuccess("Le générateur du salon **${channel.name}** a été supprimé.")
@@ -62,18 +58,28 @@ class ChanGenCommand : ListenerAdapter() {
         }
     }
 
-    override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-        checkJoin(event.channelJoined)
+    override fun onGuildVoiceUpdate(event: GuildVoiceUpdateEvent) {
+        if (event.channelJoined == null) {
+            onGuildVoiceLeave(event)
+        } else if (event.channelLeft == null) {
+            onGuildVoiceJoin(event)
+        } else {
+            onGuildVoiceMove(event)
+        }
+    }
+
+    private fun onGuildVoiceJoin(event: GuildVoiceUpdateEvent) {
+        event.channelJoined?.asVoiceChannel()?.let(::checkJoin)
         handleRequest(event)
     }
 
-    override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
-        checkLeave(event.channelLeft)
+    private fun onGuildVoiceLeave(event: GuildVoiceUpdateEvent) {
+        event.channelLeft?.asVoiceChannel()?.let(::checkLeave)
     }
 
-    override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
-        checkJoin(event.channelJoined)
-        checkLeave(event.channelLeft)
+    private fun onGuildVoiceMove(event: GuildVoiceUpdateEvent) {
+        event.channelJoined?.asVoiceChannel()?.let(::checkJoin)
+        event.channelLeft?.asVoiceChannel()?.let(::checkLeave)
         handleRequest(event)
     }
 
@@ -95,7 +101,7 @@ class ChanGenCommand : ListenerAdapter() {
         }
 
         // Creating new temporary channel for the current member.
-        channelJoined.parent?.createVoiceChannel("\uD83D\uDD35 Salon de ${member.effectiveName}")?.queue {
+        channelJoined.parentCategory?.createVoiceChannel("\uD83D\uDD35 Salon de ${member.effectiveName}")?.queue {
             temporaryChannels[member.id] = it.id
             member.guild.moveVoiceMember(member, it).queue()
         }

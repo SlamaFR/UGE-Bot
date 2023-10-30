@@ -2,7 +2,7 @@ package io.slama.utils
 
 import io.slama.core.BotConfiguration
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 
 val Guild.announcementChannel: TextChannel?
     get() = BotConfiguration.guilds[idLong]?.let {

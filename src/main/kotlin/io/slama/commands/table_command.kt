@@ -4,13 +4,13 @@ import io.slama.utils.EmbedColors
 import io.slama.utils.replyWarning
 import io.slama.utils.splitArgs
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.util.Collections
+import java.util.*
 
 class TableCommand : ListenerAdapter() {
 
-    override fun onSlashCommand(event: SlashCommandEvent) {
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != "table") return
 
         val content = event.getOption("content")
@@ -44,7 +44,7 @@ class TableCommand : ListenerAdapter() {
         }
     }
 
-    private fun sendUsage(event: SlashCommandEvent) {
+    private fun sendUsage(event: SlashCommandInteractionEvent) {
         event.replyEmbeds(
             EmbedBuilder()
                 .setTitle("Générateur de tableaux ASCII")

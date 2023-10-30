@@ -22,7 +22,7 @@ import io.slama.utils.TaskScheduler
 import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.events.ReadyEvent
+import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
@@ -116,7 +116,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         presenceJob?.cancel()
         presenceJob = TaskScheduler.repeat(10, TimeUnit.MINUTES) {
             val (message, type) = BotConfiguration.presence?.messages?.entries?.random()?.toPair()
-                ?: ("nothing" to Activity.ActivityType.DEFAULT)
+                ?: ("nothing" to Activity.ActivityType.PLAYING)
             jda.presence.setPresence(Activity.of(type, message), false)
             true
         }

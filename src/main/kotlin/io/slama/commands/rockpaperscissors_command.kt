@@ -10,13 +10,13 @@ import io.slama.utils.replyError
 import io.slama.utils.replySuccess
 import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Emoji
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.components.Button
-import net.dv8tion.jda.api.interactions.components.ButtonStyle
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import java.util.Objects
@@ -31,7 +31,7 @@ val RPS_GAME_STATISTICS_FOLDER: Path = Path.of(ConfigFolders.GAMES_DATA_ROOT).re
 
 class RockPaperScissorsCommand : ListenerAdapter() {
 
-    override fun onSlashCommand(event: SlashCommandEvent) {
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != "pfc") return
         if (event.guild == null) return
 
@@ -58,7 +58,7 @@ class RockPaperScissorsCommand : ListenerAdapter() {
 class RPSStatisticsTracker(userId: Long) : AbstractStatisticsTracker(RPS_GAME_STATISTICS_FOLDER, userId)
 
 class RockPaperScissors(
-    private val event: GenericInteractionCreateEvent,
+    private val event: IReplyCallback,
     private val player1: RPSPlayer,
     private val player2: RPSPlayer,
     private val rounds: Int = 1
@@ -118,7 +118,7 @@ class RockPaperScissors(
         ).queue { scheduleTimeout() }
     }
 
-    private fun play(event: ButtonClickEvent, move: RPSMove) {
+    private fun play(event: ButtonInteractionEvent, move: RPSMove) {
         val player = when (event.user.idLong) {
             player1.id -> player1
             player2.id -> player2
@@ -228,10 +228,10 @@ class RockPaperScissors(
                 )
                 .setColor(EmbedColors.GREEN)
                 .build()
-        ).setActionRows().queue()
+        ).setComponents().queue()
     }
 
-    override fun onButtonClick(event: ButtonClickEvent) {
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
         if (!event.componentId.startsWith("rps.$gameId")) return
 
         if (event.user.idLong != player1.id && event.user.idLong != player2.id) {
@@ -259,7 +259,7 @@ class RockPaperScissors(
                     .setDescription("La partie a été annulée car un des joueurs n'a pas répondu à temps.")
                     .setColor(EmbedColors.RED)
                     .build()
-            ).setActionRows().queue {
+            ).setComponents().queue {
                 event.jda.removeEventListener(this)
             }
         }
@@ -299,7 +299,7 @@ enum class RPSMove(
     SCISSORS(Emoji.fromUnicode("✌️"), { it == PAPER });
 
     override fun toString(): String {
-        return emoji.asMention
+        return emoji.asReactionCode
     }
 }
 

@@ -4,32 +4,33 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
-operator fun Guild.invoke(dsl: MutableList<CommandData>.() -> Unit) {
-    val commands = mutableListOf<CommandData>()
+operator fun Guild.invoke(dsl: MutableList<SlashCommandData>.() -> Unit) {
+    val commands = mutableListOf<SlashCommandData>()
     commands.dsl()
     this.updateCommands().addCommands(commands).queue()
 }
 
-operator fun JDA.invoke(dsl: MutableList<CommandData>.() -> Unit) {
-    val commands = mutableListOf<CommandData>()
+operator fun JDA.invoke(dsl: MutableList<SlashCommandData>.() -> Unit) {
+    val commands = mutableListOf<SlashCommandData>()
     commands.dsl()
     this.updateCommands().addCommands(commands).queue()
 }
 
-fun MutableList<CommandData>.command(
+fun MutableList<SlashCommandData>.command(
     name: String,
     desc: String,
-    options: CommandData.() -> Unit = {}
+    options: SlashCommandData.() -> Unit = {}
 ) {
-    val command = CommandData(name, desc)
+    val command = Commands.slash(name, desc)
     command.options()
     this += command
 }
 
-fun CommandData.option(
+fun SlashCommandData.option(
     type: OptionType,
     name: String,
     desc: String,
@@ -41,7 +42,7 @@ fun CommandData.option(
     this.addOptions(option)
 }
 
-fun CommandData.integer(
+fun SlashCommandData.integer(
     name: String,
     desc: String,
     required: Boolean = false,

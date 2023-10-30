@@ -21,7 +21,7 @@ import io.slama.utils.isFromMoodle
 import io.slama.utils.senderName
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.awt.Color

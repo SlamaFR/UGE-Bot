@@ -1,26 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     kotlin("jvm") version "1.6.20"
     kotlin("plugin.serialization") version "1.6.20"
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
     java
     application
 }
 
 group = "io.slama"
 version = "2.2.2"
-
-ktlint {
-    debug.set(true)
-    outputToConsole.set(true)
-    disabledRules.add("filename")
-    reporters {
-        reporter(ReporterType.CHECKSTYLE)
-        reporter(ReporterType.PLAIN)
-    }
-}
 
 repositories {
     mavenCentral()
@@ -39,7 +27,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     // JDA & co.
-    implementation("net.dv8tion:JDA:4.4.0_352") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.10") {
         exclude("opus-java")
     }
     implementation("ch.qos.logback:logback-classic:1.2.11")
