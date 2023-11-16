@@ -37,10 +37,16 @@ class CallScheduler(
         }
 
         val now = Instant.now()
-        guildConfig.scheduledCalls
-            .filter { Instant.parse(it.executionTime).isAfter(now) }
-            .sortedBy { Instant.parse(it.executionTime) }
-            .forEach { calls.add(it) }
+        try {
+            guildConfig.scheduledCalls
+                .filter { Instant.parse(it.executionTime).isAfter(now) }
+                .sortedBy { Instant.parse(it.executionTime) }
+                .forEach { calls.add(it) }
+        } catch (e: Exception) {
+            logger.error("$guildId: Failed to load scheduled calls")
+            logger.error("$guildId: ${e.message}")
+            return
+        }
 
         scheduleNextCall()
     }
