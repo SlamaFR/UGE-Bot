@@ -91,7 +91,7 @@ fun Guild.createAutoRoleIfAbsent(name: String, config: AutoRoleDTO): AutoRole? {
     if (name !in guildAutoRoles.keys) {
         val autoRole = AutoRole(config, name, id, jda)
         guildAutoRoles[name] = autoRole
-        logger.info("Successfully created AutoRole \"$name\" on $id")
+        logger.info("$id: Successfully created AutoRole \"$name\"")
         return autoRole
     }
     return guildAutoRoles[name]
