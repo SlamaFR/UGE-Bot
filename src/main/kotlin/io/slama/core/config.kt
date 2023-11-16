@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
+import kotlinx.serialization.encodeToString
 
 private val logger = LoggerFactory.getLogger("Configuration")
 
@@ -143,6 +144,11 @@ class BotConfiguration private constructor() {
             file.writeText("{}\n")
         }
 
+        private fun createScheduledCallsFile(file: File) {
+            file.createNewFile()
+            file.writeText("[]\n")
+        }
+
         private fun createShusherFile(file: File) {
             file.createNewFile()
             file.writeText(
@@ -201,11 +207,11 @@ class BotConfiguration private constructor() {
                 try {
                     loadConfig(guildId)
                 } catch (e: SerializationException) {
-                    logger.warn("Failed to load guild config for guild $guildId. Using backup")
+                    logger.warn("$guildId: Failed to load guild config. Using backup")
                     if (old != null) {
                         guildConfigsMap[guildId] = old
                     } else {
-                        logger.error("No backup for guild $guildId. Guild will be ignored")
+                        logger.error("$guildId: No backup! Guild will be ignored")
                         return null
                     }
                 }
@@ -234,11 +240,17 @@ class BotConfiguration private constructor() {
                 createAutorolesFile(autorolesF)
             }
 
+            val scheduledCallsF = File("$GUILD_CONFIG_ROOT$guildId/scheduledCalls.json")
+            if (!scheduledCallsF.exists()) {
+                createScheduledCallsFile(scheduledCallsF)
+            }
+
             guildConfigsMap[guildId] = GuildConfig(
                 Json.decodeFromString(channelsF.readText()),
                 Json.decodeFromString(autorolesF.readText()),
+                Json.decodeFromString(scheduledCallsF.readText()),
             )
-            logger.info("Loaded config of guild $guildId")
+            logger.info("$guildId: Loaded config.")
         }
     }
 
@@ -371,6 +383,15 @@ data class AutoRoleDTO(
 )
 
 @Serializable
+data class ScheduledCallDTO(
+    val channelId: Long,
+    val recipientId: Long,
+    val roleId: Long? = null,
+    val timeout: Long? = 5,
+    val executionTime: String,
+)
+
+@Serializable
 data class ShusherConfig(
     val sentences: List<String>,
 )
@@ -403,4 +424,5 @@ data class MailConfig(
 data class GuildConfig(
     val channels: ChannelsDTO,
     val autoRoles: Map<String, AutoRoleDTO>,
+    val scheduledCalls: List<ScheduledCallDTO>,
 )

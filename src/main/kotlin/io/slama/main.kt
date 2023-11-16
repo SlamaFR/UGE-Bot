@@ -18,6 +18,7 @@ import io.slama.events.Shusher
 import io.slama.events.clearAutoRoles
 import io.slama.events.loadAutoRoles
 import io.slama.managers.MailManager
+import io.slama.managers.initCallScheduler
 import io.slama.utils.TaskScheduler
 import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.JDABuilder
@@ -43,7 +44,7 @@ class UGEBot(token: String) : ListenerAdapter() {
             .createDefault(token)
             .setChunkingFilter(ChunkingFilter.ALL)
             .addEventListeners(this)
-            .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             .build()
     } catch (e: LoginException) {
         logger.error("Invalid token.")
@@ -111,6 +112,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         jda.guilds.forEach {
             it.loadAutoRoles()
             it.registerGuildCommands()
+            it.initCallScheduler(jda)
         }
         logger.info("Registered commands")
         presenceJob?.cancel()
@@ -129,9 +131,9 @@ class UGEBot(token: String) : ListenerAdapter() {
             }.queue { command ->
                 command?.let {
                     guild.deleteCommandById(it.idLong).queue {
-                        logger.info("Deleted command '$name' in guild ${guild.id}")
+                        logger.info("${guild.id}: Deleted command '$name'")
                     }
-                } ?: logger.info("Command '$name' not found in guild ${guild.id}")
+                } ?: logger.info("${guild.id}: Command '$name' not found")
             }
         }
     }
