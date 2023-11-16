@@ -207,11 +207,11 @@ class BotConfiguration private constructor() {
                 try {
                     loadConfig(guildId)
                 } catch (e: SerializationException) {
-                    logger.warn("Failed to load guild config for guild $guildId. Using backup")
+                    logger.warn("$guildId: Failed to load guild config. Using backup")
                     if (old != null) {
                         guildConfigsMap[guildId] = old
                     } else {
-                        logger.error("No backup for guild $guildId. Guild will be ignored")
+                        logger.error("$guildId: No backup! Guild will be ignored")
                         return null
                     }
                 }
@@ -250,7 +250,7 @@ class BotConfiguration private constructor() {
                 Json.decodeFromString(autorolesF.readText()),
                 Json.decodeFromString(scheduledCallsF.readText()),
             )
-            logger.info("Loaded config of guild $guildId")
+            logger.info("$guildId: Loaded config.")
         }
     }
 

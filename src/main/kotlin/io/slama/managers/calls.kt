@@ -32,7 +32,7 @@ class CallScheduler(
         nextCallJob?.cancel()
 
         val guildConfig = BotConfiguration.guilds[guildId] ?: run {
-            logger.error("No configuration found for guild $guildId")
+            logger.error("$guildId: No configuration found!")
             return
         }
 

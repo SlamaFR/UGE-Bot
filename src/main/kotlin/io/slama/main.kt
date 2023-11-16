@@ -131,9 +131,9 @@ class UGEBot(token: String) : ListenerAdapter() {
             }.queue { command ->
                 command?.let {
                     guild.deleteCommandById(it.idLong).queue {
-                        logger.info("Deleted command '$name' in guild ${guild.id}")
+                        logger.info("${guild.id}: Deleted command '$name'")
                     }
-                } ?: logger.info("Command '$name' not found in guild ${guild.id}")
+                } ?: logger.info("${guild.id}: Command '$name' not found")
             }
         }
     }
