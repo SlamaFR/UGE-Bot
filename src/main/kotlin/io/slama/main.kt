@@ -18,7 +18,7 @@ import io.slama.events.Shusher
 import io.slama.events.clearAutoRoles
 import io.slama.events.loadAutoRoles
 import io.slama.managers.MailManager
-import io.slama.managers.ScheduledCallsManager
+import io.slama.managers.initCallScheduler
 import io.slama.utils.TaskScheduler
 import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.JDABuilder
@@ -112,6 +112,7 @@ class UGEBot(token: String) : ListenerAdapter() {
         jda.guilds.forEach {
             it.loadAutoRoles()
             it.registerGuildCommands()
+            it.initCallScheduler(jda)
         }
         logger.info("Registered commands")
         presenceJob?.cancel()
@@ -121,7 +122,6 @@ class UGEBot(token: String) : ListenerAdapter() {
             jda.presence.setPresence(Activity.of(type, message), false)
             true
         }
-        ScheduledCallsManager.start(jda)
     }
 
     private fun deleteCommandByName(name: String) {
